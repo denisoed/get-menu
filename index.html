@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Меню • Быстрый заказ</title>
+  <!-- Tailwind via CDN for rapid styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fff7ed', 100: '#ffedd5', 200: '#fed7aa', 300: '#fdba74', 400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c', 800: '#9a3412', 900: '#7c2d12'
+            },
+          },
+          boxShadow: {
+            soft: '0 10px 30px rgba(0,0,0,.08)'
+          }
+        }
+      },
+      darkMode: 'class'
+    }
+  </script>
+  <style>
+    /* Smooth custom scrollbar */
+    * { scrollbar-width: thin; scrollbar-color: #e2e8f0 transparent; }
+    *::-webkit-scrollbar { height: 8px; width: 8px; }
+    *::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 999px; }
+    .container-capped { max-width: 1100px; }
+    @media print {
+      /* Print-only menu (hide controls) */
+      header, #hero, #cartDrawer, #quickOrder, #footer, #topbar, #controls { display: none !important; }
+      #menu { margin-top: 0 !important; }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-b from-orange-50 to-white text-slate-800 selection:bg-brand-200">
+  <!-- ===== SETTINGS (Edit to adapt for a cafe) ===== -->
+  <script>
+    const SETTINGS = {
+      cafeName: 'Кафе «Вкусно и Точка»',
+      address: 'г. Бишкек, пр. Чуй, 123',
+      phone: '+996 555 123 456',
+      whatsapp: '+996555123456', // digits only also ok
+      currency: 'KGS',
+      deliveryFee: 150,
+      minOrder: 0,
+      openHours: 'Ежедневно 10:00–22:00',
+      announcement: 'Скидка 10% на самовывоз по промокоду PICKUP10',
+      banner: {
+        title: 'Горячие обеды · Быстро и вкусно',
+        subtitle: 'Доставка за 30–45 минут по городу',
+        image: 'https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1600&auto=format&fit=crop'
+      }
+    }
+
+    // Example menu data — replace with your actual items
+    const MENU = [
+      { id: 'p1', name: 'Бургер «Классик»', price: 290, category: 'Бургеры', img: 'https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=1200&auto=format&fit=crop', tags: ['Хит'], options: { sizes: [{label:'Мал', add:0},{label:'Стд', add:40},{label:'Больш', add:80}], extras: [{label:'Сыр', add:40}, {label:'Бекон', add:70}] } },
+      { id: 'p2', name: 'Бургер «Острый»', price: 320, category: 'Бургеры', img: 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?q=80&w=1200&auto=format&fit=crop', tags: ['Острый'] },
+      { id: 'p3', name: 'Картофель фри', price: 120, category: 'Закуски', img: 'https://images.unsplash.com/photo-1541592553160-82008b127ccb?q=80&w=1200&auto=format&fit=crop', tags: ['Веган'], options: { sizes: [{label:'Мал', add:0},{label:'Больш', add:50}] } },
+      { id: 'p4', name: 'Салат «Цезарь»', price: 260, category: 'Салаты', img: 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?q=80&w=1200&auto=format&fit=crop' },
+      { id: 'p5', name: 'Лимонад домашний', price: 110, category: 'Напитки', img: 'https://images.unsplash.com/photo-1528909514045-2fa4ac7a08ba?q=80&w=1200&auto=format&fit=crop', options: { sizes: [{label:'300 мл', add:0},{label:'500 мл', add:30}] } },
+      { id: 'p6', name: 'Пицца Маргарита', price: 490, category: 'Пицца', img: 'https://images.unsplash.com/photo-1548365328-9f547fb095c3?q=80&w=1200&auto=format&fit=crop', tags: ['Хит'], options: { sizes: [{label:'25 см', add:0},{label:'30 см', add:120},{label:'35 см', add:220}], extras: [{label:'Пепперони', add:120},{label:'Сыр Моцарелла', add:90}] } },
+      { id: 'p7', name: 'Паста Карбонара', price: 380, category: 'Паста', img: 'https://images.unsplash.com/photo-1523986371872-9d3ba2e2f642?q=80&w=1200&auto=format&fit=crop' },
+      { id: 'p8', name: 'Чизкейк Нью-Йорк', price: 220, category: 'Десерты', img: 'https://images.unsplash.com/photo-1505253216365-9b094d542965?q=80&w=1200&auto=format&fit=crop', tags: ['Новинка'] },
+    ];
+  </script>
+  <!-- ===== /SETTINGS ===== -->
+
+  <!-- Topbar -->
+  <div id="topbar" class="w-full bg-white/70 backdrop-blur sticky top-0 z-40 shadow-soft">
+    <div class="mx-auto container-capped px-4 py-2 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-3">
+        <button id="themeToggle" class="px-3 py-1 rounded-full text-sm border border-slate-200 hover:bg-slate-50">🌓 Тема</button>
+        <span class="hidden sm:inline text-sm text-slate-600">⏰ <span id="openHours"></span></span>
+        <span class="hidden md:inline text-sm text-slate-600">📍 <span id="address"></span></span>
+      </div>
+      <div class="flex items-center gap-2">
+        <a id="callLink" class="text-sm px-3 py-1 rounded-full border border-brand-300 text-brand-700 hover:bg-brand-50" href="#">☎ Позвонить</a>
+        <button id="cartBtn" class="relative px-4 py-1 rounded-full bg-brand-600 text-white hover:bg-brand-700">
+          Корзина
+          <span id="cartCount" class="absolute -top-2 -right-2 text-[11px] bg-white text-brand-700 border border-brand-600 rounded-full px-1.5">0</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header / Hero -->
+  <header id="hero" class="bg-white">
+    <div class="mx-auto container-capped px-4 pt-8 pb-10">
+      <div class="grid md:grid-cols-2 gap-6 items-center">
+        <div>
+          <h1 id="cafeName" class="text-3xl md:text-4xl font-extrabold leading-tight">Меню</h1>
+          <p id="announcement" class="mt-3 text-slate-600">…</p>
+          <div class="mt-5 flex gap-3">
+            <a href="#menu" class="px-5 py-2.5 rounded-xl bg-brand-600 text-white hover:bg-brand-700 shadow-soft">Смотреть меню</a>
+            <a id="waQuick" target="_blank" class="px-5 py-2.5 rounded-xl bg-green-600 text-white hover:bg-green-700">Заказать в WhatsApp</a>
+          </div>
+        </div>
+        <div>
+          <div class="relative rounded-2xl overflow-hidden shadow-soft">
+            <img id="bannerImage" class="w-full h-60 object-cover" alt="Баннер" />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+            <div class="absolute bottom-3 left-3 text-white">
+              <div id="bannerTitle" class="text-xl font-semibold"></div>
+              <div id="bannerSub" class="opacity-90 text-sm"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Controls: Search + Categories -->
+  <section id="controls" class="sticky top-[52px] z-30 bg-white/85 backdrop-blur border-b border-slate-100">
+    <div class="mx-auto container-capped px-4 py-3 flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+      <div class="flex items-center gap-2 w-full md:w-1/2">
+        <input id="search" type="search" placeholder="Поиск по меню…" class="w-full rounded-xl border border-slate-200 px-4 py-2.5 outline-none focus:ring-2 focus:ring-brand-300" />
+      </div>
+      <div id="categories" class="flex gap-2 overflow-x-auto"></div>
+    </div>
+  </section>
+
+  <!-- Menu List -->
+  <main id="menu" class="mx-auto container-capped px-4 py-8 grid md:grid-cols-[1fr_360px] gap-6">
+    <!-- Items -->
+    <div id="items" class="grid sm:grid-cols-2 lg:grid-cols-2 gap-4"></div>
+
+    <!-- Cart Drawer (sticky on desktop) -->
+    <aside id="cartDrawer" class="hidden md:block sticky top-[120px] h-fit">
+      <div class="bg-white rounded-2xl border border-slate-100 shadow-soft p-4">
+        <h3 class="text-lg font-semibold">Ваш заказ</h3>
+        <div id="cartList" class="mt-3 flex flex-col gap-3"></div>
+        <div class="mt-4 border-t pt-3 text-sm text-slate-600 space-y-1">
+          <div class="flex justify-between"><span>Доставка</span><span id="deliveryFee">—</span></div>
+          <div class="flex justify-between font-semibold text-slate-800"><span>Итого</span><span id="cartTotal">0</span></div>
+          <div id="minOrderNote" class="hidden text-[12px] text-amber-700 bg-amber-50 rounded-lg p-2"></div>
+        </div>
+        <button id="checkoutBtn" class="mt-3 w-full rounded-xl bg-brand-600 text-white py-2.5 hover:bg-brand-700 disabled:opacity-50">Оформить заказ</button>
+        <a id="waOrder" target="_blank" class="mt-2 w-full inline-block text-center rounded-xl border border-green-600 text-green-700 py-2 hover:bg-green-50">WhatsApp</a>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Quick Order Modal -->
+  <div id="quickOrder" class="fixed inset-0 hidden items-end md:items-center justify-center z-50">
+    <div class="absolute inset-0 bg-black/50" onclick="toggleQuick(false)"></div>
+    <div class="w-full md:w-[720px] bg-white rounded-t-2xl md:rounded-2xl p-5 max-h-[90vh] overflow-y-auto shadow-soft">
+      <div class="flex items-start justify-between gap-4">
+        <h3 class="text-xl font-semibold">Оформление заказа</h3>
+        <button class="text-slate-500" onclick="toggleQuick(false)">✕</button>
+      </div>
+      <form id="orderForm" class="mt-4 grid md:grid-cols-2 gap-4">
+        <div class="grid gap-3">
+          <label class="text-sm">Имя
+            <input name="name" required class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2" placeholder="Ваше имя"/>
+          </label>
+          <label class="text-sm">Телефон
+            <input name="phone" required class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2" placeholder="+996..."/>
+          </label>
+          <label class="text-sm">Способ получения
+            <select name="type" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2">
+              <option value="delivery">Доставка</option>
+              <option value="pickup">Самовывоз</option>
+            </select>
+          </label>
+          <label id="addressField" class="text-sm">Адрес (для доставки)
+            <input name="address" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2" placeholder="Улица, дом, подъезд"/>
+          </label>
+          <label class="text-sm">Время
+            <select name="time" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2">
+              <option value="asap">Как можно скорее</option>
+              <option>Через 30 минут</option>
+              <option>Через 1 час</option>
+            </select>
+          </label>
+        </div>
+        <div class="grid gap-3">
+          <div class="p-3 rounded-xl bg-slate-50 text-sm">
+            <div class="font-medium">Состав заказа</div>
+            <div id="summary" class="mt-1 whitespace-pre-wrap"></div>
+          </div>
+          <label class="text-sm">Комментарий курьеру
+            <textarea name="comment" rows="4" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2" placeholder="Код домофона, пожелания…"></textarea>
+          </label>
+          <button class="rounded-xl bg-brand-600 text-white py-2.5 hover:bg-brand-700">Подтвердить заказ</button>
+          <a id="waBigOrder" target="_blank" class="rounded-xl border border-green-600 text-green-700 py-2 text-center hover:bg-green-50">Отправить в WhatsApp</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer id="footer" class="mt-8 bg-white border-t">
+    <div class="mx-auto container-capped px-4 py-6 text-sm text-slate-600 flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
+      <div>
+        <strong id="fCafe"></strong> • <span id="fAddr"></span> • <a id="fCall" class="underline" href="#"></a>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="window.print()" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200">🖨️ Печать QR/меню</button>
+        <button id="darkToggleBottom" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200">🌗 Тёмная тема</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Mobile Cart Bar -->
+  <div class="md:hidden fixed bottom-4 inset-x-0 z-40 px-4">
+    <div class="bg-white border border-slate-200 shadow-soft rounded-2xl px-4 py-2 flex items-center justify-between">
+      <div>
+        <div class="text-xs text-slate-500">Итого</div>
+        <div id="cartTotalMobile" class="font-semibold">0</div>
+      </div>
+      <button onclick="toggleQuick(true)" class="rounded-xl bg-brand-600 text-white px-4 py-2">Оформить</button>
+    </div>
+  </div>
+
+  <!-- ============== JS Logic ============== -->
+  <script>
+    const $ = (sel, root=document) => root.querySelector(sel);
+    const $all = (sel, root=document) => [...root.querySelectorAll(sel)];
+
+    const state = {
+      items: MENU,
+      filter: 'Все',
+      search: '',
+      cart: [] // { id, qty, size?, extras?:[], price }
+    }
+
+    const fmt = (n) => new Intl.NumberFormat('ru-RU').format(n) + ' ' + SETTINGS.currency;
+
+    function init() {
+      // Header setup
+      $('#cafeName').textContent = SETTINGS.cafeName;
+      $('#announcement').textContent = SETTINGS.announcement;
+      $('#openHours').textContent = SETTINGS.openHours;
+      $('#address').textContent = SETTINGS.address;
+      $('#fCafe').textContent = SETTINGS.cafeName;
+      $('#fAddr').textContent = SETTINGS.address;
+      $('#fCall').textContent = SETTINGS.phone; $('#fCall').href = `tel:${SETTINGS.phone}`;
+      $('#callLink').href = `tel:${SETTINGS.phone}`;
+      $('#bannerImage').src = SETTINGS.banner.image;
+      $('#bannerTitle').textContent = SETTINGS.banner.title;
+      $('#bannerSub').textContent = SETTINGS.banner.subtitle;
+      $('#waQuick').href = whatsappLink('Здравствуйте! Хочу сделать заказ.');
+
+      // Categories
+      const cats = ['Все', ...new Set(state.items.map(i=>i.category))];
+      const catWrap = $('#categories');
+      catWrap.innerHTML = '';
+      cats.forEach(c => {
+        const b = document.createElement('button');
+        b.className = 'px-3 py-1.5 rounded-full text-sm border border-slate-200 hover:bg-slate-50 whitespace-nowrap';
+        b.textContent = c; b.dataset.cat = c;
+        b.onclick = () => { state.filter = c; renderItems(); highlightCats(); };
+        catWrap.appendChild(b);
+      });
+      highlightCats();
+
+      // Search
+      $('#search').addEventListener('input', (e)=>{ state.search = e.target.value.trim().toLowerCase(); renderItems(); })
+
+      // Buttons
+      $('#cartBtn').onclick = ()=>toggleQuick(true);
+      $('#checkoutBtn').onclick = ()=>toggleQuick(true);
+      $('#themeToggle').onclick = toggleDark;
+      $('#darkToggleBottom').onclick = toggleDark;
+
+      // Form interactions
+      $('#orderForm').type.onchange = (e)=>{
+        $('#addressField').style.display = e.target.value === 'delivery' ? 'block' : 'none';
+      }
+      $('#orderForm').onsubmit = (e)=>{
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(e.target).entries());
+        const text = buildOrderText(data);
+        alert('Заказ принят!\n\n' + text);
+        window.open(whatsappLink(text), '_blank');
+      }
+
+      renderItems();
+      renderCart();
+      applyThemeFromStorage();
+    }
+
+    function highlightCats(){
+      $all('#categories button').forEach(b=>{
+        b.classList.toggle('bg-brand-600', b.dataset.cat===state.filter);
+        b.classList.toggle('text-white', b.dataset.cat===state.filter);
+        b.classList.toggle('border-brand-600', b.dataset.cat===state.filter);
+      })
+    }
+
+    function renderItems(){
+      const wrap = $('#items');
+      const q = state.search;
+      const cat = state.filter;
+      const list = state.items.filter(i => (
+        (cat==='Все' || i.category===cat) && (!q || i.name.toLowerCase().includes(q))
+      ));
+      wrap.innerHTML = '';
+      if (!list.length) {
+        wrap.innerHTML = `<div class="col-span-full text-slate-500">Ничего не найдено</div>`;
+        return;
+      }
+      list.forEach(item => wrap.appendChild(card(item)));
+    }
+
+    function card(item){
+      const el = document.createElement('div');
+      el.className = 'bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-soft flex flex-col';
+      el.innerHTML = `
+        <img src="${item.img}" alt="${item.name}" class="h-44 w-full object-cover">
+        <div class="p-4 flex-1 flex flex-col">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <h4 class="font-semibold text-lg">${item.name}</h4>
+              <div class="text-sm text-slate-500">${item.category}</div>
+            </div>
+            <div class="text-right">
+              <div class="font-bold text-brand-700">${fmt(item.price)}</div>
+              ${item.tags? `<div class='mt-1 flex flex-wrap gap-1'>${item.tags.map(t=>`<span class="text-[11px] px-2 py-0.5 rounded-full bg-slate-100">${t}</span>`).join('')}</div>`:''}
+            </div>
+          </div>
+          <div class="mt-3 flex items-center gap-2">
+            <button class="px-3 py-2 text-sm rounded-xl border border-slate-200 hover:bg-slate-50" onclick='openOptions("${item.id}")'>Выбрать</button>
+            <button class="px-3 py-2 text-sm rounded-xl bg-brand-600 text-white hover:bg-brand-700" onclick='addToCart("${item.id}")'>В корзину</button>
+          </div>
+        </div>`
+      return el;
+    }
+
+    function openOptions(id){
+      const item = state.items.find(i=>i.id===id);
+      if(!item.options){ addToCart(id); return; }
+      const {sizes=[], extras=[]} = item.options;
+      const html = `
+        <div class='space-y-2'>
+          ${sizes.length? `<label class='text-sm block'>Размер<select id='optSize' class='mt-1 w-full rounded-xl border border-slate-200 px-3 py-2'>${sizes.map((o,i)=>`<option value='${i}'>${o.label} ${o.add? '(+'+fmt(o.add)+')':''}</option>`).join('')}</select></label>`:''}
+          ${extras.length? `<div class='text-sm'>Добавки<div class='mt-1 grid grid-cols-2 gap-2'>${extras.map((o,i)=>`<label class='flex gap-2 items-center text-sm border rounded-xl px-3 py-2'><input type='checkbox' value='${i}' class='extraCheck'>${o.label} ${o.add? '(+'+fmt(o.add)+')':''}</label>`).join('')}</div></div>`:''}
+        </div>`;
+      const modal = document.createElement('div');
+      modal.className='fixed inset-0 z-50 flex items-center justify-center';
+      modal.innerHTML = `<div class='absolute inset-0 bg-black/50' onclick='this.parentElement.remove()'></div>
+        <div class='relative bg-white w-[92vw] max-w-md rounded-2xl p-5 shadow-soft'>
+          <div class='flex items-start justify-between'><div class='font-semibold text-lg'>${item.name}</div><button class='text-slate-500' onclick='this.closest(".fixed").remove()'>✕</button></div>
+          ${html}
+          <div class='mt-4 flex gap-2'>
+            <button class='px-4 py-2 rounded-xl bg-brand-600 text-white' id='ok'>Добавить</button>
+            <button class='px-4 py-2 rounded-xl border' onclick='this.closest(".fixed").remove()'>Отмена</button>
+          </div>
+        </div>`;
+      document.body.appendChild(modal);
+      modal.querySelector('#ok').onclick = ()=>{
+        const sizeIdx = modal.querySelector('#optSize')? +modal.querySelector('#optSize').value : null;
+        const extrasIdx = $all('.extraCheck', modal).filter(c=>c.checked).map(c=>+c.value);
+        addToCart(id, { sizeIdx, extrasIdx });
+        modal.remove();
+      }
+    }
+
+    function addToCart(id, opts={}){
+      const item = state.items.find(i=>i.id===id);
+      const key = JSON.stringify({id, ...opts});
+      let row = state.cart.find(r=>r.key===key);
+      const addPrice = calcAddPrice(item, opts);
+      if(row){ row.qty++; }
+      else { row = { key, id, name:item.name, base:item.price, add:addPrice, qty:1, opts }; state.cart.push(row); }
+      renderCart();
+    }
+
+    function calcAddPrice(item, {sizeIdx=null, extrasIdx=[]}={}){
+      let add = 0;
+      if(item.options?.sizes && sizeIdx!=null){ add += item.options.sizes[sizeIdx].add||0; }
+      if(item.options?.extras && extrasIdx?.length){ extrasIdx.forEach(i=> add += item.options.extras[i].add||0 ); }
+      return add;
+    }
+
+    function removeFromCart(key){
+      const i = state.cart.findIndex(r=>r.key===key);
+      if(i>-1){ state.cart.splice(i,1); renderCart(); }
+    }
+
+    function changeQty(key, d){
+      const row = state.cart.find(r=>r.key===key);
+      if(!row) return;
+      row.qty += d; if(row.qty<=0) removeFromCart(key); else renderCart();
+    }
+
+    function cartTotals(){
+      const sub = state.cart.reduce((s,r)=> s + (r.base + r.add)*r.qty, 0);
+      const delivery = state.cart.length? SETTINGS.deliveryFee : 0;
+      const total = sub + delivery;
+      return { sub, delivery, total };
+    }
+
+    function renderCart(){
+      $('#cartCount').textContent = state.cart.reduce((s,r)=>s+r.qty,0);
+      const list = $('#cartList');
+      if(list){
+        list.innerHTML = '';
+        if(!state.cart.length){ list.innerHTML = `<div class='text-slate-500 text-sm'>Корзина пуста</div>`; }
+        state.cart.forEach(r=>{
+          const item = state.items.find(i=>i.id===r.id);
+          const opts = [];
+          if(item.options?.sizes && r.opts.sizeIdx!=null) opts.push(item.options.sizes[r.opts.sizeIdx].label);
+          if(item.options?.extras && r.opts.extrasIdx?.length) opts.push(...r.opts.extrasIdx.map(i=>item.options.extras[i].label));
+          const el = document.createElement('div');
+          el.className='flex items-start justify-between gap-2';
+          el.innerHTML = `
+            <div>
+              <div class='font-medium'>${r.name}</div>
+              ${opts.length? `<div class='text-[12px] text-slate-500'>${opts.join(', ')}</div>`:''}
+              <div class='text-[12px] text-slate-500'>${fmt(r.base + r.add)} × ${r.qty}</div>
+            </div>
+            <div class='text-right'>
+              <div class='font-semibold'>${fmt((r.base + r.add)*r.qty)}</div>
+              <div class='mt-1 flex items-center gap-1 justify-end'>
+                <button class='w-6 h-6 rounded-full border' onclick='changeQty("${r.key}",-1)'>-</button>
+                <button class='w-6 h-6 rounded-full border' onclick='changeQty("${r.key}",1)'>+</button>
+                <button class='ml-1 text-slate-400 hover:text-red-500' onclick='removeFromCart("${r.key}")'>Удалить</button>
+              </div>
+            </div>`
+          list.appendChild(el);
+        })
+      }
+      const {sub, delivery, total} = cartTotals();
+      const dFee = state.cart.length? fmt(delivery): '—';
+      $('#deliveryFee').textContent = dFee;
+      $('#cartTotal').textContent = fmt(total);
+      $('#cartTotalMobile').textContent = fmt(total);
+
+      const meetsMin = total >= SETTINGS.minOrder;
+      $('#minOrderNote').classList.toggle('hidden', meetsMin);
+      if(!meetsMin){ $('#minOrderNote').textContent = `Минимальная сумма заказа: ${fmt(SETTINGS.minOrder)}`; }
+
+      // Update links
+      $('#waOrder').href = whatsappLink(buildOrderText());
+      $('#waBigOrder').href = whatsappLink(buildOrderText());
+      $('#waQuick').href = whatsappLink('Здравствуйте! Хочу сделать заказ.');
+
+      // Summary in modal
+      if($('#summary')) $('#summary').textContent = orderLines().join('\n');
+    }
+
+    function orderLines(){
+      const lines = state.cart.map(r=>{
+        const item = state.items.find(i=>i.id===r.id);
+        const opts = [];
+        if(item.options?.sizes && r.opts.sizeIdx!=null) opts.push(item.options.sizes[r.opts.sizeIdx].label);
+        if(item.options?.extras && r.opts.extrasIdx?.length) opts.push(...r.opts.extrasIdx.map(i=>item.options.extras[i].label));
+        const title = opts.length? `${r.name} (${opts.join(', ')})` : r.name;
+        const sum = (r.base + r.add) * r.qty;
+        return `• ${title} — ${r.qty} шт. = ${fmt(sum)}`;
+      })
+      const {delivery, total} = cartTotals();
+      if(delivery) lines.push(`Доставка: ${fmt(delivery)}`);
+      lines.push(`Итого: ${fmt(total)}`);
+      return lines;
+    }
+
+    function buildOrderText(formData){
+      const header = `Заказ из ${SETTINGS.cafeName}`;
+      const lines = orderLines();
+      let info = '';
+      if(formData){
+        info = `\nИмя: ${formData.name}\nТелефон: ${formData.phone}\nТип: ${formData.type}${formData.type==='delivery' ? `\nАдрес: ${formData.address||''}`:''}\nВремя: ${formData.time}\nКомментарий: ${formData.comment||''}`
+      }
+      return `${header}\n${lines.join('\n')}${info}\n\nСпасибо!`;
+    }
+
+    function whatsappLink(text){
+      const phone = SETTINGS.whatsapp.replace(/\D/g,'');
+      return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+    }
+
+    function toggleQuick(show){
+      $('#quickOrder').classList.toggle('hidden', !show);
+      if(show){ $('#summary').textContent = orderLines().join('\n'); }
+    }
+
+    function toggleDark(){
+      document.documentElement.classList.toggle('dark');
+      document.body.classList.toggle('bg-slate-900');
+      document.body.classList.toggle('text-slate-100');
+      localStorage.setItem('menu_dark', document.documentElement.classList.contains('dark')? '1':'0');
+    }
+
+    function applyThemeFromStorage(){
+      if(localStorage.getItem('menu_dark')==='1'){ toggleDark(); }
+    }
+
+    // Boot
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
