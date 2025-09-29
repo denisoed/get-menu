@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GetMenu — Онлайн‑меню с заказами для кафе и ресторанов</title>
+  <meta name="description" content="GetMenu — онлайн‑меню с оформлением заказов. Создайте меню за 5 минут, делитесь ссылкой, получайте заказы в WhatsApp или Telegram. Тарифы от $15/мес." />
+  <meta name="theme-color" content="#f97316" />
+  <!-- OpenGraph -->
+  <meta property="og:title" content="GetMenu — Онлайн‑меню с заказами" />
+  <meta property="og:description" content="Создайте меню за 5 минут и принимайте заказы без звонков. Работает на любом устройстве." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://getmenu.app/" />
+  <meta property="og:image" content="https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1600&auto=format&fit=crop" />
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="GetMenu — Онлайн‑меню с заказами" />
+  <meta name="twitter:description" content="Онлайн‑меню для кафе и ресторанов. Заказы в WhatsApp/Telegram. Тарифы от $15/мес." />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50:'#fff7ed',100:'#ffedd5',200:'#fed7aa',300:'#fdba74',400:'#fb923c',500:'#f97316',600:'#ea580c',700:'#c2410c',800:'#9a3412',900:'#7c2d12' }
+          },
+          boxShadow: { soft: '0 12px 40px rgba(0,0,0,.08)' }
+        }
+      },
+      darkMode: 'class'
+    }
+  </script>
+  <style>
+    .container-capped{max-width:1120px}
+    .hero-bg{background: radial-gradient(1200px 600px at 80% -10%, rgba(249,115,22,.18), transparent 60%), radial-gradient(800px 500px at 10% 120%, rgba(251,146,60,.18), transparent 60%);} 
+  </style>
+  
+  <!-- JSON-LD Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "GetMenu",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": "USD",
+      "price": "15",
+      "description": "Базовый план — онлайн‑меню + заказы через мессенджеры"
+    },
+    "description": "Онлайн‑меню с оформлением заказов для кафе и ресторанов.",
+    "url": "https://getmenu.app/"
+  }
+  </script>
+</head>
+<body class="bg-white text-slate-900 selection:bg-brand-200">
+  <!-- Top Bar -->
+  <div class="w-full bg-white/70 backdrop-blur sticky top-0 z-40 border-b">
+    <div class="container-capped mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="#" class="flex items-center gap-2 font-extrabold text-lg">
+        <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-brand-600 text-white">GM</span> GetMenu
+      </a>
+      <nav class="hidden md:flex items-center gap-6 text-sm">
+        <a href="#features" class="hover:text-brand-700">Возможности</a>
+        <a href="#how" class="hover:text-brand-700">Как это работает</a>
+        <a href="#pricing" class="hover:text-brand-700">Тарифы</a>
+        <a href="#faq" class="hover:text-brand-700">FAQ</a>
+      </nav>
+      <div class="flex items-center gap-2">
+        <a href="#demo" class="px-3 py-1.5 rounded-lg border border-slate-200 text-sm hover:bg-slate-50">Демо</a>
+        <a href="#signup" class="px-4 py-1.5 rounded-lg bg-brand-600 text-white text-sm hover:bg-brand-700">Создать меню</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <header class="hero-bg">
+    <div class="container-capped mx-auto px-4 py-14 lg:py-20 grid lg:grid-cols-2 gap-8 items-center">
+      <div>
+        <h1 class="text-3xl md:text-5xl font-extrabold leading-tight">Онлайн‑меню с заказами для кафе и ресторанов</h1>
+        <p class="mt-4 text-lg text-slate-600 max-w-xl">Ваши гости смотрят меню и оформляют заказ онлайн. Без звонков, без приложений, без лишних затрат.</p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a id="ctaCreateTop" href="#signup" class="px-5 py-3 rounded-xl bg-brand-600 text-white hover:bg-brand-700 shadow-soft">Создать меню за 5 минут</a>
+          <a href="#demo" class="px-5 py-3 rounded-xl border border-slate-200 hover:bg-slate-50">Посмотреть демо</a>
+        </div>
+        <div class="mt-4 text-sm text-slate-500">Тарифы от $15/мес • Без комиссии с заказов</div>
+      </div>
+      <div class="relative">
+        <div class="rounded-2xl overflow-hidden shadow-soft border border-slate-100">
+          <img src="https://images.unsplash.com/photo-1556742393-d75f468bfcb0?q=80&w=1600&auto=format&fit=crop" alt="Онлайн‑меню на телефоне" class="w-full h-72 object-cover" />
+        </div>
+        <div class="absolute -bottom-5 -right-5 bg-white border border-slate-100 rounded-xl p-4 shadow-soft hidden md:block">
+          <div class="text-sm">⏱ Запуск за 5 минут</div>
+          <div class="text-sm">💬 Заказы в WhatsApp/Telegram</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Pain / What you lose -->
+  <section id="pain" class="py-12 border-t bg-white">
+    <div class="container-capped mx-auto px-4">
+      <h2 class="text-2xl md:text-3xl font-extrabold">Что вы теряете без GetMenu</h2>
+      <div class="mt-6 grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="p-5 rounded-2xl border bg-white">
+          <div class="text-2xl">❌</div>
+          <div class="mt-2 font-semibold">Потраченное время на звонки</div>
+          <p class="text-slate-600 text-sm">Гости уточняют блюда по телефону — персонал отвлекается.</p>
+        </div>
+        <div class="p-5 rounded-2xl border bg-white">
+          <div class="text-2xl">❌</div>
+          <div class="mt-2 font-semibold">Упущенные заказы</div>
+          <p class="text-slate-600 text-sm">Меню не найти онлайн — клиенты уходят к конкурентам.</p>
+        </div>
+        <div class="p-5 rounded-2xl border bg-white">
+          <div class="text-2xl">❌</div>
+          <div class="mt-2 font-semibold">Лишние расходы</div>
+          <p class="text-slate-600 text-sm">Дорогие печать и разработка сайта, хотя нужен только список блюд.</p>
+        </div>
+        <div class="p-5 rounded-2xl border bg-white">
+          <div class="text-2xl">❌</div>
+          <div class="mt-2 font-semibold">Нет быстрого обновления</div>
+          <p class="text-slate-600 text-sm">Сложно менять цены и запускать акции оперативно.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Solution / Features -->
+  <section id="features" class="py-14">
+    <div class="container-capped mx-auto px-4">
+      <h2 class="text-2xl md:text-3xl font-extrabold">GetMenu решает это за вас</h2>
+      <p class="mt-2 text-slate-600">Создайте меню, поделитесь ссылкой, принимайте заказы — всё работает в браузере.</p>
+      <div class="mt-8 grid md:grid-cols-2 gap-6">
+        <div class="p-6 rounded-2xl border bg-white">
+          <div class="font-semibold text-lg">Онлайн‑меню за 5 минут</div>
+          <p class="text-slate-600 mt-2 text-sm">Добавляйте блюда, фото и цены. Без программистов и дизайнеров.</p>
+        </div>
+        <div class="p-6 rounded-2xl border bg-white">
+          <div class="font-semibold text-lg">Заказы через мессенджеры</div>
+          <p class="text-slate-600 mt-2 text-sm">Заявки уходят вам в WhatsApp или Telegram — удобно и быстро.</p>
+        </div>
+        <div class="p-6 rounded-2xl border bg-white">
+          <div class="font-semibold text-lg">Работает на любом устройстве</div>
+          <p class="text-slate-600 mt-2 text-sm">Смартфон, планшет, компьютер — меню всегда под рукой у гостей.</p>
+        </div>
+        <div class="p-6 rounded-2xl border bg-white">
+          <div class="font-semibold text-lg">Мгновенные правки</div>
+          <p class="text-slate-600 mt-2 text-sm">Меняйте цены, скрывайте позиции, запускайте акции за секунды.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section id="how" class="py-14 bg-slate-50">
+    <div class="container-capped mx-auto px-4">
+      <h2 class="text-2xl md:text-3xl font-extrabold">Как это работает</h2>
+      <div class="mt-8 grid md:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl bg-white border">
+          <div class="text-sm text-slate-500">Шаг 1</div>
+          <div class="font-semibold text-lg mt-1">Создайте меню</div>
+          <p class="text-slate-600 mt-2 text-sm">Добавьте блюда, цены и фото в простой админке.</p>
+        </div>
+        <div class="p-6 rounded-2xl bg-white border">
+          <div class="text-sm text-slate-500">Шаг 2</div>
+          <div class="font-semibold text-lg mt-1">Поделитесь ссылкой</div>
+          <p class="text-slate-600 mt-2 text-sm">Разместите ссылку в Instagram, WhatsApp, на вывеске или в профиле.</p>
+        </div>
+        <div class="p-6 rounded-2xl bg-white border">
+          <div class="text-sm text-slate-500">Шаг 3</div>
+          <div class="font-semibold text-lg mt-1">Получайте заказы</div>
+          <p class="text-slate-600 mt-2 text-sm">Гости оформляют заказ онлайн, вы получаете заявку в мессенджер.</p>
+        </div>
+      </div>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="#signup" class="px-5 py-3 rounded-xl bg-brand-600 text-white hover:bg-brand-700">Создать меню бесплатно</a>
+        <a href="#demo" class="px-5 py-3 rounded-xl border border-slate-200 hover:bg-white">Посмотреть демо</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Use cases -->
+  <section id="usecases" class="py-14">
+    <div class="container-capped mx-auto px-4">
+      <h2 class="text-2xl md:text-3xl font-extrabold">Кому подходит GetMenu</h2>
+      <div class="mt-8 grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="p-6 rounded-2xl border bg-white"><div class="font-semibold">🍕 Доставка пиццы</div><p class="text-slate-600 text-sm mt-2">Онлайн‑заказы без агрегаторов и комиссий.</p></div>
+        <div class="p-6 rounded-2xl border bg-white"><div class="font-semibold">☕ Кофейни</div><p class="text-slate-600 text-sm mt-2">Быстрые заказы напитков на вынос.</p></div>
+        <div class="p-6 rounded-2xl border bg-white"><div class="font-semibold">🥗 Кафе</div><p class="text-slate-600 text-sm mt-2">Меню и заказы на самовывоз в один клик.</p></div>
+        <div class="p-6 rounded-2xl border bg-white"><div class="font-semibold">🍽 Рестораны</div><p class="text-slate-600 text-sm mt-2">Предзаказ блюд и сбор заявок на бронирование.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What you lose (again, urgency) -->
+  <section id="loss" class="py-12 bg-white border-y">
+    <div class="container-capped mx-auto px-4">
+      <h2 class="text-2xl md:text-3xl font-extrabold">Не подключитесь — потеряете</h2>
+      <ul class="mt-6 grid md:grid-cols-2 gap-3 text-slate-700">
+        <li class="flex gap-2"><span>🔴</span><span>Клиентов, которые ищут меню онлайн и не находят вас.</span></li>
+        <li class="flex gap-2"><span>🔴</span><span>Время персонала на бесконечные звонки и уточнения.</span></li>
+        <li class="flex gap-2"><span>🔴</span><span>Деньги на печать и дизайн бумажных меню.</span></li>
+        <li class="flex gap-2"><span>🔴</span><span>Возможность быстро менять цены и запускать акции.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section id="pricing" class="py-16 bg-slate-50">
+    <div class="container-capped mx-auto px-4">
+      <h2 class="text-2xl md:text-3xl font-extrabold">Тарифы</h2>
+      <div class="mt-8 grid md:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl bg-white border">
+          <div class="text-sm text-slate-500">Старт</div>
+          <div class="text-3xl font-extrabold mt-1">$15<span class="text-base font-medium text-slate-500">/мес</span></div>
+          <ul class="mt-4 text-sm space-y-2 text-slate-700">
+            <li>Онлайн‑меню</li>
+            <li>Заказы в WhatsApp/Telegram</li>
+            <li>Базовые шаблоны</li>
+          </ul>
+          <a href="#signup" class="mt-5 inline-block w-full text-center px-4 py-2.5 rounded-xl border hover:bg-slate-50">Выбрать</a>
+        </div>
+        <div class="p-6 rounded-2xl bg-white border ring-2 ring-brand-500">
+          <div class="text-sm text-brand-700 font-medium">Рекомендуем</div>
+          <div class="text-3xl font-extrabold mt-1">$30<span class="text-base font-medium text-slate-500">/мес</span></div>
+          <ul class="mt-4 text-sm space-y-2 text-slate-700">
+            <li>Собственный домен</li>
+            <li>Брендирование и цвета</li>
+            <li>Приоритетная поддержка</li>
+          </ul>
+          <a href="#signup" class="mt-5 inline-block w-full text-center px-4 py-2.5 rounded-xl bg-brand-600 text-white hover:bg-brand-700">Подключить</a>
+        </div>
+        <div class="p-6 rounded-2xl bg-white border">
+          <div class="text-sm text-slate-500">Бизнес</div>
+          <div class="text-3xl font-extrabold mt-1">$50<span class="text-base font-medium text-slate-500">/мес</span></div>
+          <ul class="mt-4 text-sm space-y-2 text-slate-700">
+            <li>Аналитика заказов</li>
+            <li>Интеграции (CRM/оплаты)</li>
+            <li>Выделенный менеджер</li>
+          </ul>
+          <a href="#signup" class="mt-5 inline-block w-full text-center px-4 py-2.5 rounded-xl border hover:bg-slate-50">Связаться</a>
+        </div>
+      </div>
+      <div class="mt-4 text-xs text-slate-500">Без комиссии с заказов. Отмена в любой момент.</div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="py-14">
+    <div class="container-capped mx-auto px-4">
+      <h2 class="text-2xl md:text-3xl font-extrabold">FAQ</h2>
+      <div class="mt-6 divide-y border rounded-2xl bg-white">
+        <details class="group p-5">
+          <summary class="cursor-pointer list-none flex items-center justify-between">
+            <span class="font-semibold">Если у нас уже есть Instagram?</span>
+            <span class="transition group-open:rotate-180">⌄</span>
+          </summary>
+          <p class="mt-2 text-slate-600 text-sm">Instagram показывает фото, но не принимает заказы. GetMenu принимает и отправляет их вам в мессенджер.</p>
+        </details>
+        <details class="group p-5">
+          <summary class="cursor-pointer list-none flex items-center justify-between">
+            <span class="font-semibold">Можно ли начать с малого меню?</span>
+            <span class="transition group-open:rotate-180">⌄</span>
+          </summary>
+          <p class="mt-2 text-slate-600 text-sm">Да. Запуститься можно с 5 позициями и расширять по мере роста.</p>
+        </details>
+        <details class="group p-5">
+          <summary class="cursor-pointer list-none flex items-center justify-between">
+            <span class="font-semibold">Нужен ли отдельный сайт?</span>
+            <span class="transition group-open:rotate-180">⌄</span>
+          </summary>
+          <p class="mt-2 text-slate-600 text-sm">Нет. GetMenu сам станет вашим сайтом — ссылка работает везде.</p>
+        </details>
+        <details class="group p-5">
+          <summary class="cursor-pointer list-none flex items-center justify-between">
+            <span class="font-semibold">Сложно ли управлять меню?</span>
+            <span class="transition group-open:rotate-180">⌄</span>
+          </summary>
+          <p class="mt-2 text-slate-600 text-sm">Нет. Добавлять блюда так же просто, как публиковать пост в соцсетях.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="py-16 bg-gradient-to-b from-brand-50 to-white">
+    <div class="container-capped mx-auto px-4 text-center">
+      <h2 class="text-2xl md:text-4xl font-extrabold">Ваши гости ищут меню онлайн. Позвольте им заказать прямо сейчас.</h2>
+      <p class="mt-3 text-slate-700">Начните бесплатно. Оплачивайте только когда увидите результат.</p>
+      <div class="mt-6 flex items-center justify-center gap-3">
+        <a href="#signup" class="px-6 py-3 rounded-xl bg-brand-600 text-white hover:bg-brand-700">Создать меню</a>
+        <a href="#demo" class="px-6 py-3 rounded-xl border border-slate-200 hover:bg-white">Посмотреть демо</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-8 border-t">
+    <div class="container-capped mx-auto px-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-sm text-slate-600">
+      <div>
+        <div class="font-semibold text-slate-800">GetMenu</div>
+        <div class="mt-1">© <span id="year"></span> GetMenu. Все права защищены.</div>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="#" class="hover:text-slate-800">Политика конфиденциальности</a>
+        <span>•</span>
+        <button id="toggleTheme" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200">🌗 Тёмная тема</button>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Theme toggle
+    const toggleBtn = document.getElementById('toggleTheme');
+    const root = document.documentElement;
+    function applyTheme(){ if(localStorage.getItem('gm_dark')==='1'){ root.classList.add('dark'); document.body.classList.add('bg-slate-900','text-slate-100'); } }
+    function toggleTheme(){ const on = !root.classList.contains('dark'); root.classList.toggle('dark', on); document.body.classList.toggle('bg-slate-900', on); document.body.classList.toggle('text-slate-100', on); localStorage.setItem('gm_dark', on?'1':'0'); }
+    toggleBtn.addEventListener('click', toggleTheme);
+    applyTheme();
+
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(a=>{
+      a.addEventListener('click', (e)=>{
+        const id = a.getAttribute('href').slice(1);
+        const t = document.getElementById(id);
+        if(t){ e.preventDefault(); t.scrollIntoView({behavior:'smooth', block:'start'}); }
+      })
+    })
+  </script>
+</body>
+</html>
