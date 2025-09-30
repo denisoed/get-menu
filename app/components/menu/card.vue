@@ -15,7 +15,17 @@
         </div>
       </div>
       <div class="mt-3 flex items-center gap-2">
-        <button class="px-3 py-2 text-sm rounded-xl bg-brand-600 text-white hover:bg-brand-700" @click="$emit('add-to-cart', id)">
+        <button 
+          v-if="options"
+          class="px-3 py-2 text-sm rounded-xl border border-slate-200 hover:bg-slate-50" 
+          @click="$emit('open-options', { id, name, category, price, tags, img, options })"
+        >
+          Выбрать
+        </button>
+        <button 
+          class="px-3 py-2 text-sm rounded-xl bg-brand-600 text-white hover:bg-brand-700" 
+          @click="$emit('add-to-cart', id)"
+        >
           В корзину
         </button>
       </div>
@@ -24,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import useDate from '~/composables/useDate';
+import useDate from '../../composables/useDate';
 
 const { fmt } = useDate();
 
@@ -35,5 +45,25 @@ defineProps<{
   price: number;
   tags: string[];
   img: string;
+  options?: {
+    sizes?: Array<{ label: string; add?: number }>;
+    extras?: Array<{ label: string; add?: number }>;
+  };
+}>();
+
+defineEmits<{
+  'add-to-cart': [id: string];
+  'open-options': [item: {
+    id: string;
+    name: string;
+    category: string;
+    price: number;
+    tags: string[];
+    img: string;
+    options: {
+      sizes?: Array<{ label: string; add?: number }>;
+      extras?: Array<{ label: string; add?: number }>;
+    };
+  }];
 }>();
 </script>

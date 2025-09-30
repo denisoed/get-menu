@@ -1,6 +1,10 @@
 <template>
   <LayoutAppHeader />
-  <HomeContent :menu="MENU" />
+  <HomeContent 
+    :menu="MENU" 
+    :format-price="fmt"
+    :add-to-cart="addToCart"
+  />
   <LayoutAppFooter />
 </template>
 
@@ -133,41 +137,12 @@
           </div>
         </div>
         <div class="mt-3 flex items-center gap-2">
-          <button class="px-3 py-2 text-sm rounded-xl border border-slate-200 hover:bg-slate-50" onclick='openOptions("${item.id}")'>Выбрать</button>
-          <button class="px-3 py-2 text-sm rounded-xl bg-brand-600 text-white hover:bg-brand-700" onclick='addToCart("${item.id}")'>В корзину</button>
+          <button class="px-3 py-2 text-sm rounded-xl border border-slate-200 hover:bg-slate-50" onclick='addToCart("${item.id}")'>В корзину</button>
         </div>
       </div>`
     return el;
   }
 
-  function openOptions(id){
-    const item = state.items.find(i=>i.id===id);
-    if(!item.options){ addToCart(id); return; }
-    const {sizes=[], extras=[]} = item.options;
-    const html = `
-      <div class='space-y-2'>
-        ${sizes.length? `<label class='text-sm block'>Размер<select id='optSize' class='mt-1 w-full rounded-xl border border-slate-200 px-3 py-2'>${sizes.map((o,i)=>`<option value='${i}'>${o.label} ${o.add? '(+'+fmt(o.add)+')':''}</option>`).join('')}</select></label>`:''}
-        ${extras.length? `<div class='text-sm'>Добавки<div class='mt-1 grid grid-cols-2 gap-2'>${extras.map((o,i)=>`<label class='flex gap-2 items-center text-sm border rounded-xl px-3 py-2'><input type='checkbox' value='${i}' class='extraCheck'>${o.label} ${o.add? '(+'+fmt(o.add)+')':''}</label>`).join('')}</div></div>`:''}
-      </div>`;
-    const modal = document.createElement('div');
-    modal.className='fixed inset-0 z-50 flex items-center justify-center';
-    modal.innerHTML = `<div class='absolute inset-0 bg-black/50' onclick='this.parentElement.remove()'></div>
-      <div class='relative bg-white w-[92vw] max-w-md rounded-2xl p-5 shadow-soft'>
-        <div class='flex items-start justify-between'><div class='font-semibold text-lg'>${item.name}</div><button class='text-slate-500' onclick='this.closest(".fixed").remove()'>✕</button></div>
-        ${html}
-        <div class='mt-4 flex gap-2'>
-          <button class='px-4 py-2 rounded-xl bg-brand-600 text-white' id='ok'>Добавить</button>
-          <button class='px-4 py-2 rounded-xl border' onclick='this.closest(".fixed").remove()'>Отмена</button>
-        </div>
-      </div>`;
-    document.body.appendChild(modal);
-    modal.querySelector('#ok').onclick = ()=>{
-      const sizeIdx = modal.querySelector('#optSize')? +modal.querySelector('#optSize').value : null;
-      const extrasIdx = $all('.extraCheck', modal).filter(c=>c.checked).map(c=>+c.value);
-      addToCart(id, { sizeIdx, extrasIdx });
-      modal.remove();
-    }
-  }
 
   function addToCart(id, opts={}){
     const item = state.items.find(i=>i.id===id);

@@ -5,4 +5,8 @@ export interface MenuItem {
   price: number;
   tags: string[] | [];
   img: string;
+  options?: {
+    sizes?: Array<{ label: string; add?: number }>;
+    extras?: Array<{ label: string; add?: number }>;
+  };
 }

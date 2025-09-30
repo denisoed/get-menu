@@ -38,7 +38,11 @@
   <!-- Menu List -->
   <main id="menu" class="mx-auto container-capped px-4 py-8 grid md:grid-cols-[1fr_360px] gap-6">
     <!-- Items -->
-    <HomeListCards :menu="menu" />
+    <HomeListCards 
+      :menu="menu" 
+      :format-price="formatPrice"
+      :on-add-to-cart="addToCart"
+    />
 
     <!-- Cart Drawer (sticky on desktop) -->
     <aside id="cartDrawer" class="hidden md:block sticky top-[120px] h-fit">
@@ -117,9 +121,13 @@
 </template>
 
 <script setup lang="ts">
-import type { MenuItem } from '~/types/menu';
+import type { MenuItem } from '../../types/menu';
 
-defineProps<{
+interface Props {
   menu: MenuItem[];
-}>();
+  formatPrice: (price: number) => string;
+  addToCart: (id: string, opts?: { sizeIdx?: number | null; extrasIdx?: number[] }) => void;
+}
+
+defineProps<Props>();
 </script>

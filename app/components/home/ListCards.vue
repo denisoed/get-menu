@@ -9,14 +9,51 @@
       :price="item.price"
       :tags="item.tags || []"
       :img="item.img"
+      :options="item.options"
+      @open-options="openOptionsDialog"
     />
   </div>
+
+  <DialogOptions 
+    :is-visible="showOptionsDialog" 
+    :item="selectedItem" 
+    :format-price="formatPrice"
+    @close="closeOptionsDialog"
+    @add-to-cart="handleAddToCart"
+  />
 </template>
 
 <script setup lang="ts">
-import type { MenuItem } from '~/types/menu';
+import { ref } from 'vue'
+import type { MenuItem } from '../../types/menu';
 
-defineProps<{
+interface Props {
   menu: MenuItem[];
-}>();
+  formatPrice: (price: number) => string;
+  onAddToCart: (id: string, opts?: { sizeIdx?: number | null; extrasIdx?: number[] }) => void;
+}
+
+const props = defineProps<Props>();
+
+// Dialog state
+const showOptionsDialog = ref(false);
+const selectedItem = ref<MenuItem | null>(null);
+
+function openOptionsDialog(item: MenuItem) {
+  if (!item.options) {
+    props.onAddToCart(item.id);
+    return;
+  }
+  selectedItem.value = item;
+  showOptionsDialog.value = true;
+}
+
+function closeOptionsDialog() {
+  showOptionsDialog.value = false;
+  selectedItem.value = null;
+}
+
+function handleAddToCart(data: { id: string; sizeIdx: number | null; extrasIdx: number[] }) {
+  props.onAddToCart(data.id, { sizeIdx: data.sizeIdx, extrasIdx: data.extrasIdx });
+}
 </script>
