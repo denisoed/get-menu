@@ -1,10 +1,15 @@
 <template>
   <LayoutAppHeader />
-  <HomeContent />
+  <HomeContent :menu="MENU" />
   <LayoutAppFooter />
 </template>
 
 <script setup>
+  const { data, error } = await useFetch('/api/menu')
+  console.log('DATA', data);
+  console.log('ERROR', error);
+  
+  let MENU = data.value || []
   const SETTINGS = {
     cafeName: 'Кафе «Вкусно и Точка»',
     address: 'г. Бишкек, пр. Чуй, 123',
@@ -21,18 +26,6 @@
       image: 'https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1600&auto=format&fit=crop'
     }
   }
-
-  // Example menu data — replace with your actual items
-  const MENU = [
-    { id: 'p1', name: 'Бургер «Классик»', price: 290, category: 'Бургеры', img: 'https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=1200&auto=format&fit=crop', tags: ['Хит'], options: { sizes: [{label:'Мал', add:0},{label:'Стд', add:40},{label:'Больш', add:80}], extras: [{label:'Сыр', add:40}, {label:'Бекон', add:70}] } },
-    { id: 'p2', name: 'Бургер «Острый»', price: 320, category: 'Бургеры', img: 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?q=80&w=1200&auto=format&fit=crop', tags: ['Острый'] },
-    { id: 'p3', name: 'Картофель фри', price: 120, category: 'Закуски', img: 'https://images.unsplash.com/photo-1541592553160-82008b127ccb?q=80&w=1200&auto=format&fit=crop', tags: ['Веган'], options: { sizes: [{label:'Мал', add:0},{label:'Больш', add:50}] } },
-    { id: 'p4', name: 'Салат «Цезарь»', price: 260, category: 'Салаты', img: 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?q=80&w=1200&auto=format&fit=crop' },
-    { id: 'p5', name: 'Лимонад домашний', price: 110, category: 'Напитки', img: 'https://images.unsplash.com/photo-1528909514045-2fa4ac7a08ba?q=80&w=1200&auto=format&fit=crop', options: { sizes: [{label:'300 мл', add:0},{label:'500 мл', add:30}] } },
-    { id: 'p6', name: 'Пицца Маргарита', price: 490, category: 'Пицца', img: 'https://images.unsplash.com/photo-1548365328-9f547fb095c3?q=80&w=1200&auto=format&fit=crop', tags: ['Хит'], options: { sizes: [{label:'25 см', add:0},{label:'30 см', add:120},{label:'35 см', add:220}], extras: [{label:'Пепперони', add:120},{label:'Сыр Моцарелла', add:90}] } },
-    { id: 'p7', name: 'Паста Карбонара', price: 380, category: 'Паста', img: 'https://images.unsplash.com/photo-1523986371872-9d3ba2e2f642?q=80&w=1200&auto=format&fit=crop' },
-    { id: 'p8', name: 'Чизкейк Нью-Йорк', price: 220, category: 'Десерты', img: 'https://images.unsplash.com/photo-1505253216365-9b094d542965?q=80&w=1200&auto=format&fit=crop', tags: ['Новинка'] },
-  ];
 
   const $ = (sel, root=document) => root.querySelector(sel);
   const $all = (sel, root=document) => [...root.querySelectorAll(sel)];
@@ -78,8 +71,8 @@
     $('#search').addEventListener('input', (e)=>{ state.search = e.target.value.trim().toLowerCase(); renderItems(); })
 
     // Buttons
-    $('#cartBtn').onclick = ()=>toggleQuick(true);
-    $('#checkoutBtn').onclick = ()=>toggleQuick(true);
+    $('#cartBtn').onclick = () => toggleQuick(true);
+    $('#checkoutBtn').onclick = () => toggleQuick(true);
     $('#themeToggle').onclick = toggleDark;
     $('#darkToggleBottom').onclick = toggleDark;
 
@@ -95,7 +88,7 @@
       window.open(whatsappLink(text), '_blank');
     }
 
-    renderItems();
+    // renderItems();
     renderCart();
     applyThemeFromStorage();
   }

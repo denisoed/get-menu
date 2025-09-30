@@ -26,7 +26,7 @@
   </header>
 
   <!-- Controls: Search + Categories -->
-  <section id="controls" class="sticky top-[52px] z-30 bg-white/85 backdrop-blur border-b border-slate-100">
+  <section id="controls" class="sticky top-[48px] z-30 bg-white/70 backdrop-blur border-b border-slate-100">
     <div class="mx-auto container-capped px-4 py-3 flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
       <div class="flex items-center gap-2 w-full md:w-1/2">
         <input id="search" type="search" placeholder="Поиск по меню…" class="w-full rounded-xl border border-slate-200 px-4 py-2.5 outline-none focus:ring-2 focus:ring-brand-300" />
@@ -38,7 +38,7 @@
   <!-- Menu List -->
   <main id="menu" class="mx-auto container-capped px-4 py-8 grid md:grid-cols-[1fr_360px] gap-6">
     <!-- Items -->
-    <div id="items" class="grid sm:grid-cols-2 lg:grid-cols-2 gap-4"></div>
+    <HomeListCards :menu="menu" />
 
     <!-- Cart Drawer (sticky on desktop) -->
     <aside id="cartDrawer" class="hidden md:block sticky top-[120px] h-fit">
@@ -115,3 +115,11 @@
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import type { MenuItem } from '~/types/menu';
+
+defineProps<{
+  menu: MenuItem[];
+}>();
+</script>
