@@ -4,20 +4,32 @@
     <div class="mx-auto container-capped px-4 pt-8 pb-10">
       <div class="grid md:grid-cols-2 gap-6 items-center">
         <div>
-          <h1 id="cafeName" class="text-3xl md:text-4xl font-extrabold leading-tight">Меню</h1>
-          <p id="announcement" class="mt-3 text-slate-600">…</p>
+          <h1 id="cafeName" class="text-3xl md:text-4xl font-extrabold leading-tight">{{ settings.cafeName }}</h1>
+          <p id="announcement" class="mt-3 text-slate-600">{{ settings.announcement }}</p>
           <div class="mt-5 flex gap-3">
             <a href="#menu" class="px-5 py-2.5 rounded-xl bg-brand-600 text-white hover:bg-brand-700 shadow-soft">Смотреть меню</a>
-            <a id="waQuick" target="_blank" class="px-5 py-2.5 rounded-xl bg-green-600 text-white hover:bg-green-700">Заказать в WhatsApp</a>
+            <a
+              id="waQuick"
+              :href="whatsappGreetingLink"
+              target="_blank"
+              class="px-5 py-2.5 rounded-xl bg-green-600 text-white hover:bg-green-700"
+            >
+              Заказать в WhatsApp
+            </a>
           </div>
         </div>
         <div>
           <div class="relative rounded-2xl overflow-hidden shadow-soft">
-            <img id="bannerImage" class="w-full h-60 object-cover" alt="Баннер" />
+            <img
+              id="bannerImage"
+              class="w-full h-60 object-cover"
+              :src="settings.banner.image"
+              :alt="settings.banner.title"
+            />
             <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
             <div class="absolute bottom-3 left-3 text-white">
-              <div id="bannerTitle" class="text-xl font-semibold"></div>
-              <div id="bannerSub" class="opacity-90 text-sm"></div>
+              <div id="bannerTitle" class="text-xl font-semibold">{{ settings.banner.title }}</div>
+              <div id="bannerSub" class="opacity-90 text-sm">{{ settings.banner.subtitle }}</div>
             </div>
           </div>
         </div>
@@ -29,105 +41,135 @@
   <section id="controls" class="sticky top-[48px] z-30 bg-white/70 backdrop-blur border-b border-slate-100">
     <div class="mx-auto container-capped px-4 py-3 flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
       <div class="flex items-center gap-2 w-full md:w-1/2">
-        <input id="search" type="search" placeholder="Поиск по меню…" class="w-full rounded-xl border border-slate-200 px-4 py-2.5 outline-none focus:ring-2 focus:ring-brand-300" />
+        <input
+          id="search"
+          v-model="searchTerm"
+          type="search"
+          placeholder="Поиск по меню…"
+          class="w-full rounded-xl border border-slate-200 px-4 py-2.5 outline-none focus:ring-2 focus:ring-brand-300"
+        />
       </div>
-      <div id="categories" class="flex gap-2 overflow-x-auto"></div>
+      <div id="categories" class="flex gap-2 overflow-x-auto">
+        <button
+          v-for="category in categories"
+          :key="category"
+          class="px-3 py-1.5 rounded-full text-sm border border-slate-200 hover:bg-slate-50 whitespace-nowrap"
+          :class="{
+            'bg-brand-600 text-white border-brand-600': selectedCategory === category,
+          }"
+          @click="selectCategory(category)"
+        >
+          {{ category }}
+        </button>
+      </div>
     </div>
   </section>
 
   <!-- Menu List -->
   <main id="menu" class="mx-auto container-capped px-4 py-8 grid md:grid-cols-[1fr_360px] gap-6">
     <!-- Items -->
-    <HomeListCards 
-      :menu="menu" 
-      :format-price="formatPrice"
-      :on-add-to-cart="addToCart"
+    <HomeListCards
+      :menu="filteredMenu"
+      :format-price="fmt"
     />
 
     <!-- Cart Drawer (sticky on desktop) -->
-    <aside id="cartDrawer" class="hidden md:block sticky top-[120px] h-fit">
-      <div class="bg-white rounded-2xl border border-slate-100 shadow-soft p-4">
-        <h3 class="text-lg font-semibold">Ваш заказ</h3>
-        <div id="cartList" class="mt-3 flex flex-col gap-3"></div>
-        <div class="mt-4 border-t pt-3 text-sm text-slate-600 space-y-1">
-          <div class="flex justify-between"><span>Доставка</span><span id="deliveryFee">—</span></div>
-          <div class="flex justify-between font-semibold text-slate-800"><span>Итого</span><span id="cartTotal">0</span></div>
-          <div id="minOrderNote" class="hidden text-[12px] text-amber-700 bg-amber-50 rounded-lg p-2"></div>
-        </div>
-        <button id="checkoutBtn" class="mt-3 w-full rounded-xl bg-brand-600 text-white py-2.5 hover:bg-brand-700 disabled:opacity-50">Оформить заказ</button>
-        <a id="waOrder" target="_blank" class="mt-2 w-full inline-block text-center rounded-xl border border-green-600 text-green-700 py-2 hover:bg-green-50">WhatsApp</a>
-      </div>
-    </aside>
+  <CartDrawer
+    :delivery-fee="settings.deliveryFee"
+    :min-order="settings.minOrder"
+    :whatsapp-phone="settings.whatsapp"
+    :cafe-name="settings.cafeName"
+    @checkout="openQuickOrder"
+  />
   </main>
 
-  <!-- Quick Order Modal -->
-  <div id="quickOrder" class="fixed inset-0 hidden items-end md:items-center justify-center z-50">
-    <div class="absolute inset-0 bg-black/50" onclick="toggleQuick(false)"></div>
-    <div class="w-full md:w-[720px] bg-white rounded-t-2xl md:rounded-2xl p-5 max-h-[90vh] overflow-y-auto shadow-soft">
-      <div class="flex items-start justify-between gap-4">
-        <h3 class="text-xl font-semibold">Оформление заказа</h3>
-        <button class="text-slate-500" onclick="toggleQuick(false)">✕</button>
-      </div>
-      <form id="orderForm" class="mt-4 grid md:grid-cols-2 gap-4">
-        <div class="grid gap-3">
-          <label class="text-sm">Имя
-            <input name="name" required class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2" placeholder="Ваше имя"/>
-          </label>
-          <label class="text-sm">Телефон
-            <input name="phone" required class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2" placeholder="+996..."/>
-          </label>
-          <label class="text-sm">Способ получения
-            <select name="type" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2">
-              <option value="delivery">Доставка</option>
-              <option value="pickup">Самовывоз</option>
-            </select>
-          </label>
-          <label id="addressField" class="text-sm">Адрес (для доставки)
-            <input name="address" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2" placeholder="Улица, дом, подъезд"/>
-          </label>
-          <label class="text-sm">Время
-            <select name="time" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2">
-              <option value="asap">Как можно скорее</option>
-              <option>Через 30 минут</option>
-              <option>Через 1 час</option>
-            </select>
-          </label>
-        </div>
-        <div class="grid gap-3">
-          <div class="p-3 rounded-xl bg-slate-50 text-sm">
-            <div class="font-medium">Состав заказа</div>
-            <div id="summary" class="mt-1 whitespace-pre-wrap"></div>
-          </div>
-          <label class="text-sm">Комментарий курьеру
-            <textarea name="comment" rows="4" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2" placeholder="Код домофона, пожелания…"></textarea>
-          </label>
-          <button class="rounded-xl bg-brand-600 text-white py-2.5 hover:bg-brand-700">Подтвердить заказ</button>
-          <a id="waBigOrder" target="_blank" class="rounded-xl border border-green-600 text-green-700 py-2 text-center hover:bg-green-50">Отправить в WhatsApp</a>
-        </div>
-      </form>
-    </div>
-  </div>
+  <CartQuickOrder
+    v-model:is-open="isQuickOrderOpen"
+    :settings="{
+      cafeName: settings.cafeName,
+      whatsapp: settings.whatsapp,
+      deliveryFee: settings.deliveryFee,
+    }"
+  />
 
   <!-- Mobile Cart Bar -->
   <div class="md:hidden fixed bottom-4 inset-x-0 z-40 px-4">
     <div class="bg-white border border-slate-200 shadow-soft rounded-2xl px-4 py-2 flex items-center justify-between">
       <div>
         <div class="text-xs text-slate-500">Итого</div>
-        <div id="cartTotalMobile" class="font-semibold">0</div>
+        <div id="cartTotalMobile" class="font-semibold">{{ fmt(totals.total) }}</div>
       </div>
-      <button onclick="toggleQuick(true)" class="rounded-xl bg-brand-600 text-white px-4 py-2">Оформить</button>
+      <button
+        class="rounded-xl bg-brand-600 text-white px-4 py-2 disabled:opacity-50"
+        :disabled="!groupedCart.length || !meetsMinOrder"
+        @click="openQuickOrder"
+      >
+        Оформить
+      </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { MenuItem } from '../../types/menu';
+import { computed, ref } from 'vue'
+import { SETTINGS } from '~/config/settings'
+import useDate from '~/composables/useDate'
+import { useCartStore } from '~/store/cart'
+import type { MenuItem } from '~/types/menu'
+import type { CartEntry } from '~/types/cart'
+import { calculateCartTotals, groupCartItems } from '~/utils/cart'
 
 interface Props {
-  menu: MenuItem[];
-  formatPrice: (price: number) => string;
-  addToCart: (id: string, opts?: { sizeIdx?: number | null; extrasIdx?: number[] }) => void;
+  menu: MenuItem[]
 }
 
-defineProps<Props>();
+const props = defineProps<Props>()
+
+const settings = SETTINGS
+const { fmt } = useDate()
+const cartStore = useCartStore()
+
+const searchTerm = ref('')
+const selectedCategory = ref('Все')
+
+const categories = computed(() => {
+  const uniqueCategories = Array.from(new Set(props.menu.map(item => item.category)))
+  return ['Все', ...uniqueCategories]
+})
+
+const filteredMenu = computed(() => {
+  const query = searchTerm.value.trim().toLowerCase()
+
+  return props.menu.filter((item) => {
+    const inCategory = selectedCategory.value === 'Все' || item.category === selectedCategory.value
+    const matchesQuery = !query || item.name.toLowerCase().includes(query)
+    return inCategory && matchesQuery
+  })
+})
+
+function selectCategory (category: string) {
+  selectedCategory.value = category
+}
+
+const cartItems = computed(() => cartStore.cart as CartEntry[])
+const groupedCart = computed(() => groupCartItems(cartItems.value))
+const totals = computed(() => calculateCartTotals(groupedCart.value, settings.deliveryFee))
+const meetsMinOrder = computed(() => totals.value.total >= settings.minOrder)
+
+const isQuickOrderOpen = ref(false)
+
+const whatsappGreetingLink = computed(() => {
+  const phone = settings.whatsapp.replace(/\D/g, '')
+  const text = encodeURIComponent('Здравствуйте! Хочу сделать заказ.')
+  return `https://wa.me/${phone}?text=${text}`
+})
+
+function openQuickOrder () {
+  if (!groupedCart.value.length) return
+  isQuickOrderOpen.value = true
+}
+
+defineExpose({
+  openQuickOrder,
+})
 </script>

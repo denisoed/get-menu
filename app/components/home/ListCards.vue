@@ -11,13 +11,14 @@
       :img="item.img"
       :options="item.options"
       @open-options="openOptionsDialog"
+      @add-to-cart="handleQuickAdd"
     />
   </div>
 
   <DialogOptions 
     :is-visible="showOptionsDialog" 
     :item="selectedItem" 
-    :format-price="formatPrice"
+    :format-price="props.formatPrice"
     @close="closeOptionsDialog"
     @add-to-cart="handleAddToCart"
   />
@@ -25,15 +26,18 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { MenuItem } from '../../types/menu';
+import { useCartStore } from '~/store/cart'
+import type { MenuItem } from '../../types/menu'
+import type { CartEntry } from '~/types/cart'
 
 interface Props {
   menu: MenuItem[];
   formatPrice: (price: number) => string;
-  onAddToCart: (id: string, opts?: { sizeIdx?: number | null; extrasIdx?: number[] }) => void;
 }
 
 const props = defineProps<Props>();
+
+const cartStore = useCartStore()
 
 // Dialog state
 const showOptionsDialog = ref(false);
@@ -41,7 +45,7 @@ const selectedItem = ref<MenuItem | null>(null);
 
 function openOptionsDialog(item: MenuItem) {
   if (!item.options) {
-    props.onAddToCart(item.id);
+    handleQuickAdd(item.id);
     return;
   }
   selectedItem.value = item;
@@ -54,6 +58,42 @@ function closeOptionsDialog() {
 }
 
 function handleAddToCart(data: { id: string; sizeIdx: number | null; extrasIdx: number[] }) {
-  props.onAddToCart(data.id, { sizeIdx: data.sizeIdx, extrasIdx: data.extrasIdx });
+  const item = props.menu.find(entry => entry.id === data.id)
+  if (!item) return
+
+  cartStore.addToCart(createCartEntry(item, data))
+}
+
+function handleQuickAdd(id: string) {
+  const item = props.menu.find(entry => entry.id === id)
+  if (!item) return
+
+  cartStore.addToCart(createCartEntry(item))
+}
+
+function createCartEntry (
+  item: MenuItem,
+  options: { sizeIdx: number | null; extrasIdx: number[] } = { sizeIdx: null, extrasIdx: [] },
+): CartEntry {
+  const { sizeIdx, extrasIdx } = options
+  const extrasSorted = [...(extrasIdx || [])].sort((a, b) => a - b)
+  const size = sizeIdx != null ? item.options?.sizes?.[sizeIdx] : undefined
+  const extras = (item.options?.extras || []).filter((_, idx) => extrasSorted.includes(idx))
+
+  const additional = (size?.add || 0) + extras.reduce((acc, extra) => acc + (extra.add || 0), 0)
+  const cartKeyParts = [
+    item.id,
+    sizeIdx != null ? `size:${sizeIdx}` : 'size:-',
+    extrasSorted.length ? `extras:${extrasSorted.join(',')}` : 'extras:-',
+  ]
+
+  return {
+    ...item,
+    cartKey: cartKeyParts.join('|'),
+    basePrice: item.price,
+    price: item.price + additional,
+    sizeLabel: size?.label,
+    extrasLabels: extras.map(extra => extra.label),
+  }
 }
 </script>
