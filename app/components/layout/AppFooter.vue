@@ -1,6 +1,6 @@
 <template>
   <footer id="footer" class="mt-8 bg-white border-t">
-    <div class="mx-auto container-capped px-4 py-6 text-sm text-slate-600 flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
+    <div class="mx-auto container-capped px-4 pt-6 pb-[96px] md:pb-6 text-sm text-slate-600 flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
       <div>
         <strong id="fCafe">{{ settings.cafeName }}</strong> • <span id="fAddr">{{ settings.address }}</span> •
         <a id="fCall" class="underline" :href="callHref">{{ settings.phone }}</a>

@@ -2,20 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Smooth custom scrollbar */
+/* Hide scrollbars */
 * {
-  scrollbar-width: thin;
-  scrollbar-color: #e2e8f0 transparent;
+  scrollbar-width: none;
+  -ms-overflow-style: none; /* IE/Edge */
 }
 
 *::-webkit-scrollbar {
-  height: 8px;
-  width: 8px;
-}
-
-*::-webkit-scrollbar-thumb {
-  background: #e2e8f0;
-  border-radius: 999px;
+  display: none;
 }
 
 .container-capped {

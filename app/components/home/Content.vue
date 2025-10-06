@@ -6,17 +6,9 @@
         <div>
           <h1 id="cafeName" class="text-3xl md:text-4xl font-extrabold leading-tight">{{ settings.cafeName }}</h1>
           <p id="announcement" class="mt-3 text-slate-600">{{ settings.announcement }}</p>
-          <div class="mt-5 flex gap-3">
-            <a href="#menu" class="px-5 py-2.5 rounded-xl bg-brand-600 text-white hover:bg-brand-700 shadow-soft">Смотреть меню</a>
-            <a
-              id="waQuick"
-              :href="whatsappGreetingLink"
-              target="_blank"
-              class="px-5 py-2.5 rounded-xl bg-green-600 text-white hover:bg-green-700"
-            >
-              Заказать в WhatsApp
-            </a>
-          </div>
+          <!-- <div class="mt-5 flex gap-3">
+            <a href="#controls" class="px-5 py-2.5 rounded-xl bg-brand-600 text-white hover:bg-brand-700 shadow-soft">Смотреть меню</a>
+          </div> -->
         </div>
         <div>
           <div class="relative rounded-2xl overflow-hidden shadow-soft">
@@ -38,7 +30,7 @@
   </header>
 
   <!-- Controls: Search + Categories -->
-  <section id="controls" class="sticky top-[48px] z-30 bg-white/70 backdrop-blur border-b border-slate-100">
+  <section id="controls" class="sticky top-[46px] z-30 bg-white/70 backdrop-blur border-b border-slate-100">
     <div class="mx-auto container-capped px-4 py-3 flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
       <div class="flex items-center gap-2 w-full md:w-1/2">
         <input
