@@ -6,6 +6,26 @@ const STORAGE_KEY = 'menu_dark'
 export function useTheme () {
   const isDark = useState<boolean>('theme-dark', () => false)
 
+  function syncSurfaceColor () {
+    if (!process.client) return
+    const footer = document.getElementById('footer')
+    if (!footer) return
+
+    const backgroundColor = window.getComputedStyle(footer).backgroundColor
+    let metaTheme = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null
+
+    if (!metaTheme) {
+      metaTheme = document.createElement('meta')
+      metaTheme.name = 'theme-color'
+      document.head.appendChild(metaTheme)
+    }
+
+    metaTheme.setAttribute('content', backgroundColor)
+
+    document.documentElement.style.backgroundColor = backgroundColor
+    document.body.style.backgroundColor = backgroundColor
+  }
+
   function applyTheme (value = isDark.value) {
     if (!process.client) return
     const classList = document.documentElement.classList
@@ -20,6 +40,8 @@ export function useTheme () {
       bodyClassList.remove('bg-slate-900', 'text-slate-100')
       localStorage.removeItem(STORAGE_KEY)
     }
+
+    syncSurfaceColor()
   }
 
   function toggleTheme () {
@@ -39,6 +61,7 @@ export function useTheme () {
     isDark,
     toggleTheme,
     applyTheme,
+    syncSurfaceColor,
   }
 }
 
