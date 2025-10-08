@@ -45,10 +45,11 @@
         <button
           v-for="category in categories"
           :key="category"
-          class="px-3 py-1.5 rounded-full text-sm border border-slate-200 hover:bg-slate-50 whitespace-nowrap dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-800"
-          :class="{
-            'bg-brand-600 text-white border-brand-600 dark:border-brand-500': selectedCategory === category,
-          }"
+          class="px-3 py-1.5 rounded-full text-sm border whitespace-nowrap transition-colors"
+          :class="selectedCategory === category
+            ? 'bg-brand-600 text-white border-brand-600 dark:border-brand-500'
+            : 'border-slate-200 text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-800'
+          "
           @click="selectCategory(category)"
         >
           {{ category }}
