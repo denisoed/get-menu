@@ -1,11 +1,11 @@
 <template>
   <!-- Header / Hero -->
-  <header id="hero" class="bg-white">
+  <header id="hero" class="bg-white dark:bg-slate-950">
     <div class="mx-auto container-capped px-4 pt-8 pb-10">
       <div class="grid md:grid-cols-2 gap-6 items-center">
         <div>
-          <h1 id="cafeName" class="text-3xl md:text-4xl font-extrabold leading-tight">{{ settings.cafeName }}</h1>
-          <p id="announcement" class="mt-3 text-slate-600">{{ settings.announcement }}</p>
+          <h1 id="cafeName" class="text-3xl md:text-4xl font-extrabold leading-tight text-slate-900 dark:text-slate-100">{{ settings.cafeName }}</h1>
+          <p id="announcement" class="mt-3 text-slate-600 dark:text-slate-300">{{ settings.announcement }}</p>
           <!-- <div class="mt-5 flex gap-3">
             <a href="#controls" class="px-5 py-2.5 rounded-xl bg-brand-600 text-white hover:bg-brand-700 shadow-soft">Смотреть меню</a>
           </div> -->
@@ -30,7 +30,7 @@
   </header>
 
   <!-- Controls: Search + Categories -->
-  <section id="controls" class="sticky top-[46px] z-30 bg-white/70 backdrop-blur border-b border-slate-100">
+  <section id="controls" class="sticky top-[46px] z-30 bg-white/70 backdrop-blur border-b border-slate-100 dark:bg-slate-950/80 dark:border-slate-800">
     <div class="mx-auto container-capped px-4 py-3 flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
       <div class="flex items-center gap-2 w-full md:w-1/2">
         <input
@@ -38,16 +38,16 @@
           v-model="searchTerm"
           type="search"
           placeholder="Поиск по меню…"
-          class="w-full rounded-xl border border-slate-200 px-4 py-2.5 outline-none focus:ring-2 focus:ring-brand-300"
+          class="w-full rounded-xl border border-slate-200 px-4 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400 dark:focus:ring-brand-500"
         />
       </div>
       <div id="categories" class="flex gap-2 overflow-x-auto">
         <button
           v-for="category in categories"
           :key="category"
-          class="px-3 py-1.5 rounded-full text-sm border border-slate-200 hover:bg-slate-50 whitespace-nowrap"
+          class="px-3 py-1.5 rounded-full text-sm border border-slate-200 hover:bg-slate-50 whitespace-nowrap dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-800"
           :class="{
-            'bg-brand-600 text-white border-brand-600': selectedCategory === category,
+            'bg-brand-600 text-white border-brand-600 dark:border-brand-500': selectedCategory === category,
           }"
           @click="selectCategory(category)"
         >
@@ -66,13 +66,13 @@
     />
 
     <!-- Cart Drawer (sticky on desktop) -->
-  <CartDrawer
-    :delivery-fee="settings.deliveryFee"
-    :min-order="settings.minOrder"
-    :whatsapp-phone="settings.whatsapp"
-    :cafe-name="settings.cafeName"
-    @checkout="openQuickOrder"
-  />
+    <CartDrawer
+      :delivery-fee="settings.deliveryFee"
+      :min-order="settings.minOrder"
+      :whatsapp-phone="settings.whatsapp"
+      :cafe-name="settings.cafeName"
+      @checkout="openQuickOrder"
+    />
   </main>
 
   <CartQuickOrder
@@ -86,10 +86,10 @@
 
   <!-- Mobile Cart Bar -->
   <div class="md:hidden fixed bottom-4 inset-x-0 z-40 px-4">
-    <div class="bg-white border border-slate-200 shadow-soft rounded-2xl px-4 py-2 flex items-center justify-between">
+    <div class="bg-white border border-slate-200 shadow-soft rounded-2xl px-4 py-2 flex items-center justify-between dark:bg-slate-950 dark:border-slate-800">
       <div>
-        <div class="text-xs text-slate-500">Итого</div>
-        <div id="cartTotalMobile" class="font-semibold">{{ fmt(totals.total) }}</div>
+        <div class="text-xs text-slate-500 dark:text-slate-400">Итого</div>
+        <div id="cartTotalMobile" class="font-semibold text-slate-900 dark:text-slate-100">{{ fmt(totals.total) }}</div>
       </div>
       <button
         class="rounded-xl bg-brand-600 text-white px-4 py-2 disabled:opacity-50"

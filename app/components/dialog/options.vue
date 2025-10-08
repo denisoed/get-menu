@@ -1,19 +1,19 @@
 <template>
   <div v-if="isVisible" class="fixed inset-0 z-50 flex items-center justify-center">
     <div class="absolute inset-0 bg-black/50" @click="close"></div>
-    <div class="relative bg-white w-[92vw] max-w-md rounded-2xl p-5 shadow-soft">
+    <div class="relative bg-white w-[92vw] max-w-md rounded-2xl p-5 shadow-soft dark:bg-slate-950 dark:text-slate-100">
       <div class="flex items-start justify-between">
-        <div class="font-semibold text-lg">{{ item.name }}</div>
-        <button class="text-slate-500" @click="close">✕</button>
+        <div class="font-semibold text-lg text-slate-900 dark:text-slate-100">{{ item.name }}</div>
+        <button class="text-slate-500 dark:text-slate-400" @click="close">✕</button>
       </div>
-      
-      <div class="space-y-2 mt-4">
+
+      <div class="space-y-2 mt-4 text-slate-700 dark:text-slate-200">
         <!-- Size selection -->
         <label v-if="item.options?.sizes?.length" class="text-sm block">
           Размер
           <select 
             v-model="selectedSizeIndex" 
-            class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2"
+            class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100"
           >
             <option 
               v-for="(size, index) in item.options.sizes" 
@@ -29,10 +29,10 @@
         <div v-if="item.options?.extras?.length" class="text-sm">
           Добавки
           <div class="mt-1 grid grid-cols-2 gap-2">
-            <label 
-              v-for="(extra, index) in item.options.extras" 
+            <label
+              v-for="(extra, index) in item.options.extras"
               :key="index"
-              class="flex gap-2 items-center text-sm border rounded-xl px-3 py-2"
+              class="flex gap-2 items-center text-sm border rounded-xl px-3 py-2 dark:border-slate-700 dark:bg-slate-900/60"
             >
               <input 
                 type="checkbox" 
@@ -54,7 +54,7 @@
           Добавить
         </button>
         <button 
-          class="px-4 py-2 rounded-xl border" 
+          class="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 dark:border-slate-700 dark:text-slate-200"
           @click="close"
         >
           Отмена

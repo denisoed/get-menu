@@ -1,30 +1,30 @@
 <template>
   <aside id="cartDrawer" class="hidden md:block sticky top-[120px] h-fit">
-    <div class="bg-white rounded-2xl border border-slate-100 shadow-soft p-4">
-      <h3 class="text-lg font-semibold">Ваш заказ</h3>
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-soft p-4 dark:bg-slate-950 dark:border-slate-800">
+      <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Ваш заказ</h3>
       <div class="mt-3 flex flex-col gap-3">
-        <div v-if="!groupedCart.length" class="text-slate-500 text-sm">Корзина пуста</div>
+        <div v-if="!groupedCart.length" class="text-slate-500 text-sm dark:text-slate-400">Корзина пуста</div>
         <div v-else>
           <div
             v-for="entry in groupedCart"
             :key="entry.key"
-            class="flex items-start justify-between gap-2"
+            class="flex items-start justify-between gap-2 text-slate-700 dark:text-slate-200"
           >
             <div>
-              <div class="font-medium">{{ entry.item.name }}</div>
-              <div v-if="cartEntryDescription(entry)" class="text-[12px] text-slate-500">
+              <div class="font-medium text-slate-900 dark:text-slate-100">{{ entry.item.name }}</div>
+              <div v-if="cartEntryDescription(entry)" class="text-[12px] text-slate-500 dark:text-slate-400">
                 {{ cartEntryDescription(entry) }}
               </div>
-              <div class="text-[12px] text-slate-500">
+              <div class="text-[12px] text-slate-500 dark:text-slate-400">
                 {{ fmt(entry.item.price) }} × {{ entry.quantity }}
               </div>
             </div>
-            <div class="text-right">
+            <div class="text-right text-slate-900 dark:text-slate-100">
               <div class="font-semibold">{{ fmt(entry.lineTotal) }}</div>
               <div class="mt-1 flex items-center gap-1 justify-end">
-                <button class="w-6 h-6 rounded-full border" @click="decrement(entry.key)">-</button>
-                <button class="w-6 h-6 rounded-full border" @click="increment(entry.item)">+</button>
-                <button class="ml-1 text-slate-400 hover:text-red-500" @click="remove(entry.key)">
+                <button class="w-6 h-6 rounded-full border border-slate-200 hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800" @click="decrement(entry.key)">-</button>
+                <button class="w-6 h-6 rounded-full border border-slate-200 hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800" @click="increment(entry.item)">+</button>
+                <button class="ml-1 text-slate-400 hover:text-red-500 dark:text-slate-500 dark:hover:text-red-400" @click="remove(entry.key)">
                   Удалить
                 </button>
               </div>
@@ -32,15 +32,15 @@
           </div>
         </div>
       </div>
-      <div class="mt-4 border-t pt-3 text-sm text-slate-600 space-y-1">
+      <div class="mt-4 border-t pt-3 text-sm text-slate-600 space-y-1 dark:border-slate-800 dark:text-slate-300">
         <div class="flex justify-between"><span>Доставка</span><span id="deliveryFee">{{ deliveryText }}</span></div>
-        <div class="flex justify-between font-semibold text-slate-800">
+        <div class="flex justify-between font-semibold text-slate-800 dark:text-slate-100">
           <span>Итого</span>
           <span id="cartTotal">{{ fmt(totals.total) }}</span>
         </div>
         <div
           id="minOrderNote"
-          class="text-[12px] text-amber-700 bg-amber-50 rounded-lg p-2"
+          class="text-[12px] text-amber-700 bg-amber-50 rounded-lg p-2 dark:text-amber-300 dark:bg-amber-900/40"
           :class="{ hidden: meetsMinOrder }"
         >
           Минимальная сумма заказа: {{ fmt(minOrder) }}
@@ -58,7 +58,7 @@
         id="waOrder"
         :href="whatsappUrl"
         target="_blank"
-        class="mt-2 w-full inline-block text-center rounded-xl border border-green-600 text-green-700 py-2 hover:bg-green-50"
+        class="mt-2 w-full inline-block text-center rounded-xl border border-green-600 text-green-700 py-2 hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-900/40"
         :class="{ 'pointer-events-none opacity-60': !groupedCart.length }"
       >
         WhatsApp
