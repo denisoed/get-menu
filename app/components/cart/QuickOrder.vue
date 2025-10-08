@@ -1,11 +1,13 @@
 <template>
   <div
     id="quickOrder"
-    class="fixed inset-0 items-end md:items-center justify-center z-50"
-    :class="{ hidden: !isOpen || !hasItems, flex: isOpen && hasItems }"
+    class="fixed inset-0 z-50 flex min-h-[100dvh] flex-col items-stretch justify-end md:items-center md:justify-center"
+    :class="{ hidden: !isOpen || !hasItems }"
   >
     <div class="absolute inset-0 bg-black/50" @click="close"></div>
-    <div class="w-full md:w-[720px] bg-white rounded-t-2xl md:rounded-2xl p-5 max-h-[90vh] overflow-y-auto shadow-soft z-50 dark:bg-slate-950 dark:text-slate-100">
+    <div
+      class="relative z-10 flex h-[100dvh] w-full flex-col overflow-y-auto rounded-none bg-white p-5 shadow-soft dark:bg-slate-950 dark:text-slate-100 md:h-auto md:max-h-[90vh] md:w-[720px] md:rounded-2xl"
+    >
       <div class="flex items-start justify-between gap-4">
         <h3 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Оформление заказа</h3>
         <button class="text-slate-500 dark:text-slate-400" @click="close">✕</button>

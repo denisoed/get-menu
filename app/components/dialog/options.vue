@@ -1,7 +1,12 @@
 <template>
-  <div v-if="isVisible" class="fixed inset-0 z-50 flex items-center justify-center">
+  <div
+    v-if="isVisible"
+    class="fixed inset-0 z-50 flex min-h-[100dvh] items-stretch justify-center p-4 sm:items-center"
+  >
     <div class="absolute inset-0 bg-black/50" @click="close"></div>
-    <div class="relative bg-white w-[92vw] max-w-md rounded-2xl p-5 shadow-soft dark:bg-slate-950 dark:text-slate-100">
+    <div
+      class="relative flex w-full max-w-md flex-col overflow-y-auto rounded-none bg-white p-5 shadow-soft dark:bg-slate-950 dark:text-slate-100 sm:max-h-[90vh] sm:rounded-3xl"
+    >
       <div class="flex items-start justify-between">
         <div class="font-semibold text-lg text-slate-900 dark:text-slate-100">{{ item.name }}</div>
         <button class="text-slate-500 dark:text-slate-400" @click="close">✕</button>
