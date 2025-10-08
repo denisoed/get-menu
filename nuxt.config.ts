@@ -23,10 +23,18 @@ export default defineNuxtConfig({
   app: {
     head: {
       title: 'Меню • Быстрый заказ',
+      // Этот мета-тег используется в useTheme.syncSurfaceColor(), чтобы Safari и WebView
+      // окрашивали статус-бар в тот же цвет, что и текущий фон приложения.
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'description', content: 'Онлайн-меню с быстрым заказом для кафе и ресторанов' }
+        { name: 'description', content: 'Онлайн-меню с быстрым заказом для кафе и ресторанов' },
+        { name: 'color-scheme', content: 'light dark' },
+        {
+          id: 'theme-color',
+          name: 'theme-color',
+          content: '#f8fafc'
+        }
       ]
     }
   },
