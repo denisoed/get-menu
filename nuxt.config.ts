@@ -23,10 +23,28 @@ export default defineNuxtConfig({
   app: {
     head: {
       title: 'Меню • Быстрый заказ',
+      // Мета-теги ниже синхронизируют фон статус-бара Safari и WebView
+      // с активной цветовой схемой приложения. Без них верхняя панель на iOS
+      // оставалась светлой даже при включенной темной теме.
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'description', content: 'Онлайн-меню с быстрым заказом для кафе и ресторанов' }
+        { name: 'description', content: 'Онлайн-меню с быстрым заказом для кафе и ресторанов' },
+        { name: 'color-scheme', content: 'light dark' },
+        {
+          id: 'theme-color-dark',
+          name: 'theme-color',
+          media: '(prefers-color-scheme: dark)',
+          content: '#0f172a'
+        },
+        {
+          id: 'theme-color-light',
+          name: 'theme-color',
+          media: '(prefers-color-scheme: light)',
+          content: '#f8fafc'
+        },
+        { name: 'apple-mobile-web-app-capable', content: 'yes' },
+        { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' }
       ]
     }
   },
