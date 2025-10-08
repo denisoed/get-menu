@@ -1,13 +1,13 @@
 <template>
-  <footer id="footer" class="mt-8 bg-white border-t">
-    <div class="mx-auto container-capped px-4 pt-6 pb-[96px] md:pb-6 text-sm text-slate-600 flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
+  <footer id="footer" class="mt-8 bg-white border-t dark:bg-slate-950 dark:border-slate-800">
+    <div class="mx-auto container-capped px-4 pt-6 pb-[96px] md:pb-6 text-sm text-slate-600 dark:text-slate-300 flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
       <div>
         <strong id="fCafe">{{ settings.cafeName }}</strong> • <span id="fAddr">{{ settings.address }}</span> •
         <a id="fCall" class="underline" :href="callHref">{{ settings.phone }}</a>
       </div>
       <div class="flex gap-2">
-        <button @click="printPage" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200">🖨️ Печать QR/меню</button>
-        <button id="darkToggleBottom" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200" @click="toggleTheme">🌗 Тёмная тема</button>
+        <button @click="printPage" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700">🖨️ Печать QR/меню</button>
+        <button id="darkToggleBottom" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700" @click="toggleTheme">🌗 Тёмная тема</button>
       </div>
     </div>
   </footer>

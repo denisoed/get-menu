@@ -5,30 +5,30 @@
     :class="{ hidden: !isOpen || !hasItems, flex: isOpen && hasItems }"
   >
     <div class="absolute inset-0 bg-black/50" @click="close"></div>
-    <div class="w-full md:w-[720px] bg-white rounded-t-2xl md:rounded-2xl p-5 max-h-[90vh] overflow-y-auto shadow-soft z-50">
+    <div class="w-full md:w-[720px] bg-white rounded-t-2xl md:rounded-2xl p-5 max-h-[90vh] overflow-y-auto shadow-soft z-50 dark:bg-slate-950 dark:text-slate-100">
       <div class="flex items-start justify-between gap-4">
-        <h3 class="text-xl font-semibold">Оформление заказа</h3>
-        <button class="text-slate-500" @click="close">✕</button>
+        <h3 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Оформление заказа</h3>
+        <button class="text-slate-500 dark:text-slate-400" @click="close">✕</button>
       </div>
       <form class="mt-4 grid md:grid-cols-2 gap-4" @submit.prevent="handleSubmit">
         <div class="grid gap-3">
-          <label class="text-sm">Имя
-            <input v-model="form.name" name="name" required class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2" placeholder="Ваше имя"/>
+          <label class="text-sm text-slate-700 dark:text-slate-200">Имя
+            <input v-model="form.name" name="name" required class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400" placeholder="Ваше имя"/>
           </label>
-          <label class="text-sm">Телефон
-            <input v-model="form.phone" name="phone" required class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2" placeholder="+996..."/>
+          <label class="text-sm text-slate-700 dark:text-slate-200">Телефон
+            <input v-model="form.phone" name="phone" required class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400" placeholder="+996..."/>
           </label>
-          <label class="text-sm">Способ получения
-            <select v-model="form.type" name="type" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2">
+          <label class="text-sm text-slate-700 dark:text-slate-200">Способ получения
+            <select v-model="form.type" name="type" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100">
               <option value="delivery">Доставка</option>
               <option value="pickup">Самовывоз</option>
             </select>
           </label>
-          <label class="text-sm" v-show="requiresAddress">Адрес (для доставки)
-            <input v-model="form.address" name="address" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2" placeholder="Улица, дом, подъезд"/>
+          <label class="text-sm text-slate-700 dark:text-slate-200" v-show="requiresAddress">Адрес (для доставки)
+            <input v-model="form.address" name="address" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400" placeholder="Улица, дом, подъезд"/>
           </label>
-          <label class="text-sm">Время
-            <select v-model="form.time" name="time" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2">
+          <label class="text-sm text-slate-700 dark:text-slate-200">Время
+            <select v-model="form.time" name="time" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100">
               <option value="asap">Как можно скорее</option>
               <option value="30m">Через 30 минут</option>
               <option value="1h">Через 1 час</option>
@@ -36,12 +36,12 @@
           </label>
         </div>
         <div class="grid gap-3">
-          <div class="p-3 rounded-xl bg-slate-50 text-sm">
-            <div class="font-medium">Состав заказа</div>
-            <div class="mt-1 whitespace-pre-wrap">{{ orderSummary }}</div>
+          <div class="p-3 rounded-xl bg-slate-50 text-sm dark:bg-slate-900/80">
+            <div class="font-medium text-slate-800 dark:text-slate-100">Состав заказа</div>
+            <div class="mt-1 whitespace-pre-wrap text-slate-700 dark:text-slate-200">{{ orderSummary }}</div>
           </div>
-          <label class="text-sm">Комментарий курьеру
-            <textarea v-model="form.comment" name="comment" rows="4" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2" placeholder="Код домофона, пожелания…"></textarea>
+          <label class="text-sm text-slate-700 dark:text-slate-200">Комментарий курьеру
+            <textarea v-model="form.comment" name="comment" rows="4" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400" placeholder="Код домофона, пожелания…"></textarea>
           </label>
           <button class="rounded-xl bg-brand-600 text-white py-2.5 hover:bg-brand-700 disabled:opacity-50" :disabled="!hasItems">
             Подтвердить заказ
@@ -49,7 +49,7 @@
           <a
             :href="whatsappOrderLink"
             target="_blank"
-            class="rounded-xl border border-green-600 text-green-700 py-2 text-center hover:bg-green-50"
+            class="rounded-xl border border-green-600 text-green-700 py-2 text-center hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-900/40"
             :class="{ 'pointer-events-none opacity-60': !hasItems }"
           >
             Отправить в WhatsApp
