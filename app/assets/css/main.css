@@ -8,6 +8,11 @@
   -ms-overflow-style: none; /* IE/Edge */
 }
 
+input,
+textarea {
+  caret-color: #f97316;
+}
+
 *::-webkit-scrollbar {
   display: none;
 }

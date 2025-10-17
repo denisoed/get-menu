@@ -24,10 +24,26 @@
       <form class="mt-4 grid md:grid-cols-2 gap-4" @submit.prevent="handleSubmit">
         <div class="grid gap-3">
           <label class="text-sm text-slate-700 dark:text-slate-200">Имя
-            <input v-model="form.name" name="name" required class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400" placeholder="Ваше имя"/>
+            <input
+              v-model="form.name"
+              name="name"
+              required
+              enterkeyhint="done"
+              class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400"
+              placeholder="Ваше имя"
+              @keydown="dismissOnDoneKey"
+            />
           </label>
           <label class="text-sm text-slate-700 dark:text-slate-200">Телефон
-            <input v-model="form.phone" name="phone" required class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400" placeholder="+996..."/>
+            <input
+              v-model="form.phone"
+              name="phone"
+              required
+              enterkeyhint="done"
+              class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400"
+              placeholder="+996..."
+              @keydown="dismissOnDoneKey"
+            />
           </label>
           <label class="text-sm text-slate-700 dark:text-slate-200">Способ получения
             <select v-model="form.type" name="type" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100">
@@ -36,7 +52,14 @@
             </select>
           </label>
           <label class="text-sm text-slate-700 dark:text-slate-200" v-show="requiresAddress">Адрес (для доставки)
-            <input v-model="form.address" name="address" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400" placeholder="Улица, дом, подъезд"/>
+            <input
+              v-model="form.address"
+              name="address"
+              enterkeyhint="done"
+              class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400"
+              placeholder="Улица, дом, подъезд"
+              @keydown="dismissOnDoneKey"
+            />
           </label>
           <label class="text-sm text-slate-700 dark:text-slate-200">Время
             <select v-model="form.time" name="time" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100">
@@ -136,6 +159,7 @@ import useDate from '~/composables/useDate'
 import { useCartStore } from '~/store/cart'
 import type { CartEntry } from '~/types/cart'
 import { buildCartLines, calculateCartTotals, cartEntryDescription, composeOrderMessage, groupCartItems } from '~/utils/cart'
+import { handleDoneKey } from '~/utils/keyboard'
 
 interface Settings {
   cafeName: string
@@ -195,6 +219,8 @@ watch(() => props.isOpen, (isOpen) => {
     emit('update:is-open', false)
   }
 })
+
+const dismissOnDoneKey = handleDoneKey
 
 function close () {
   emit('update:is-open', false)

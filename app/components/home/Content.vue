@@ -38,7 +38,9 @@
           v-model="searchTerm"
           type="search"
           placeholder="Поиск по меню…"
+          enterkeyhint="done"
           class="w-full rounded-xl border border-slate-200 px-4 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400 dark:focus:ring-brand-500"
+          @keydown="dismissOnDoneKey"
         />
       </div>
       <div id="categories" class="flex gap-2 overflow-x-auto">
@@ -111,6 +113,7 @@ import { useCartStore } from '~/store/cart'
 import type { MenuItem } from '~/types/menu'
 import type { CartEntry } from '~/types/cart'
 import { calculateCartTotals, groupCartItems } from '~/utils/cart'
+import { handleDoneKey } from '~/utils/keyboard'
 
 interface Props {
   menu: MenuItem[]
@@ -143,6 +146,8 @@ const filteredMenu = computed(() => {
 function selectCategory (category: string) {
   selectedCategory.value = category
 }
+
+const dismissOnDoneKey = handleDoneKey
 
 const cartItems = computed(() => cartStore.cart as CartEntry[])
 const groupedCart = computed(() => groupCartItems(cartItems.value))
