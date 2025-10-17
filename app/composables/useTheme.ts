@@ -1,5 +1,6 @@
 import { onMounted } from 'vue'
 import { useState } from '#app'
+import { normaliseColor } from '~/utils/color'
 
 const STORAGE_KEY = 'menu_dark'
 
@@ -9,9 +10,11 @@ export function useTheme () {
   function syncSurfaceColor () {
     if (!process.client) return
     const footer = document.getElementById('footer')
-    if (!footer) return
+    const backgroundSource = footer ?? document.body ?? document.documentElement
+    if (!backgroundSource) return
 
-    const backgroundColor = window.getComputedStyle(footer).backgroundColor
+    const styles = window.getComputedStyle(backgroundSource)
+    const backgroundColor = styles.backgroundColor
     let metaTheme = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null
 
     if (!metaTheme) {
@@ -24,6 +27,23 @@ export function useTheme () {
 
     document.documentElement.style.backgroundColor = backgroundColor
     document.body.style.backgroundColor = backgroundColor
+
+    const telegramColor = normaliseColor(backgroundColor)
+    const webApp = window.Telegram?.WebApp
+
+    if (webApp && telegramColor) {
+      try {
+        webApp.setBackgroundColor?.(telegramColor)
+
+        const topbar = document.getElementById('topbar')
+        const headerBackground = topbar ? normaliseColor(window.getComputedStyle(topbar).backgroundColor) : telegramColor
+        if (headerBackground) {
+          webApp.setHeaderColor?.(headerBackground)
+        }
+      } catch (error) {
+        console.warn('[telegram]', 'Unable to synchronise theme colors', error)
+      }
+    }
   }
 
   function applyTheme (value = isDark.value) {
