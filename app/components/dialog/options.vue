@@ -4,7 +4,18 @@
     <div class="relative bg-white w-[92vw] max-w-md rounded-2xl p-5 shadow-soft dark:bg-slate-950 dark:text-slate-100">
       <div class="flex items-start justify-between">
         <div class="font-semibold text-lg text-slate-900 dark:text-slate-100">{{ item.name }}</div>
-        <button class="text-slate-500 dark:text-slate-400" @click="close">✕</button>
+        <button
+          class="relative h-10 w-10 rounded-full bg-white text-slate-500 shadow-md ring-1 ring-slate-200 transition hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-slate-900/80 dark:text-slate-300 dark:ring-slate-700 dark:hover:bg-slate-800"
+          @click="close"
+          aria-label="Закрыть"
+        >
+          <span
+            aria-hidden="true"
+            class="pointer-events-none absolute inset-0 grid place-items-center text-xl leading-none"
+          >
+            ✕
+          </span>
+        </button>
       </div>
 
       <div class="space-y-2 mt-4 text-slate-700 dark:text-slate-200">
