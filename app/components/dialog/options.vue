@@ -40,19 +40,14 @@
         <div v-if="item.options?.extras?.length" class="text-sm">
           Добавки
           <div class="mt-1 grid grid-cols-2 gap-2">
-            <label
+            <UiCheckbox
               v-for="(extra, index) in item.options.extras"
               :key="index"
-              class="flex gap-2 items-center text-sm border rounded-xl px-3 py-2 dark:border-slate-700 dark:bg-slate-900/60"
+              :value="index"
+              v-model="selectedExtrasIndexes"
             >
-              <input 
-                type="checkbox" 
-                :value="index" 
-                v-model="selectedExtrasIndexes"
-                class="extraCheck"
-              >
               {{ extra.label }} {{ extra.add ? `(+${formatPrice(extra.add)})` : '' }}
-            </label>
+            </UiCheckbox>
           </div>
         </div>
       </div>
