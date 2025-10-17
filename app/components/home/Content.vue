@@ -32,16 +32,26 @@
   <!-- Controls: Search + Categories -->
   <section id="controls" class="sticky top-[46px] z-30 bg-white/70 backdrop-blur border-b border-slate-100 dark:bg-slate-950/80 dark:border-slate-800">
     <div class="mx-auto container-capped px-4 py-3 flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
-      <div class="flex items-center gap-2 w-full md:w-1/2">
+      <div class="relative w-full md:w-1/2">
         <input
           id="search"
           v-model="searchTerm"
-          type="search"
+          type="text"
+          inputmode="search"
           placeholder="Поиск по меню…"
           enterkeyhint="done"
-          class="w-full rounded-xl border border-slate-200 px-4 py-2.5 outline-none focus:ring-2 focus:ring-brand-300 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400 dark:focus:ring-brand-500"
+          class="w-full rounded-xl border border-slate-200 px-4 py-2.5 pr-14 outline-none focus:ring-2 focus:ring-brand-300 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400 dark:focus:ring-brand-500"
           @keydown="dismissOnDoneKey"
         />
+        <button
+          v-if="searchTerm"
+          type="button"
+          class="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white text-slate-500 shadow-md ring-1 ring-slate-200 transition hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-slate-900/80 dark:text-slate-300 dark:ring-slate-700 dark:hover:bg-slate-800"
+          aria-label="Очистить поиск"
+          @click="clearSearch"
+        >
+          <span aria-hidden="true" class="text-base leading-none">✕</span>
+        </button>
       </div>
       <div id="categories" class="flex gap-2 overflow-x-auto">
         <button
@@ -127,6 +137,10 @@ const cartStore = useCartStore()
 
 const searchTerm = ref('')
 const selectedCategory = ref('Все')
+
+function clearSearch () {
+  searchTerm.value = ''
+}
 
 const categories = computed(() => {
   const uniqueCategories = Array.from(new Set(props.menu.map(item => item.category)))

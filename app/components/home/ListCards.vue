@@ -1,5 +1,5 @@
 <template>
-  <div class="grid sm:grid-cols-2 lg:grid-cols-2 gap-4">
+  <div v-if="menu.length" class="grid sm:grid-cols-2 lg:grid-cols-2 gap-4">
     <MenuCard
       v-for="item in menu"
       :key="item.id"
@@ -13,6 +13,9 @@
       @open-options="openOptionsDialog"
       @add-to-cart="handleQuickAdd"
     />
+  </div>
+  <div v-else class="rounded-xl border border-dashed border-slate-200 px-6 py-10 text-center text-slate-500 dark:border-slate-700 dark:text-slate-400">
+    Ничего не найдено. Попробуйте изменить запрос.
   </div>
 
   <DialogOptions 
