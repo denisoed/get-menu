@@ -1,6 +1,6 @@
 <template>
   <div v-if="isVisible" class="fixed inset-0 z-50 flex items-center justify-center">
-    <div class="absolute inset-0 bg-black/50" @click="close"></div>
+    <div class="absolute inset-0 bg-transparent backdrop-blur-sm" @click="close"></div>
     <div class="relative bg-white w-[92vw] max-w-md rounded-2xl p-5 shadow-soft dark:bg-slate-950 dark:text-slate-100">
       <div class="flex items-start justify-between">
         <div class="font-semibold text-lg text-slate-900 dark:text-slate-100">{{ item.name }}</div>
