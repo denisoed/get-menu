@@ -47,9 +47,68 @@
           </label>
         </div>
         <div class="grid gap-3">
-          <div class="p-3 rounded-xl bg-slate-50 text-sm dark:bg-slate-900/80">
-            <div class="font-medium text-slate-800 dark:text-slate-100">Состав заказа</div>
-            <div class="mt-1 whitespace-pre-wrap text-slate-700 dark:text-slate-200">{{ orderSummary }}</div>
+          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/80">
+            <div class="flex items-center justify-between gap-3">
+              <div class="font-medium text-slate-800 dark:text-slate-100">Состав заказа</div>
+              <div class="text-xs text-slate-500 dark:text-slate-400">{{ groupedCart.length }} поз.</div>
+            </div>
+            <div class="mt-3 grid gap-3">
+              <div
+                v-for="entry in groupedCart"
+                :key="entry.key"
+                class="rounded-xl border border-slate-200 bg-white/70 p-3 shadow-sm backdrop-blur-sm dark:border-slate-800 dark:bg-slate-950/70"
+              >
+                <div class="flex items-start justify-between gap-3">
+                  <div class="flex-1">
+                    <div class="text-sm font-semibold text-slate-900 dark:text-slate-100">{{ entry.item.name }}</div>
+                    <div
+                      v-if="cartEntryDescription(entry)"
+                      class="mt-0.5 text-xs text-slate-500 dark:text-slate-400"
+                    >
+                      {{ cartEntryDescription(entry) }}
+                    </div>
+                    <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-600 dark:text-slate-300">
+                      <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1 dark:bg-slate-800/60">
+                        Количество: <strong class="font-semibold">{{ entry.quantity }}</strong>
+                      </span>
+                      <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1 dark:bg-slate-800/60">
+                        За шт.: <strong class="font-semibold">{{ fmt(entry.item.price) }}</strong>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="flex flex-col items-end gap-2">
+                    <div class="text-sm font-semibold text-slate-900 dark:text-slate-100">{{ fmt(entry.lineTotal) }}</div>
+                    <button
+                      type="button"
+                      class="flex items-center gap-1 rounded-lg border border-red-200 px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-400 dark:border-red-500/40 dark:text-red-300 dark:hover:bg-red-500/10"
+                      @click="removeFromCart(entry.key)"
+                    >
+                      Удалить
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div
+                v-if="!groupedCart.length"
+                class="rounded-xl border border-dashed border-slate-200 p-6 text-center text-sm text-slate-500 dark:border-slate-800 dark:text-slate-400"
+              >
+                Корзина пуста. Добавьте блюда, чтобы оформить заказ.
+              </div>
+            </div>
+            <div class="mt-4 space-y-2 rounded-xl bg-white/60 p-3 text-sm text-slate-700 shadow-inner dark:bg-slate-900/60 dark:text-slate-200">
+              <div class="flex items-center justify-between">
+                <span>Сумма блюд</span>
+                <span class="font-medium text-slate-900 dark:text-slate-100">{{ fmt(totals.subtotal) }}</span>
+              </div>
+              <div class="flex items-center justify-between" v-if="totals.delivery">
+                <span>Доставка</span>
+                <span class="font-medium text-slate-900 dark:text-slate-100">{{ fmt(totals.delivery) }}</span>
+              </div>
+              <div class="flex items-center justify-between border-t border-slate-200 pt-2 font-semibold text-slate-900 dark:border-slate-800 dark:text-slate-100">
+                <span>Итого</span>
+                <span>{{ fmt(totals.total) }}</span>
+              </div>
+            </div>
           </div>
           <label class="text-sm text-slate-700 dark:text-slate-200">Комментарий курьеру
             <textarea v-model="form.comment" name="comment" rows="4" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400" placeholder="Код домофона, пожелания…"></textarea>
@@ -76,7 +135,7 @@ import { computed, reactive, watch } from 'vue'
 import useDate from '~/composables/useDate'
 import { useCartStore } from '~/store/cart'
 import type { CartEntry } from '~/types/cart'
-import { buildCartLines, calculateCartTotals, composeOrderMessage, groupCartItems } from '~/utils/cart'
+import { buildCartLines, calculateCartTotals, cartEntryDescription, composeOrderMessage, groupCartItems } from '~/utils/cart'
 
 interface Settings {
   cafeName: string
@@ -110,7 +169,6 @@ const totals = computed(() => calculateCartTotals(groupedCart.value, props.setti
 const hasItems = computed(() => groupedCart.value.length > 0)
 
 const quickOrderLines = computed(() => buildCartLines(groupedCart.value, fmt, totals.value))
-const orderSummary = computed(() => quickOrderLines.value.join('\n'))
 
 const quickOrderMessage = computed(() => composeOrderMessage(props.settings.cafeName, quickOrderLines.value, {
   customer: {
@@ -140,6 +198,10 @@ watch(() => props.isOpen, (isOpen) => {
 
 function close () {
   emit('update:is-open', false)
+}
+
+function removeFromCart (key: string) {
+  cartStore.cart = cartStore.cart.filter(entry => ((entry as CartEntry).cartKey || entry.id) !== key)
 }
 
 function handleSubmit () {
