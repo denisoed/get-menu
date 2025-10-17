@@ -5,12 +5,6 @@
         Управление меню в Get Menu — создавайте и редактируйте проекты в одном месте.
       </p>
       <div class="flex flex-wrap items-center gap-3">
-        <NuxtLink
-          to="/"
-          class="rounded-full border border-slate-300 px-3 py-1 transition hover:border-brand-500 hover:text-brand-600 dark:border-slate-700 dark:hover:border-brand-400 dark:hover:text-brand-300"
-        >
-          Открыть публичный сайт
-        </NuxtLink>
         <span class="text-xs text-slate-500 dark:text-slate-400">© {{ currentYear }} Get Menu</span>
       </div>
     </div>
