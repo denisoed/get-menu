@@ -13,6 +13,7 @@
           id="callLink"
           class="text-sm px-3 py-1 rounded-full border border-brand-300 text-brand-700 hover:bg-brand-50 dark:border-brand-500 dark:text-brand-200 dark:hover:bg-brand-900/40"
           :href="callHref"
+          @click="handleCallClick"
         >
           ☎ Позвонить
         </a>
@@ -39,6 +40,7 @@
 import { computed } from 'vue'
 import { useCartStore } from '~/store/cart'
 import { useTheme } from '~/composables/useTheme'
+import { useTelegram } from '~/composables/useTelegram'
 
 interface Props {
   settings: {
@@ -54,9 +56,22 @@ const emit = defineEmits<{ (e: 'open-quick-order'): void }>()
 const cartStore = useCartStore()
 const cartCount = computed(() => cartStore.cart.length)
 const { toggleTheme } = useTheme()
+const { isTelegram, openLink } = useTelegram()
 
 const callHref = computed(() => {
   const digits = props.settings.phone.replace(/\s+/g, '')
   return `tel:${digits}`
 })
+
+const handleCallClick = (event: MouseEvent) => {
+  if (openLink(callHref.value)) {
+    event.preventDefault()
+    return
+  }
+
+  if (isTelegram.value) {
+    event.preventDefault()
+    window.location.href = callHref.value
+  }
+}
 </script>
