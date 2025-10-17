@@ -11,9 +11,9 @@
         <!-- Size selection -->
         <label v-if="item.options?.sizes?.length" class="text-sm block">
           Размер
-          <select 
-            v-model="selectedSizeIndex" 
-            class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100"
+          <select
+            v-model="selectedSizeIndex"
+            class="mt-1 form-select"
           >
             <option 
               v-for="(size, index) in item.options.sizes" 

@@ -51,3 +51,22 @@
 .dark ::selection {
   background-color: #c2410c;
 }
+
+.form-select {
+  @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-700 outline-none transition-colors focus:border-brand-300 focus:ring-2 focus:ring-brand-200;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20' stroke='%23475569' stroke-width='1.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 0.85rem;
+  padding-right: 2.75rem;
+}
+
+.form-select:focus {
+  @apply border-brand-400;
+}
+
+.dark .form-select {
+  @apply border-slate-700 bg-slate-900 text-slate-100 focus:border-brand-500 focus:ring-brand-500;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20' stroke='%2394a3b8' stroke-width='1.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m6 8 4 4 4-4'/%3E%3C/svg%3E");
+}

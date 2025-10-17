@@ -19,7 +19,7 @@
             <input v-model="form.phone" name="phone" required class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400" placeholder="+996..."/>
           </label>
           <label class="text-sm text-slate-700 dark:text-slate-200">Способ получения
-            <select v-model="form.type" name="type" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100">
+            <select v-model="form.type" name="type" class="mt-1 form-select">
               <option value="delivery">Доставка</option>
               <option value="pickup">Самовывоз</option>
             </select>
@@ -28,7 +28,7 @@
             <input v-model="form.address" name="address" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400" placeholder="Улица, дом, подъезд"/>
           </label>
           <label class="text-sm text-slate-700 dark:text-slate-200">Время
-            <select v-model="form.time" name="time" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100">
+            <select v-model="form.time" name="time" class="mt-1 form-select">
               <option value="asap">Как можно скорее</option>
               <option value="30m">Через 30 минут</option>
               <option value="1h">Через 1 час</option>
