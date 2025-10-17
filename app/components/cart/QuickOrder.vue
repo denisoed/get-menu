@@ -132,6 +132,7 @@
 
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue'
+import { useBodyScrollLock } from '~/composables/useBodyScrollLock'
 import useDate from '~/composables/useDate'
 import { useCartStore } from '~/store/cart'
 import type { CartEntry } from '~/types/cart'
@@ -167,6 +168,8 @@ const cartItems = computed(() => cartStore.cart as CartEntry[])
 const groupedCart = computed(() => groupCartItems(cartItems.value))
 const totals = computed(() => calculateCartTotals(groupedCart.value, props.settings.deliveryFee))
 const hasItems = computed(() => groupedCart.value.length > 0)
+
+useBodyScrollLock(() => props.isOpen && hasItems.value)
 
 const quickOrderLines = computed(() => buildCartLines(groupedCart.value, fmt, totals.value))
 

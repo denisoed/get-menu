@@ -76,6 +76,8 @@
 </template>
 
 <script setup lang="ts">
+import { useBodyScrollLock } from '~/composables/useBodyScrollLock'
+
 interface MenuItem {
   id: string
   name: string
@@ -102,6 +104,8 @@ const emit = defineEmits<Emits>()
 
 const selectedSizeIndex = ref<number | null>(null)
 const selectedExtrasIndexes = ref<number[]>([])
+
+useBodyScrollLock(() => props.isVisible)
 
 // Initialize selected values when item changes
 watch(() => props.item, (newItem) => {
