@@ -20,7 +20,7 @@
 - ✅ `.env.example` — добавлены переменные `SUPABASE_URL` и `SUPABASE_SERVICE_ROLE_KEY` с пояснениями.
 - ✅ `nuxt.config.ts` — Supabase ключи доступны только на сервере через `runtimeConfig`.
 - ✅ `server/utils/supabaseClient.ts` — кэширование инициализированного Supabase клиента.
-- ✅ `server/api/admin/menu.get.ts` — выборка активных меню, обработка ошибок и логирование.
+- ✅ `server/api/admin/menu.get.ts` — выборка активных меню (коллекций блюд), обработка ошибок и логирование.
 - ✅ `tests/server/api/admin-menu.get.test.ts` — тесты покрывают успешный ответ и ошибку Supabase.
 - ✅ `README.md` — инструкция по настройке Supabase и описанию API.
 - ✅ `spec/features/supabase/tasks.md` — все чекбоксы подтверждены.

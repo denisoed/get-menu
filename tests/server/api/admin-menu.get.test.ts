@@ -23,11 +23,11 @@ describe('GET /api/admin/menu', () => {
   const sampleMenus: MenuRecord[] = [
     {
       id: '1',
-      title: 'Test menu item',
-      description: 'Sample description',
-      price: 100,
-      category: 'Test',
-      is_active: true
+      name: 'Летнее меню',
+      slug: 'summer-menu',
+      description: 'Меню с сезонными блюдами',
+      is_active: true,
+      position: 1
     }
   ]
 
@@ -67,7 +67,9 @@ describe('GET /api/admin/menu', () => {
     const response = await handleAdminMenuRequest(mockEvent)
 
     expect(fromMock).toHaveBeenCalledWith('menus')
-    expect(selectMock).toHaveBeenCalledWith('*')
+    expect(selectMock).toHaveBeenCalledWith(
+      'id, name, slug, description, is_active, position, valid_from, valid_to, created_at, updated_at'
+    )
     expect(eqMock).toHaveBeenCalledWith('is_active', true)
     expect(orderMock).toHaveBeenNthCalledWith(1, 'position', { ascending: true, nullsLast: false })
     expect(orderMock).toHaveBeenNthCalledWith(2, 'created_at', { ascending: true })

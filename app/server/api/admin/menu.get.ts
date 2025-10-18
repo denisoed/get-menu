@@ -10,7 +10,20 @@ export const handleAdminMenuRequest = defineEventHandler(async () => {
 
     const query = supabase
       .from('menus')
-      .select('*')
+      .select(
+        [
+          'id',
+          'name',
+          'slug',
+          'description',
+          'is_active',
+          'position',
+          'valid_from',
+          'valid_to',
+          'created_at',
+          'updated_at'
+        ].join(', ')
+      )
       .eq('is_active', true)
       .order('position', { ascending: true, nullsLast: false })
       .order('created_at', { ascending: true })

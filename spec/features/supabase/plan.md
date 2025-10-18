@@ -3,7 +3,7 @@
 **Plan:** Реализовать серверную интеграцию с Supabase для получения списка меню, настроить переменные окружения и подготовить серверный API-эндпоинт без подключения к UI.
 
 ## Data sources / schemas
-- Определить название таблицы меню в Supabase (например, `menus`) и ключевые поля (`id`, `title`, `description`, `price`, `is_active`, `position`).
+- Определить название таблицы меню в Supabase (например, `menus`) и ключевые поля (`id`, `name`, `slug`, `description`, `is_active`, `position`, временные границы действия).
 - Убедиться, что таблица содержит индексы для сортировки по `position` или `created_at`, если требуется упорядочивание.
 - Настроить `.env` и `.env.example` с переменными `SUPABASE_URL` и `SUPABASE_SERVICE_ROLE_KEY`; в Nuxt использовать префикс `NUXT_SUPABASE_SERVICE_ROLE_KEY` с опцией `server`.
 - При необходимости добавить типы (через `types/supabase.ts` или генерацию) для строк меню, чтобы обеспечить типобезопасность при работе с SDK.
@@ -21,7 +21,7 @@
 ## Architecture / Components
 - Использовать `@supabase/supabase-js` с инициализацией в серверном контексте (например, `server/utils/supabaseClient.ts`).
 - Создать модуль-обёртку для Supabase клиента, который читает переменные окружения и кэширует экземпляр для повторного использования.
-- Эндпоинт обращается к обёртке, выполняет запрос `supabase.from('menus').select('*').eq('is_active', true).order('position')` (уточнить фильтры).
+- Эндпоинт обращается к обёртке, выполняет запрос `supabase.from('menus').select('id, name, slug, description, is_active, position, valid_from, valid_to, created_at, updated_at').eq('is_active', true).order('position')` (уточнить фильтры).
 - Добавить базовую обработку логов через существующий logger или `console.error` (если нет централизованного логирования).
 - Убедиться, что код выполняется только на сервере, используя Nitro runtime и отсутствие экспорта в клиентский бандл.
 
