@@ -76,6 +76,8 @@
     <HomeListCards
       :menu="filteredMenu"
       :format-price="fmt"
+      :is-favorite="isFavorite"
+      :toggle-favorite="toggleFavorite"
     />
 
     <!-- Cart Drawer (sticky on desktop) -->
@@ -119,6 +121,7 @@
 import { computed, ref } from 'vue'
 import { SETTINGS } from '~/config/settings'
 import useDate from '~/composables/useDate'
+import { useFavorites } from '~/composables/useFavorites'
 import { useCartStore } from '~/store/cart'
 import type { MenuItem } from '~/types/menu'
 import type { CartEntry } from '~/types/cart'
@@ -136,7 +139,13 @@ const { fmt } = useDate()
 const cartStore = useCartStore()
 
 const searchTerm = ref('')
-const selectedCategory = ref('Все')
+
+const FAVORITES_CATEGORY = 'Избранное'
+const ALL_CATEGORY = 'Все'
+
+const selectedCategory = ref(ALL_CATEGORY)
+
+const { isFavorite, toggleFavorite } = useFavorites()
 
 function clearSearch () {
   searchTerm.value = ''
@@ -144,14 +153,22 @@ function clearSearch () {
 
 const categories = computed(() => {
   const uniqueCategories = Array.from(new Set(props.menu.map(item => item.category)))
-  return ['Все', ...uniqueCategories]
+  return [
+    FAVORITES_CATEGORY,
+    ALL_CATEGORY,
+    ...uniqueCategories.filter(category => category !== ALL_CATEGORY && category !== FAVORITES_CATEGORY),
+  ]
 })
 
 const filteredMenu = computed(() => {
   const query = searchTerm.value.trim().toLowerCase()
 
   return props.menu.filter((item) => {
-    const inCategory = selectedCategory.value === 'Все' || item.category === selectedCategory.value
+    const inCategory = selectedCategory.value === ALL_CATEGORY
+      ? true
+      : selectedCategory.value === FAVORITES_CATEGORY
+        ? isFavorite(item.id)
+        : item.category === selectedCategory.value
     const matchesQuery = !query || item.name.toLowerCase().includes(query)
     return inCategory && matchesQuery
   })
