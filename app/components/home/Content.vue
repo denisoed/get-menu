@@ -4,6 +4,9 @@
     <div class="mx-auto container-capped px-4 pt-8 pb-10">
       <div class="grid md:grid-cols-2 gap-6 items-center">
         <div>
+          <div class="mb-5">
+            <BackButton />
+          </div>
           <h1 id="cafeName" class="text-3xl md:text-4xl font-extrabold leading-tight text-slate-900 dark:text-slate-100">{{ settings.cafeName }}</h1>
           <p id="announcement" class="mt-3 text-slate-600 dark:text-slate-300">{{ settings.announcement }}</p>
           <!-- <div class="mt-5 flex gap-3">
@@ -149,6 +152,7 @@ import { SETTINGS } from '~/config/settings'
 import useDate from '~/composables/useDate'
 import { useFavorites } from '~/composables/useFavorites'
 import { useCartStore } from '~/store/cart'
+import BackButton from '~/components/ui/BackButton.vue'
 import type { MenuItem } from '~/types/menu'
 import type { CartEntry } from '~/types/cart'
 import { calculateCartTotals, groupCartItems } from '~/utils/cart'

@@ -3,6 +3,9 @@
 
   <section class="bg-white dark:bg-slate-950">
     <div class="mx-auto container-capped px-4 py-10">
+      <div class="mb-8">
+        <BackButton fallback="/admin" />
+      </div>
       <div class="max-w-3xl space-y-4">
         <p class="text-sm uppercase tracking-[0.2em] text-brand-600 dark:text-brand-300">Новое меню</p>
         <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-slate-100">
@@ -440,6 +443,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { useHead } from '#imports'
+import BackButton from '~/components/ui/BackButton.vue'
 
 type OptionType = 'sizes' | 'extras'
 
