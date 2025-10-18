@@ -57,13 +57,29 @@
         <button
           v-for="category in categories"
           :key="category"
-          class="px-3 py-1.5 rounded-full text-sm border whitespace-nowrap transition-colors"
+          class="px-3 py-1.5 rounded-full text-sm border whitespace-nowrap transition-colors flex items-center gap-1.5"
           :class="selectedCategory === category
             ? 'bg-brand-600 text-white border-brand-600 dark:border-brand-500'
             : 'border-slate-200 text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-800'
           "
           @click="selectCategory(category)"
         >
+          <span
+            v-if="category === FAVORITES_CATEGORY"
+            aria-hidden="true"
+            class="flex h-4 w-4 items-center justify-center text-brand-600 dark:text-brand-400"
+          >
+            <svg
+              class="h-3 w-3"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M9.9999 17.083c-.2793 0-.5586-.096-.7832-.2882-3.8682-3.2944-5.8008-5.1288-6.6533-6.395-1.03-1.535-1.1367-3.5485-.2656-5.133C3.1093 3.6849 4.6883 2.917 6.4377 2.917c1.2784 0 2.5763.4727 3.5622 1.3228.9859-.8501 2.2838-1.3228 3.5622-1.3228 1.7494 0 3.3284.7678 4.1399 2.3498.8711 1.5844.7644 3.598-.2656 5.133-1.2383 1.8482-3.3418 3.904-6.6533 6.395a1.0524 1.0524 0 0 1-.78.2882Z"
+              />
+            </svg>
+          </span>
           {{ category }}
         </button>
       </div>
