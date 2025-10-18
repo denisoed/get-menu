@@ -73,3 +73,11 @@ bun run preview
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+
+## Supabase configuration
+
+1. Copy `.env.example` to `.env` and fill in the Supabase project URL and service role key.
+2. The service role key is used only on the server. Do not expose it in client-side code or commit it to the repository.
+3. After setting the variables, restart the Nuxt development server so that the runtime configuration is refreshed.
+
+The admin menu API is available at `GET /api/admin/menu` once the server is running. It returns an object with `menus` and `error` fields suitable for future admin UI integration.
