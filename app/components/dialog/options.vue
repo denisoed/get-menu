@@ -71,6 +71,7 @@
 </template>
 
 <script setup lang="ts">
+import { lock as lockBodyScroll, unlock as unlockBodyScroll } from '~/utils/scroll-lock'
 interface MenuItem {
   id: string
   name: string
@@ -97,6 +98,7 @@ const emit = defineEmits<Emits>()
 
 const selectedSizeIndex = ref<number | null>(null)
 const selectedExtrasIndexes = ref<number[]>([])
+const isBodyScrollLocked = ref(false)
 
 // Initialize selected values when item changes
 watch(() => props.item, (newItem) => {
@@ -114,7 +116,7 @@ function close() {
 
 function addToCart() {
   if (!props.item) return
-  
+
   emit('add-to-cart', {
     id: props.item.id,
     sizeIdx: selectedSizeIndex.value,
@@ -122,4 +124,23 @@ function addToCart() {
   })
   close()
 }
+
+if (process.client) {
+  watch(() => props.isVisible, (isVisible) => {
+    if (isVisible) {
+      lockBodyScroll()
+      isBodyScrollLocked.value = true
+    } else if (isBodyScrollLocked.value) {
+      unlockBodyScroll()
+      isBodyScrollLocked.value = false
+    }
+  }, { immediate: true })
+}
+
+onBeforeUnmount(() => {
+  if (process.client && isBodyScrollLocked.value) {
+    unlockBodyScroll()
+    isBodyScrollLocked.value = false
+  }
+})
 </script>

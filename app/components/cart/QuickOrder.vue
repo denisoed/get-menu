@@ -154,12 +154,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, watch } from 'vue'
+import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import useDate from '~/composables/useDate'
 import { useCartStore } from '~/store/cart'
 import type { CartEntry } from '~/types/cart'
 import { buildCartLines, calculateCartTotals, cartEntryDescription, composeOrderMessage, groupCartItems } from '~/utils/cart'
 import { handleDoneKey } from '~/utils/keyboard'
+import { lock as lockBodyScroll, unlock as unlockBodyScroll } from '~/utils/scroll-lock'
 
 interface Settings {
   cafeName: string
@@ -191,6 +192,7 @@ const cartItems = computed(() => cartStore.cart as CartEntry[])
 const groupedCart = computed(() => groupCartItems(cartItems.value))
 const totals = computed(() => calculateCartTotals(groupedCart.value, props.settings.deliveryFee))
 const hasItems = computed(() => groupedCart.value.length > 0)
+const isBodyScrollLocked = ref(false)
 
 const quickOrderLines = computed(() => buildCartLines(groupedCart.value, fmt, totals.value))
 
@@ -220,6 +222,18 @@ watch(() => props.isOpen, (isOpen) => {
   }
 })
 
+if (process.client) {
+  watch(() => props.isOpen, (isOpen) => {
+    if (isOpen && hasItems.value) {
+      lockBodyScroll()
+      isBodyScrollLocked.value = true
+    } else if (isBodyScrollLocked.value) {
+      unlockBodyScroll()
+      isBodyScrollLocked.value = false
+    }
+  }, { immediate: true })
+}
+
 const dismissOnDoneKey = handleDoneKey
 
 function close () {
@@ -237,4 +251,11 @@ function handleSubmit () {
   }
   close()
 }
+
+onBeforeUnmount(() => {
+  if (process.client && isBodyScrollLocked.value) {
+    unlockBodyScroll()
+    isBodyScrollLocked.value = false
+  }
+})
 </script>
