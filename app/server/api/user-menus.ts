@@ -2,6 +2,7 @@ export default defineEventHandler(() => {
   return [
     {
       id: 'main-menu',
+      slug: 'main-menu',
       title: 'Основное меню',
       description: 'Базовое меню кафе с актуальными позициями и ценами.',
       itemsCount: 42,
@@ -10,6 +11,7 @@ export default defineEventHandler(() => {
     },
     {
       id: 'summer-special',
+      slug: 'letnee-menu',
       title: 'Летнее сезонное меню',
       description: 'Лимонады, холодные супы и десерты для летних промо.',
       itemsCount: 18,
@@ -18,6 +20,7 @@ export default defineEventHandler(() => {
     },
     {
       id: 'corporate-packages',
+      slug: 'corporate-packages',
       title: 'Корпоративные наборы',
       description: 'Подборка сетов для мероприятий и кейтеринга.',
       itemsCount: 9,
