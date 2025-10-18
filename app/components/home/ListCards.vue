@@ -10,8 +10,10 @@
       :tags="item.tags || []"
       :img="item.img"
       :options="item.options"
+      :is-favorite="props.isFavorite(item.id)"
       @open-options="openOptionsDialog"
       @add-to-cart="handleQuickAdd"
+      @toggle-favorite="props.toggleFavorite"
     />
   </div>
   <div v-else class="rounded-xl border border-dashed border-slate-200 px-6 py-10 text-center text-slate-500 dark:border-slate-700 dark:text-slate-400">
@@ -36,6 +38,8 @@ import type { CartEntry } from '~/types/cart'
 interface Props {
   menu: MenuItem[];
   formatPrice: (price: number) => string;
+  isFavorite: (id: string) => boolean;
+  toggleFavorite: (id: string) => void;
 }
 
 const props = defineProps<Props>();
