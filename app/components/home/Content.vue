@@ -67,10 +67,20 @@
           <span
             v-if="category === FAVORITES_CATEGORY"
             aria-hidden="true"
-            class="flex h-4 w-4 items-center justify-center text-brand-600 dark:text-brand-400"
+            :class="[
+              'flex h-4 w-4 items-center justify-center',
+              selectedCategory === FAVORITES_CATEGORY
+                ? 'text-white dark:text-white'
+                : 'text-brand-600 dark:text-brand-400',
+            ]"
           >
             <svg
               class="h-3 w-3"
+              :class="[
+                selectedCategory === FAVORITES_CATEGORY
+                  ? 'fill-white dark:fill-white'
+                  : 'fill-brand-600 dark:fill-brand-400',
+              ]"
               viewBox="0 0 20 20"
               fill="currentColor"
               xmlns="http://www.w3.org/2000/svg"
