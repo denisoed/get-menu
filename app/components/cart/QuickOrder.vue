@@ -5,7 +5,7 @@
     :class="{ hidden: !isOpen || !hasItems, flex: isOpen && hasItems }"
   >
     <div class="absolute inset-0 bg-transparent backdrop-blur-sm" @click="close"></div>
-    <div class="w-full md:w-[720px] bg-white rounded-t-2xl md:rounded-2xl p-5 max-h-[90vh] overflow-y-auto shadow-soft z-50 dark:bg-slate-950 dark:text-slate-100">
+    <div class="w-full md:w-[720px] bg-white rounded-none md:rounded-2xl p-5 h-full md:h-auto md:max-h-[90vh] overflow-y-auto shadow-soft z-50 dark:bg-slate-950 dark:text-slate-100">
       <div class="flex items-start justify-between gap-4">
         <h3 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Оформление заказа</h3>
         <button
