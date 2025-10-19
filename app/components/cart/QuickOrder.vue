@@ -31,7 +31,6 @@
               enterkeyhint="done"
               class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400"
               placeholder="Ваше имя"
-              @keydown="dismissOnDoneKey"
             />
           </label>
           <label class="text-sm text-slate-700 dark:text-slate-200">Телефон
@@ -42,7 +41,6 @@
               enterkeyhint="done"
               class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400"
               placeholder="+996..."
-              @keydown="dismissOnDoneKey"
             />
           </label>
           <label class="text-sm text-slate-700 dark:text-slate-200">Способ получения
@@ -58,7 +56,6 @@
               enterkeyhint="done"
               class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400"
               placeholder="Улица, дом, подъезд"
-              @keydown="dismissOnDoneKey"
             />
           </label>
           <label class="text-sm text-slate-700 dark:text-slate-200">Время
@@ -134,7 +131,14 @@
             </div>
           </div>
           <label class="text-sm text-slate-700 dark:text-slate-200">Комментарий курьеру
-            <textarea v-model="form.comment" name="comment" rows="4" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400" placeholder="Код домофона, пожелания…"></textarea>
+            <textarea
+              v-model="form.comment"
+              name="comment"
+              rows="4"
+              enterkeyhint="done"
+              class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400"
+              placeholder="Код домофона, пожелания…"
+            ></textarea>
           </label>
           <button class="rounded-xl bg-brand-600 text-white py-2.5 hover:bg-brand-700 disabled:opacity-50" :disabled="!hasItems">
             Подтвердить заказ
@@ -159,7 +163,6 @@ import useDate from '~/composables/useDate'
 import { useCartStore } from '~/store/cart'
 import type { CartEntry } from '~/types/cart'
 import { buildCartLines, calculateCartTotals, cartEntryDescription, composeOrderMessage, groupCartItems } from '~/utils/cart'
-import { handleDoneKey } from '~/utils/keyboard'
 
 interface Settings {
   cafeName: string
@@ -219,8 +222,6 @@ watch(() => props.isOpen, (isOpen) => {
     emit('update:is-open', false)
   }
 })
-
-const dismissOnDoneKey = handleDoneKey
 
 function close () {
   emit('update:is-open', false)

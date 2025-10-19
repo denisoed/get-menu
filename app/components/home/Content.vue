@@ -44,7 +44,6 @@
           placeholder="Поиск по меню…"
           enterkeyhint="done"
           class="w-full rounded-xl border border-slate-200 px-4 py-2.5 pr-14 outline-none focus:ring-2 focus:ring-brand-300 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400 dark:focus:ring-brand-500"
-          @keydown="dismissOnDoneKey"
         />
         <button
           v-if="searchTerm"
@@ -156,7 +155,6 @@ import BackButton from '~/components/ui/BackButton.vue'
 import type { MenuItem } from '~/types/menu'
 import type { CartEntry } from '~/types/cart'
 import { calculateCartTotals, groupCartItems } from '~/utils/cart'
-import { handleDoneKey } from '~/utils/keyboard'
 
 interface Props {
   menu: MenuItem[]
@@ -207,8 +205,6 @@ const filteredMenu = computed(() => {
 function selectCategory (category: string) {
   selectedCategory.value = category
 }
-
-const dismissOnDoneKey = handleDoneKey
 
 const cartItems = computed(() => cartStore.cart as CartEntry[])
 const groupedCart = computed(() => groupCartItems(cartItems.value))
