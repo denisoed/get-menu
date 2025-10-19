@@ -7,12 +7,12 @@
         <BackButton fallback="/admin" />
       </div>
       <div class="max-w-3xl space-y-4">
-        <p class="text-sm uppercase tracking-[0.2em] text-brand-600 dark:text-brand-300">Новое меню</p>
+        <p class="text-sm uppercase tracking-[0.2em] text-brand-600 dark:text-brand-300">{{ headerKicker }}</p>
         <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-slate-100">
-          Создание меню
+          {{ headerTitle }}
         </h1>
         <p class="text-base text-slate-600 dark:text-slate-300">
-          Заполните контактные данные, рабочий график и добавьте блюда. Вы сможете опубликовать меню и поделиться ссылкой сразу после сохранения.
+          {{ headerDescription }}
         </p>
       </div>
     </div>
@@ -20,7 +20,25 @@
 
   <section class="bg-slate-50 dark:bg-slate-950/80 border-t border-slate-100 dark:border-slate-800">
     <div class="mx-auto container-capped px-4 py-10">
-      <form class="grid gap-10 lg:grid-cols-[2fr_1fr]" @submit.prevent="handleSubmit">
+      <div
+        v-if="prefillError"
+        class="mb-8 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-200"
+      >
+        {{ prefillError }}
+      </div>
+      <div
+        v-if="isPrefilling"
+        class="mb-8 inline-flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
+      >
+        <span class="h-2 w-2 animate-ping rounded-full bg-brand-500"></span>
+        <span>Загружаем данные меню…</span>
+      </div>
+      <form
+        class="grid gap-10 lg:grid-cols-[2fr_1fr]"
+        :aria-busy="isPrefilling"
+        :class="{ 'pointer-events-none opacity-60': isPrefilling }"
+        @submit.prevent="handleSubmit"
+      >
         <div class="space-y-8">
           <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft dark:border-slate-800 dark:bg-slate-900">
             <div class="space-y-6">
@@ -463,9 +481,10 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
-import { useHead } from '#imports'
+import { computed, reactive, ref } from 'vue'
+import { useHead, useRoute } from '#imports'
 import BackButton from '~/components/ui/BackButton.vue'
+import type { AdminMenuDetails } from '~/types/admin-menu'
 
 type OptionType = 'sizes' | 'extras'
 
@@ -503,6 +522,25 @@ interface CafeForm {
   openHours: string
   scheduleDetails: string
 }
+
+const DEFAULT_PREFILL_ERROR = 'Не удалось загрузить данные меню. Попробуйте обновить страницу.'
+
+const route = useRoute()
+const editMenuIdQuery = route.query.edit
+const editMenuId = typeof editMenuIdQuery === 'string' ? editMenuIdQuery : null
+
+const isEditing = computed(() => editMenuId !== null)
+const isPrefilling = ref(false)
+const prefillError = ref<string | null>(null)
+const editingMenuTitle = ref('')
+
+const headerKicker = computed(() => (isEditing.value ? 'Редактирование' : 'Новое меню'))
+const headerTitle = computed(() => (isEditing.value ? `Меню «${editingMenuTitle.value || '…'}»` : 'Создание меню'))
+const headerDescription = computed(() =>
+  isEditing.value
+    ? 'Обновите контактные данные, расписание и блюда, чтобы актуализировать ссылку.'
+    : 'Заполните контактные данные, рабочий график и добавьте блюда. Вы сможете опубликовать меню и поделиться ссылкой сразу после сохранения.'
+)
 
 const cafeForm = reactive<CafeForm>({
   cafeName: '',
@@ -577,17 +615,81 @@ function removeOption (itemIndex: number, type: OptionType, optionIndex: number)
   menuItems.value[itemIndex].options[type].splice(optionIndex, 1)
 }
 
+function applyMenuDetails (details: AdminMenuDetails) {
+  editingMenuTitle.value = details.title
+  Object.assign(cafeForm, details.cafe)
+
+  const hydratedItems = details.items.map((item) => ({
+    id: createId(),
+    name: item.name,
+    category: item.category,
+    price: item.price,
+    img: item.img,
+    tags: item.tags.join(', '),
+    description: item.description,
+    options: {
+      sizes: item.options.sizes.map((size) => ({
+        id: createId(),
+        label: size.label,
+        add: size.add,
+      })),
+      extras: item.options.extras.map((extra) => ({
+        id: createId(),
+        label: extra.label,
+        add: extra.add,
+      })),
+    },
+  }))
+
+  menuItems.value = hydratedItems.length ? hydratedItems : [createMenuItem()]
+}
+
+async function prefillMenu (menuId: string) {
+  try {
+    isPrefilling.value = true
+    prefillError.value = null
+
+    const { data, error } = await useFetch<AdminMenuDetails>(`/api/admin/menu/${menuId}`)
+
+    if (error.value) {
+      prefillError.value = error.value.statusMessage || DEFAULT_PREFILL_ERROR
+      return
+    }
+
+    if (!data.value) {
+      prefillError.value = DEFAULT_PREFILL_ERROR
+      return
+    }
+
+    applyMenuDetails(data.value)
+  } catch (error) {
+    console.error('Failed to load menu for editing', error)
+    prefillError.value = DEFAULT_PREFILL_ERROR
+  } finally {
+    isPrefilling.value = false
+  }
+}
+
 async function handleSubmit () {
   try {
     isSubmitting.value = true
     await new Promise(resolve => setTimeout(resolve, 800))
-    console.info('Submitting menu', { cafeForm, menuItems: menuItems.value })
+    console.info('Submitting menu', {
+      mode: isEditing.value ? 'update' : 'create',
+      menuId: editMenuId,
+      cafeForm,
+      menuItems: menuItems.value,
+    })
   } finally {
     isSubmitting.value = false
   }
 }
 
-useHead({
-  title: 'Новое меню — Get Menu',
-})
+if (editMenuId) {
+  await prefillMenu(editMenuId)
+}
+
+useHead(() => ({
+  title: isEditing.value ? 'Редактирование меню — Get Menu' : 'Новое меню — Get Menu',
+}))
 </script>
