@@ -29,15 +29,25 @@
               <h2 class="text-xl font-semibold text-slate-900 transition-colors group-hover:text-brand-700 dark:text-slate-100 dark:group-hover:text-brand-300">
                 {{ menu.title }}
               </h2>
-              <span
-                class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium"
-                :class="menu.isPublished
-                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-200 dark:border-emerald-500/40'
-                  : 'bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-500/10 dark:text-amber-200 dark:border-amber-500/40'"
-              >
-                <span class="text-base leading-none">{{ menu.isPublished ? '●' : '○' }}</span>
-                {{ menu.isPublished ? 'Опубликовано' : 'Черновик' }}
-              </span>
+              <div class="flex items-center gap-2">
+                <span
+                  class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium"
+                  :class="menu.isPublished
+                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-200 dark:border-emerald-500/40'
+                    : 'bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-500/10 dark:text-amber-200 dark:border-amber-500/40'"
+                >
+                  <span class="text-base leading-none">{{ menu.isPublished ? '●' : '○' }}</span>
+                  {{ menu.isPublished ? 'Опубликовано' : 'Черновик' }}
+                </span>
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white/90 px-3 py-1 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-brand-500 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:border-brand-400 dark:hover:text-brand-300"
+                  @click.stop="navigateToEdit(menu)"
+                >
+                  <span aria-hidden="true" class="text-sm">✏️</span>
+                  <span class="hidden sm:inline">Редактировать</span>
+                </button>
+              </div>
             </div>
 
             <p class="text-sm text-slate-600 dark:text-slate-300">
@@ -81,12 +91,21 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useHead } from '#imports'
+import { useHead, useRouter } from '#imports'
 import type { UserMenu } from '~/types/user-menu'
 
 const { data } = await useFetch<UserMenu[]>('/api/user-menus')
 
 const userMenus = computed(() => data.value ?? [])
+
+const router = useRouter()
+
+function navigateToEdit (menu: UserMenu) {
+  router.push({
+    path: '/admin/create',
+    query: { edit: menu.id }
+  })
+}
 
 function formatMenuDate (isoDate: string) {
   const date = new Date(isoDate)
