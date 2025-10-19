@@ -26,19 +26,21 @@
             class="group relative flex h-full flex-col gap-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-soft transition hover:-translate-y-0.5 hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:bg-slate-900"
           >
             <div class="flex flex-col gap-3">
-              <h2 class="text-xl font-semibold text-slate-900 transition-colors group-hover:text-brand-700 dark:text-slate-100 dark:group-hover:text-brand-300">
-                {{ menu.title }}
-              </h2>
-              <div class="flex flex-wrap items-center gap-2">
-                <span
-                  class="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium"
-                  :class="menu.isPublished
-                    ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-500/10 dark:text-emerald-200'
-                    : 'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-200'"
-                >
-                  <span class="text-base leading-none">{{ menu.isPublished ? '●' : '○' }}</span>
-                  {{ menu.isPublished ? 'Опубликовано' : 'Черновик' }}
-                </span>
+              <div class="flex items-start justify-between gap-3">
+                <h2 class="min-w-0 flex-1 text-xl font-semibold text-slate-900 transition-colors group-hover:text-brand-700 dark:text-slate-100 dark:group-hover:text-brand-300">
+                  {{ menu.title }}
+                </h2>
+                <div class="flex flex-shrink-0 items-center justify-end gap-2 text-right">
+                  <span
+                    class="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium"
+                    :class="menu.isPublished
+                      ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-500/10 dark:text-emerald-200'
+                      : 'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-200'"
+                  >
+                    <span class="text-base leading-none">{{ menu.isPublished ? '●' : '○' }}</span>
+                    {{ menu.isPublished ? 'Опубликовано' : 'Черновик' }}
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -62,13 +64,13 @@
               </div>
               <button
                 type="button"
-                class="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white/90 px-3 py-1 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-brand-500 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:border-brand-400 dark:hover:text-brand-300"
+                class="inline-flex items-center rounded-full border border-slate-200 bg-white/90 px-3 py-1 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-brand-500 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:border-brand-400 dark:hover:text-brand-300"
+                :aria-label="`Редактировать меню «${menu.title}»`"
                 @click.stop.prevent="navigateToEdit(menu)"
                 @keydown.enter.stop.prevent="navigateToEdit(menu)"
                 @keydown.space.stop.prevent="navigateToEdit(menu)"
               >
                 <span aria-hidden="true" class="text-sm">✏️</span>
-                <span class="hidden sm:inline">Редактировать</span>
               </button>
             </div>
           </NuxtLink>
