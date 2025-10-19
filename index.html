@@ -263,12 +263,7 @@
 
       // Search
       $('#search').addEventListener('input', (e)=>{ state.search = e.target.value.trim().toLowerCase(); renderItems(); })
-      keyboardUtils?.attachDoneKey([
-        '#search',
-        '#orderForm input[name="name"]',
-        '#orderForm input[name="phone"]',
-        '#orderForm input[name="address"]',
-      ])
+      keyboardUtils?.attachDoneKey()
 
       // Buttons
       $('#cartBtn').onclick = ()=>toggleQuick(true);

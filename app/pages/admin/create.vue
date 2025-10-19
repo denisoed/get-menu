@@ -39,6 +39,7 @@
                     class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
                     placeholder="Например, Кафе «Солнечное»"
                     required
+                    enterkeyhint="done"
                   >
                 </label>
                 <label class="text-sm text-slate-700 dark:text-slate-200">
@@ -49,6 +50,7 @@
                     class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
                     placeholder="+996 555 123 456"
                     required
+                    enterkeyhint="done"
                   >
                 </label>
                 <label class="text-sm text-slate-700 dark:text-slate-200">
@@ -59,6 +61,7 @@
                     class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
                     placeholder="+996555123456"
                     required
+                    enterkeyhint="done"
                   >
                 </label>
                 <label class="text-sm text-slate-700 dark:text-slate-200">
@@ -69,6 +72,7 @@
                     min="0"
                     class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
                     placeholder="0"
+                    enterkeyhint="done"
                   >
                 </label>
                 <label class="text-sm text-slate-700 dark:text-slate-200">
@@ -79,6 +83,7 @@
                     min="0"
                     class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
                     placeholder="150"
+                    enterkeyhint="done"
                   >
                 </label>
                 <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
@@ -88,6 +93,7 @@
                     type="text"
                     class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
                     placeholder="г. Бишкек, пр. Чуй, 123"
+                    enterkeyhint="done"
                   >
                 </label>
                 <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
@@ -97,6 +103,7 @@
                     rows="3"
                     class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
                     placeholder="Расскажите о спецпредложениях или преимуществах"
+                    enterkeyhint="done"
                   ></textarea>
                 </label>
               </div>
@@ -108,6 +115,7 @@
                     type="url"
                     class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
                     placeholder="https://..."
+                    enterkeyhint="done"
                   >
                 </label>
                 <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
@@ -117,6 +125,7 @@
                     type="text"
                     class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
                     placeholder="Горячие обеды · Быстро и вкусно"
+                    enterkeyhint="done"
                   >
                 </label>
                 <label class="text-sm text-slate-700 dark:text-slate-200">
@@ -126,6 +135,7 @@
                     type="text"
                     class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
                     placeholder="Доставка 30–45 минут"
+                    enterkeyhint="done"
                   >
                 </label>
               </div>
@@ -148,6 +158,7 @@
                     type="text"
                     class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
                     placeholder="Ежедневно 10:00–22:00"
+                    enterkeyhint="done"
                   >
                 </label>
                 <label class="text-sm text-slate-700 dark:text-slate-200">
@@ -157,6 +168,7 @@
                     rows="4"
                     class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
                     placeholder="Пн–Пт: 10:00–22:00\nСб–Вс: 11:00–23:00"
+                    enterkeyhint="done"
                   ></textarea>
                 </label>
               </div>
@@ -223,6 +235,7 @@
                       class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
                       placeholder="Пицца Маргарита"
                       required
+                      enterkeyhint="done"
                     >
                   </label>
                   <label class="text-sm text-slate-700 dark:text-slate-200">
@@ -232,6 +245,7 @@
                       type="text"
                       class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
                       placeholder="Пицца"
+                      enterkeyhint="done"
                     >
                   </label>
                   <label class="text-sm text-slate-700 dark:text-slate-200">
@@ -242,6 +256,7 @@
                       min="0"
                       class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
                       placeholder="320"
+                      enterkeyhint="done"
                     >
                   </label>
                   <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
@@ -251,6 +266,7 @@
                       type="url"
                       class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
                       placeholder="https://images.unsplash.com/..."
+                      enterkeyhint="done"
                     >
                   </label>
                   <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
@@ -260,6 +276,7 @@
                       type="text"
                       class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
                       placeholder="Хит, Острый"
+                      enterkeyhint="done"
                     >
                   </label>
                   <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
@@ -269,6 +286,7 @@
                       rows="3"
                       class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
                       placeholder="Расскажите о составе или способе приготовления"
+                      enterkeyhint="done"
                     ></textarea>
                   </label>
                 </div>
@@ -302,6 +320,7 @@
                               type="text"
                               class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
                               placeholder="Стандарт"
+                              enterkeyhint="done"
                             >
                           </label>
                           <div class="flex items-end justify-between gap-3 md:block">
@@ -312,6 +331,7 @@
                                 type="number"
                                 class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
                                 placeholder="0"
+                                enterkeyhint="done"
                               >
                             </label>
                             <button
@@ -355,6 +375,7 @@
                               type="text"
                               class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
                               placeholder="Сыр моцарелла"
+                              enterkeyhint="done"
                             >
                           </label>
                           <div class="flex items-end justify-between gap-3 md:block">
@@ -365,6 +386,7 @@
                                 type="number"
                                 class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
                                 placeholder="70"
+                                enterkeyhint="done"
                               >
                             </label>
                             <button
