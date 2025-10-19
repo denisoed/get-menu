@@ -29,7 +29,7 @@
               <h2 class="text-xl font-semibold text-slate-900 transition-colors group-hover:text-brand-700 dark:text-slate-100 dark:group-hover:text-brand-300">
                 {{ menu.title }}
               </h2>
-              <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex flex-wrap items-center gap-2">
                 <span
                   class="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium"
                   :class="menu.isPublished
@@ -39,15 +39,6 @@
                   <span class="text-base leading-none">{{ menu.isPublished ? '●' : '○' }}</span>
                   {{ menu.isPublished ? 'Опубликовано' : 'Черновик' }}
                 </span>
-                <button
-                  type="button"
-                  class="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white/90 px-3 py-1 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-brand-500 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:border-brand-400 dark:hover:text-brand-300"
-                  @click.stop="navigateToEdit(menu)"
-                  @keydown.enter.stop.prevent="navigateToEdit(menu)"
-                >
-                  <span aria-hidden="true" class="text-sm">✏️</span>
-                  <span class="hidden sm:inline">Редактировать</span>
-                </button>
               </div>
             </div>
 
@@ -64,9 +55,20 @@
               </span>
             </div>
 
-            <div class="flex items-center gap-2 pt-1 text-sm font-medium text-brand-600 transition-all group-hover:gap-3 dark:text-brand-300">
-              <span>Перейти к меню</span>
-              <span aria-hidden="true" class="text-lg leading-none">→</span>
+            <div class="flex items-center justify-between gap-3 pt-1">
+              <div class="flex items-center gap-2 text-sm font-medium text-brand-600 transition-all group-hover:gap-3 dark:text-brand-300">
+                <span>Перейти к меню</span>
+                <span aria-hidden="true" class="text-lg leading-none">→</span>
+              </div>
+              <button
+                type="button"
+                class="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white/90 px-3 py-1 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-brand-500 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:border-brand-400 dark:hover:text-brand-300"
+                @click.stop="navigateToEdit(menu)"
+                @keydown.enter.stop.prevent="navigateToEdit(menu)"
+              >
+                <span aria-hidden="true" class="text-sm">✏️</span>
+                <span class="hidden sm:inline">Редактировать</span>
+              </button>
             </div>
           </NuxtLink>
         </div>
