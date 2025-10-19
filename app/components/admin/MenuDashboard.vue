@@ -23,18 +23,18 @@
             v-for="menu in userMenus"
             :key="menu.id"
             :to="`/${menu.slug}`"
-            class="group relative flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-soft transition hover:-translate-y-0.5 hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:bg-slate-900"
+            class="group relative flex h-full flex-col gap-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-soft transition hover:-translate-y-0.5 hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:bg-slate-900"
           >
-            <div class="flex items-start justify-between gap-3">
+            <div class="flex flex-col gap-3">
               <h2 class="text-xl font-semibold text-slate-900 transition-colors group-hover:text-brand-700 dark:text-slate-100 dark:group-hover:text-brand-300">
                 {{ menu.title }}
               </h2>
-              <div class="flex items-center gap-2">
+              <div class="flex flex-wrap items-center justify-between gap-2">
                 <span
-                  class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium"
+                  class="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium"
                   :class="menu.isPublished
-                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-200 dark:border-emerald-500/40'
-                    : 'bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-500/10 dark:text-amber-200 dark:border-amber-500/40'"
+                    ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-500/10 dark:text-emerald-200'
+                    : 'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-200'"
                 >
                   <span class="text-base leading-none">{{ menu.isPublished ? '●' : '○' }}</span>
                   {{ menu.isPublished ? 'Опубликовано' : 'Черновик' }}
@@ -54,7 +54,7 @@
               {{ menu.description }}
             </p>
 
-            <div class="flex flex-wrap items-center justify-between gap-3 text-sm text-slate-500 dark:text-slate-400">
+            <div class="mt-auto flex flex-wrap items-center justify-between gap-3 text-sm text-slate-500 dark:text-slate-400">
               <span>
                 Позиций: <span class="font-semibold text-slate-900 dark:text-slate-100">{{ menu.itemsCount }}</span>
               </span>
