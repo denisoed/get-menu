@@ -63,8 +63,9 @@
               <button
                 type="button"
                 class="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white/90 px-3 py-1 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-brand-500 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:border-brand-400 dark:hover:text-brand-300"
-                @click.stop="navigateToEdit(menu)"
+                @click.stop.prevent="navigateToEdit(menu)"
                 @keydown.enter.stop.prevent="navigateToEdit(menu)"
+                @keydown.space.stop.prevent="navigateToEdit(menu)"
               >
                 <span aria-hidden="true" class="text-sm">✏️</span>
                 <span class="hidden sm:inline">Редактировать</span>
