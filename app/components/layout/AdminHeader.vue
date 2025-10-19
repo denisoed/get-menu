@@ -1,5 +1,8 @@
 <template>
-  <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur supports-backdrop:backdrop-blur dark:border-slate-800 dark:bg-slate-950/80">
+  <header
+    id="topbar"
+    class="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur supports-backdrop:backdrop-blur dark:border-slate-800 dark:bg-slate-950/80"
+  >
     <div class="mx-auto container-capped flex items-center justify-between gap-4 px-4 py-3 text-slate-700 dark:text-slate-200">
       <NuxtLink
         to="/admin"

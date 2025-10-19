@@ -1,9 +1,15 @@
 import { defineNuxtPlugin } from '#app'
-import { normaliseColor } from '~/utils/color'
+import { syncSurfaceColor } from '~/utils/syncSurfaceColor'
 
-export default defineNuxtPlugin(() => {
+export default defineNuxtPlugin((nuxtApp) => {
   if (!process.client) {
     return
+  }
+
+  const scheduleSync = () => {
+    window.requestAnimationFrame(() => {
+      syncSurfaceColor()
+    })
   }
 
   const initialiseTelegram = () => {
@@ -17,21 +23,7 @@ export default defineNuxtPlugin(() => {
     webApp.expand?.()
     webApp.disableVerticalSwipes?.()
 
-    const bodyStyles = document.body ? window.getComputedStyle(document.body) : null
-    const bodyColor = bodyStyles ? normaliseColor(bodyStyles.backgroundColor) : undefined
-    if (bodyColor) {
-      try {
-        webApp.setBackgroundColor?.(bodyColor)
-        const topbar = document.getElementById('topbar')
-        const headerStyles = topbar ? window.getComputedStyle(topbar) : null
-        const headerColor = headerStyles ? normaliseColor(headerStyles.backgroundColor) : bodyColor
-        if (headerColor) {
-          webApp.setHeaderColor?.(headerColor)
-        }
-      } catch (error) {
-        console.warn('[telegram]', 'Failed to apply colors', error)
-      }
-    }
+    scheduleSync()
 
     return true
   }
@@ -60,4 +52,7 @@ export default defineNuxtPlugin(() => {
       }
     }, 250)
   }
+
+  nuxtApp.hook('page:finish', scheduleSync)
+  scheduleSync()
 })
