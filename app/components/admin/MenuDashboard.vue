@@ -22,7 +22,7 @@
           <NuxtLink
             v-for="menu in userMenus"
             :key="menu.id"
-            :to="`/${menu.slug}`"
+            :to="{ path: '/admin/create', query: { edit: menu.id } }"
             class="group relative flex h-full flex-col gap-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-soft transition hover:-translate-y-0.5 hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:bg-slate-900"
           >
             <div class="flex flex-col gap-3">
@@ -59,18 +59,18 @@
 
             <div class="flex items-center justify-between gap-3 pt-1">
               <div class="flex items-center gap-2 text-sm font-medium text-brand-600 transition-all group-hover:gap-3 dark:text-brand-300">
-                <span>Перейти к меню</span>
+                <span>Редактировать меню</span>
                 <span aria-hidden="true" class="text-lg leading-none">→</span>
               </div>
               <button
                 type="button"
                 class="inline-flex items-center rounded-full border border-slate-200 bg-white/90 px-3 py-1 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-brand-500 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300 dark:hover:border-brand-400 dark:hover:text-brand-300"
-                :aria-label="`Редактировать меню «${menu.title}»`"
-                @click.stop.prevent="navigateToEdit(menu)"
-                @keydown.enter.stop.prevent="navigateToEdit(menu)"
-                @keydown.space.stop.prevent="navigateToEdit(menu)"
+                :aria-label="`Просмотреть меню «${menu.title}»`"
+                @click.stop.prevent="navigateToMenu(menu)"
+                @keydown.enter.stop.prevent="navigateToMenu(menu)"
+                @keydown.space.stop.prevent="navigateToMenu(menu)"
               >
-                <span aria-hidden="true" class="text-sm">✏️</span>
+                <span aria-hidden="true" class="text-sm">👁️</span>
               </button>
             </div>
           </NuxtLink>
@@ -106,10 +106,9 @@ const userMenus = computed(() => data.value ?? [])
 
 const router = useRouter()
 
-function navigateToEdit (menu: UserMenu) {
+function navigateToMenu (menu: UserMenu) {
   router.push({
-    path: '/admin/create',
-    query: { edit: menu.id }
+    path: `/${menu.slug}`
   })
 }
 
