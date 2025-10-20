@@ -220,6 +220,12 @@
               </button>
             </div>
 
+            <MenuCategoryManager
+              v-model:categories="categories"
+              @category-renamed="handleCategoryRenamed"
+              @category-removed="handleCategoryRemoved"
+            />
+
             <div class="grid gap-6">
               <div
                 v-for="(item, index) in menuItems"
@@ -267,13 +273,20 @@
                   </label>
                   <label class="text-sm text-slate-700 dark:text-slate-200">
                     Категория
-                    <input
+                    <select
                       v-model="item.category"
-                      type="text"
-                      class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                      placeholder="Пицца"
-                      enterkeyhint="done"
+                      class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
                     >
+                      <option value="">Без категории</option>
+                      <option
+                        v-for="category in categories"
+                        :key="category.id"
+                        :value="category.name"
+                      >
+                        {{ category.name }}
+                      </option>
+                    </select>
+                    <p v-if="!categories.length" class="mt-1 text-xs text-slate-500 dark:text-slate-400">Создайте категорию выше, чтобы выбрать её для блюда.</p>
                   </label>
                   <label class="text-sm text-slate-700 dark:text-slate-200">
                     Цена, KGS
@@ -494,46 +507,16 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
 import { useHead, useRoute } from '#imports'
+import MenuCategoryManager from '~/components/admin/MenuCategoryManager.vue'
 import BackButton from '~/components/ui/BackButton.vue'
 import Tabs from '~/components/ui/Tabs.vue'
 import type { AdminMenuDetails } from '~/types/admin-menu'
-
-type OptionType = 'sizes' | 'extras'
-
-interface EditableOption {
-  id: string
-  label: string
-  add: number | null
-}
-
-interface EditableMenuItem {
-  id: string
-  name: string
-  category: string
-  price: number | null
-  img: string
-  tags: string
-  description: string
-  options: {
-    sizes: EditableOption[]
-    extras: EditableOption[]
-  }
-}
-
-interface CafeForm {
-  cafeName: string
-  phone: string
-  whatsapp: string
-  minOrder: number | null
-  deliveryFee: number | null
-  address: string
-  announcement: string
-  bannerImage: string
-  bannerTitle: string
-  bannerSubtitle: string
-  openHours: string
-  scheduleDetails: string
-}
+import type {
+  CafeForm,
+  EditableCategory,
+  EditableMenuItem,
+  OptionType,
+} from '~/types/admin-menu-editor'
 
 const DEFAULT_PREFILL_ERROR = 'Не удалось загрузить данные меню. Попробуйте обновить страницу.'
 
@@ -584,6 +567,7 @@ const cafeForm = reactive<CafeForm>({
   scheduleDetails: '',
 })
 
+const categories = ref<EditableCategory[]>([])
 const menuItems = ref<EditableMenuItem[]>([createMenuItem()])
 const isSubmitting = ref(false)
 
@@ -613,6 +597,24 @@ function createMenuItem (base?: EditableMenuItem): EditableMenuItem {
       extras: [],
     },
   }
+}
+
+function handleCategoryRenamed ({ previousName, nextName }: { previousName: string; nextName: string }) {
+  if (previousName === nextName) return
+
+  menuItems.value.forEach((item) => {
+    if (item.category === previousName) {
+      item.category = nextName
+    }
+  })
+}
+
+function handleCategoryRemoved ({ name }: { name: string }) {
+  menuItems.value.forEach((item) => {
+    if (item.category === name) {
+      item.category = ''
+    }
+  })
 }
 
 function addMenuItem (base?: EditableMenuItem) {
@@ -668,6 +670,12 @@ function applyMenuDetails (details: AdminMenuDetails) {
     },
   }))
 
+  const uniqueCategories = Array.from(new Set(details.items.map((item) => item.category).filter(Boolean)))
+  categories.value = uniqueCategories.map((name) => ({
+    id: createId(),
+    name,
+  }))
+
   menuItems.value = hydratedItems.length ? hydratedItems : [createMenuItem()]
 }
 
@@ -705,6 +713,7 @@ async function handleSubmit () {
       mode: isEditing.value ? 'update' : 'create',
       menuId: editMenuId,
       cafeForm,
+      categories: categories.value,
       menuItems: menuItems.value,
     })
   } finally {
