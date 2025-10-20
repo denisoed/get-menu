@@ -40,165 +40,174 @@
         @submit.prevent="handleSubmit"
       >
         <div class="space-y-8">
-          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft dark:border-slate-800 dark:bg-slate-900">
-            <div class="space-y-6">
-              <div>
-                <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Контакты и витрина</h2>
-                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                  Укажите данные, которые увидят гости на странице меню.
-                </p>
-              </div>
-              <div class="grid gap-4 md:grid-cols-2">
-                <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
-                  Название кафе
-                  <input
-                    v-model="cafeForm.cafeName"
-                    type="text"
-                    class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                    placeholder="Например, Кафе «Солнечное»"
-                    required
-                    enterkeyhint="done"
-                  >
-                </label>
-                <label class="text-sm text-slate-700 dark:text-slate-200">
-                  Телефон для звонков
-                  <input
-                    v-model="cafeForm.phone"
-                    type="tel"
-                    class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                    placeholder="+996 555 123 456"
-                    required
-                    enterkeyhint="done"
-                  >
-                </label>
-                <label class="text-sm text-slate-700 dark:text-slate-200">
-                  WhatsApp
-                  <input
-                    v-model="cafeForm.whatsapp"
-                    type="tel"
-                    class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                    placeholder="+996555123456"
-                    required
-                    enterkeyhint="done"
-                  >
-                </label>
-                <label class="text-sm text-slate-700 dark:text-slate-200">
-                  Минимальный заказ, KGS
-                  <input
-                    v-model.number="cafeForm.minOrder"
-                    type="number"
-                    min="0"
-                    class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                    placeholder="0"
-                    enterkeyhint="done"
-                  >
-                </label>
-                <label class="text-sm text-slate-700 dark:text-slate-200">
-                  Доставка, KGS
-                  <input
-                    v-model.number="cafeForm.deliveryFee"
-                    type="number"
-                    min="0"
-                    class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                    placeholder="150"
-                    enterkeyhint="done"
-                  >
-                </label>
-                <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
-                  Адрес
-                  <input
-                    v-model="cafeForm.address"
-                    type="text"
-                    class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                    placeholder="г. Бишкек, пр. Чуй, 123"
-                    enterkeyhint="done"
-                  >
-                </label>
-                <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
-                  Анонс или приветствие
-                  <textarea
-                    v-model="cafeForm.announcement"
-                    rows="3"
-                    class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                    placeholder="Расскажите о спецпредложениях или преимуществах"
-                    enterkeyhint="done"
-                  ></textarea>
-                </label>
-              </div>
-              <div class="grid gap-4 md:grid-cols-3">
-                <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-3">
-                  Баннер — ссылка на изображение
-                  <input
-                    v-model="cafeForm.bannerImage"
-                    type="url"
-                    class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                    placeholder="https://..."
-                    enterkeyhint="done"
-                  >
-                </label>
-                <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
-                  Заголовок баннера
-                  <input
-                    v-model="cafeForm.bannerTitle"
-                    type="text"
-                    class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                    placeholder="Горячие обеды · Быстро и вкусно"
-                    enterkeyhint="done"
-                  >
-                </label>
-                <label class="text-sm text-slate-700 dark:text-slate-200">
-                  Подзаголовок баннера
-                  <input
-                    v-model="cafeForm.bannerSubtitle"
-                    type="text"
-                    class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                    placeholder="Доставка 30–45 минут"
-                    enterkeyhint="done"
-                  >
-                </label>
-              </div>
-            </div>
-          </div>
+          <Tabs
+            v-model="activeTab"
+            :items="tabs"
+          >
+            <template #general>
+              <div class="space-y-8">
+                <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft dark:border-slate-800 dark:bg-slate-900">
+                  <div class="space-y-6">
+                    <div>
+                      <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Контакты и витрина</h2>
+                      <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                        Укажите данные, которые увидят гости на странице меню.
+                      </p>
+                    </div>
+                    <div class="grid gap-4 md:grid-cols-2">
+                      <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
+                        Название кафе
+                        <input
+                          v-model="cafeForm.cafeName"
+                          type="text"
+                          class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                          placeholder="Например, Кафе «Солнечное»"
+                          required
+                          enterkeyhint="done"
+                        >
+                      </label>
+                      <label class="text-sm text-slate-700 dark:text-slate-200">
+                        Телефон для звонков
+                        <input
+                          v-model="cafeForm.phone"
+                          type="tel"
+                          class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                          placeholder="+996 555 123 456"
+                          required
+                          enterkeyhint="done"
+                        >
+                      </label>
+                      <label class="text-sm text-slate-700 dark:text-slate-200">
+                        WhatsApp
+                        <input
+                          v-model="cafeForm.whatsapp"
+                          type="tel"
+                          class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                          placeholder="+996555123456"
+                          required
+                          enterkeyhint="done"
+                        >
+                      </label>
+                      <label class="text-sm text-slate-700 dark:text-slate-200">
+                        Минимальный заказ, KGS
+                        <input
+                          v-model.number="cafeForm.minOrder"
+                          type="number"
+                          min="0"
+                          class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                          placeholder="0"
+                          enterkeyhint="done"
+                        >
+                      </label>
+                      <label class="text-sm text-slate-700 dark:text-slate-200">
+                        Доставка, KGS
+                        <input
+                          v-model.number="cafeForm.deliveryFee"
+                          type="number"
+                          min="0"
+                          class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                          placeholder="150"
+                          enterkeyhint="done"
+                        >
+                      </label>
+                      <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
+                        Адрес
+                        <input
+                          v-model="cafeForm.address"
+                          type="text"
+                          class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                          placeholder="г. Бишкек, пр. Чуй, 123"
+                          enterkeyhint="done"
+                        >
+                      </label>
+                      <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
+                        Анонс или приветствие
+                        <textarea
+                          v-model="cafeForm.announcement"
+                          rows="3"
+                          class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                          placeholder="Расскажите о спецпредложениях или преимуществах"
+                          enterkeyhint="done"
+                        ></textarea>
+                      </label>
+                    </div>
+                    <div class="grid gap-4 md:grid-cols-3">
+                      <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-3">
+                        Баннер — ссылка на изображение
+                        <input
+                          v-model="cafeForm.bannerImage"
+                          type="url"
+                          class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                          placeholder="https://..."
+                          enterkeyhint="done"
+                        >
+                      </label>
+                      <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
+                        Заголовок баннера
+                        <input
+                          v-model="cafeForm.bannerTitle"
+                          type="text"
+                          class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                          placeholder="Горячие обеды · Быстро и вкусно"
+                          enterkeyhint="done"
+                        >
+                      </label>
+                      <label class="text-sm text-slate-700 dark:text-slate-200">
+                        Подзаголовок баннера
+                        <input
+                          v-model="cafeForm.bannerSubtitle"
+                          type="text"
+                          class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                          placeholder="Доставка 30–45 минут"
+                          enterkeyhint="done"
+                        >
+                      </label>
+                    </div>
+                  </div>
+                </div>
 
-          <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft dark:border-slate-800 dark:bg-slate-900">
-            <div class="space-y-6">
-              <div>
-                <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Режим работы</h2>
-                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                  Опишите, когда гости могут сделать заказ или забрать самовывоз.
-                </p>
+                <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft dark:border-slate-800 dark:bg-slate-900">
+                  <div class="space-y-6">
+                    <div>
+                      <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Режим работы</h2>
+                      <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                        Опишите, когда гости могут сделать заказ или забрать самовывоз.
+                      </p>
+                    </div>
+                    <div class="grid gap-4">
+                      <label class="text-sm text-slate-700 dark:text-slate-200">
+                        Кратко о графике
+                        <input
+                          v-model="cafeForm.openHours"
+                          type="text"
+                          class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                          placeholder="Ежедневно 10:00–22:00"
+                          enterkeyhint="done"
+                        >
+                      </label>
+                      <label class="text-sm text-slate-700 dark:text-slate-200">
+                        Детальное расписание
+                        <textarea
+                          v-model="cafeForm.scheduleDetails"
+                          rows="4"
+                          class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                          placeholder="Пн–Пт: 10:00–22:00\nСб–Вс: 11:00–23:00"
+                          enterkeyhint="done"
+                        ></textarea>
+                      </label>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="grid gap-4">
-                <label class="text-sm text-slate-700 dark:text-slate-200">
-                  Кратко о графике
-                  <input
-                    v-model="cafeForm.openHours"
-                    type="text"
-                    class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                    placeholder="Ежедневно 10:00–22:00"
-                    enterkeyhint="done"
-                  >
-                </label>
-                <label class="text-sm text-slate-700 dark:text-slate-200">
-                  Детальное расписание
-                  <textarea
-                    v-model="cafeForm.scheduleDetails"
-                    rows="4"
-                    class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                    placeholder="Пн–Пт: 10:00–22:00\nСб–Вс: 11:00–23:00"
-                    enterkeyhint="done"
-                  ></textarea>
-                </label>
-              </div>
-            </div>
-          </div>
+            </template>
 
-          <div class="space-y-4">
-            <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-              <div>
-                <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Позиции меню</h2>
-                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                  Добавляйте блюда, указывайте категории, цену и дополнительные опции.
+            <template #menu>
+              <div class="space-y-4">
+                <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Позиции меню</h2>
+                    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                      Добавляйте блюда, указывайте категории, цену и дополнительные опции.
                 </p>
               </div>
               <button
@@ -423,24 +432,26 @@
               </div>
             </div>
 
-            <div class="flex flex-col-reverse gap-3 border-t border-slate-200 pt-6 dark:border-slate-800 md:flex-row md:items-center md:justify-between">
-              <button
-                type="button"
-                class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-brand-500 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:text-slate-300 dark:hover:border-brand-400 dark:hover:text-brand-300"
-                @click="addMenuItem(menuItems[menuItems.length - 1])"
-              >
-                Дублировать последнее блюдо
-              </button>
-              <button
-                type="submit"
-                class="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 disabled:opacity-60 dark:bg-brand-500 dark:hover:bg-brand-400"
-                :disabled="isSubmitting"
-              >
-                <span v-if="isSubmitting" class="h-2 w-2 animate-ping rounded-full bg-white"></span>
-                Сохранить меню
-              </button>
-            </div>
-          </div>
+                <div class="flex flex-col-reverse gap-3 border-t border-slate-200 pt-6 dark:border-slate-800 md:flex-row md:items-center md:justify-between">
+                  <button
+                    type="button"
+                    class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-brand-500 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:text-slate-300 dark:hover:border-brand-400 dark:hover:text-brand-300"
+                    @click="addMenuItem(menuItems[menuItems.length - 1])"
+                  >
+                    Дублировать последнее блюдо
+                  </button>
+                  <button
+                    type="submit"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 disabled:opacity-60 dark:bg-brand-500 dark:hover:bg-brand-400"
+                    :disabled="isSubmitting"
+                  >
+                    <span v-if="isSubmitting" class="h-2 w-2 animate-ping rounded-full bg-white"></span>
+                    Сохранить меню
+                  </button>
+                </div>
+              </div>
+            </template>
+          </Tabs>
         </div>
 
         <aside class="space-y-6">
@@ -484,6 +495,7 @@
 import { computed, reactive, ref } from 'vue'
 import { useHead, useRoute } from '#imports'
 import BackButton from '~/components/ui/BackButton.vue'
+import Tabs from '~/components/ui/Tabs.vue'
 import type { AdminMenuDetails } from '~/types/admin-menu'
 
 type OptionType = 'sizes' | 'extras'
@@ -541,6 +553,21 @@ const headerDescription = computed(() =>
     ? 'Обновите контактные данные, расписание и блюда, чтобы актуализировать ссылку.'
     : 'Заполните контактные данные, рабочий график и добавьте блюда. Вы сможете опубликовать меню и поделиться ссылкой сразу после сохранения.'
 )
+
+const tabs = [
+  {
+    value: 'general',
+    label: 'Основное',
+    description: 'Контакты, адрес и режим работы',
+  },
+  {
+    value: 'menu',
+    label: 'Список блюд',
+    description: 'Позиции и настройки меню',
+  },
+]
+
+const activeTab = ref(tabs[0].value)
 
 const cafeForm = reactive<CafeForm>({
   cafeName: '',
