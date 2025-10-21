@@ -187,6 +187,40 @@ describe('Supabase categories service', () => {
     })
   })
 
+  it('translates Supabase no-rows error on update into a conflict', async () => {
+    const maybeSingleMock = vi.fn().mockResolvedValue({
+      data: null,
+      error: {
+        code: 'PGRST116',
+        message: 'No rows found',
+        details: 'Results contain 0 rows',
+        hint: null
+      }
+    })
+    const selectMock = vi.fn().mockReturnValue({ maybeSingle: maybeSingleMock })
+    const eqMock = vi.fn().mockImplementation(function (this: unknown) {
+      return this
+    })
+    const updateBuilder = {
+      eq: eqMock,
+      select: selectMock
+    }
+    const updateMock = vi.fn().mockReturnValue(updateBuilder)
+    const fromMock = vi.fn().mockReturnValue({ update: updateMock })
+
+    mockedSupabaseFactory.mockReturnValue({ from: fromMock })
+
+    await expect(
+      updateCategory('77777777-7777-7777-7777-777777777777', {
+        name: 'Новое имя',
+        updatedAt: '2024-02-01T00:00:00Z'
+      })
+    ).rejects.toMatchObject({
+      statusCode: 409,
+      data: { code: 'supabase_category_conflict' }
+    })
+  })
+
   it('maps foreign key errors on delete to conflict', async () => {
     const maybeSingleMock = vi.fn().mockResolvedValue({
       data: null,
@@ -209,6 +243,35 @@ describe('Supabase categories service', () => {
     await expect(deleteCategory('66666666-6666-6666-6666-666666666666')).rejects.toMatchObject({
       statusCode: 409,
       data: { code: 'supabase_category_in_use' }
+    })
+  })
+
+  it('treats Supabase no-rows error on delete as not found', async () => {
+    const maybeSingleMock = vi.fn().mockResolvedValue({
+      data: null,
+      error: {
+        code: 'PGRST116',
+        message: 'No rows found',
+        details: 'Results contain 0 rows',
+        hint: null
+      }
+    })
+    const selectMock = vi.fn().mockReturnValue({ maybeSingle: maybeSingleMock })
+    const eqMock = vi.fn().mockImplementation(function (this: unknown) {
+      return this
+    })
+    const deleteBuilder = {
+      eq: eqMock,
+      select: selectMock
+    }
+    const deleteMock = vi.fn().mockReturnValue(deleteBuilder)
+    const fromMock = vi.fn().mockReturnValue({ delete: deleteMock })
+
+    mockedSupabaseFactory.mockReturnValue({ from: fromMock })
+
+    await expect(deleteCategory('88888888-8888-8888-8888-888888888888')).rejects.toMatchObject({
+      statusCode: 404,
+      data: { code: 'supabase_category_not_found' }
     })
   })
 })
