@@ -2,7 +2,7 @@ import { createError, defineEventHandler } from 'h3'
 import { getSupabaseServiceClient } from '~/server/utils/supabaseClient'
 import type { MenuListResponse, MenuRecord } from '~/server/types/menu'
 
-const DEFAULT_ERROR_MESSAGE = 'Не удалось получить список меню. Попробуйте снова позже.'
+const DEFAULT_ERROR_MESSAGE = 'Failed to load menus. Please try again later.'
 
 export const handleAdminMenuRequest = defineEventHandler(async () => {
   try {
