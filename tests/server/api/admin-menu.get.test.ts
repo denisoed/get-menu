@@ -102,7 +102,7 @@ describe('GET /api/admin/menu', () => {
       data: {
         menus: [],
         error: {
-          message: expect.stringContaining('Не удалось получить список меню')
+          message: expect.stringContaining('Failed to load menus')
         }
       }
     })

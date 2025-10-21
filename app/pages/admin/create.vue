@@ -221,9 +221,16 @@
             </div>
 
             <MenuCategoryManager
-              v-model:categories="categories"
-              @category-renamed="handleCategoryRenamed"
-              @category-removed="handleCategoryRemoved"
+              :categories="categories"
+              :is-loading="areCategoriesLoading"
+              :load-error="categoriesLoadError"
+              :is-creating="isCreatingCategory"
+              :updating-category-id="updatingCategoryId"
+              :deleting-category-id="deletingCategoryId"
+              :on-reload="loadCategories"
+              :on-create-category="requestCategoryCreation"
+              :on-update-category="requestCategoryUpdate"
+              :on-delete-category="requestCategoryDeletion"
             />
 
             <div class="grid gap-6">
@@ -507,18 +514,18 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
 import { useHead, useRoute } from '#imports'
+import { useMenuCategories } from '~/composables/useMenuCategories'
 import MenuCategoryManager from '~/components/admin/MenuCategoryManager.vue'
 import BackButton from '~/components/ui/BackButton.vue'
 import Tabs from '~/components/ui/Tabs.vue'
 import type { AdminMenuDetails } from '~/types/admin-menu'
 import type {
   CafeForm,
-  EditableCategory,
   EditableMenuItem,
   OptionType,
 } from '~/types/admin-menu-editor'
 
-const DEFAULT_PREFILL_ERROR = 'Не удалось загрузить данные меню. Попробуйте обновить страницу.'
+const DEFAULT_PREFILL_ERROR = 'Failed to load menu data. Try refreshing the page.'
 
 const route = useRoute()
 const editMenuIdQuery = route.query.edit
@@ -567,7 +574,18 @@ const cafeForm = reactive<CafeForm>({
   scheduleDetails: '',
 })
 
-const categories = ref<EditableCategory[]>([])
+const {
+  categories,
+  isLoading: areCategoriesLoading,
+  loadError: categoriesLoadError,
+  isCreating: isCreatingCategory,
+  updatingCategoryId,
+  deletingCategoryId,
+  loadCategories,
+  createCategory: createRemoteCategory,
+  updateCategoryName: updateRemoteCategory,
+  deleteCategory: deleteRemoteCategory
+} = useMenuCategories()
 const menuItems = ref<EditableMenuItem[]>([createMenuItem()])
 const isSubmitting = ref(false)
 
@@ -615,6 +633,25 @@ function handleCategoryRemoved ({ name }: { name: string }) {
       item.category = ''
     }
   })
+}
+
+async function requestCategoryCreation (name: string) {
+  await createRemoteCategory(name)
+}
+
+async function requestCategoryUpdate ({ id, name, updatedAt }: { id: string; name: string; updatedAt: string }) {
+  const previous = categories.value.find((category) => category.id === id)
+
+  const updated = await updateRemoteCategory(id, name, updatedAt)
+
+  if (previous && previous.name !== updated.name) {
+    handleCategoryRenamed({ previousName: previous.name, nextName: updated.name })
+  }
+}
+
+async function requestCategoryDeletion ({ id }: { id: string }) {
+  const deleted = await deleteRemoteCategory(id)
+  handleCategoryRemoved({ name: deleted.name })
 }
 
 function addMenuItem (base?: EditableMenuItem) {
@@ -670,12 +707,6 @@ function applyMenuDetails (details: AdminMenuDetails) {
     },
   }))
 
-  const uniqueCategories = Array.from(new Set(details.items.map((item) => item.category).filter(Boolean)))
-  categories.value = uniqueCategories.map((name) => ({
-    id: createId(),
-    name,
-  }))
-
   menuItems.value = hydratedItems.length ? hydratedItems : [createMenuItem()]
 }
 
@@ -720,6 +751,8 @@ async function handleSubmit () {
     isSubmitting.value = false
   }
 }
+
+await loadCategories().catch(() => {})
 
 if (editMenuId) {
   await prefillMenu(editMenuId)

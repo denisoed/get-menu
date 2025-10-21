@@ -1,9 +1,8 @@
+import type { CategoryModel } from '~/schemas/categories'
+
 export type OptionType = 'sizes' | 'extras'
 
-export interface EditableCategory {
-  id: string
-  name: string
-}
+export type EditableCategory = CategoryModel
 
 export interface EditableOption {
   id: string
