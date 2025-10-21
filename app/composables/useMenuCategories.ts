@@ -44,7 +44,14 @@ function extractErrorCode(error: unknown): string | null {
 }
 
 export function useMenuCategories() {
-  const { $fetch } = useNuxtApp()
+  const nuxtApp = useNuxtApp()
+  const request =
+    nuxtApp?.$fetch ??
+    (globalThis as unknown as { $fetch?: typeof $fetch }).$fetch
+
+  if (!request) {
+    throw new Error('Nuxt $fetch instance is not available.')
+  }
   const notifications = useNotifications()
 
   const categories = ref<EditableCategory[]>([])
@@ -59,7 +66,7 @@ export function useMenuCategories() {
       isLoading.value = true
       loadError.value = null
 
-      const response = await $fetch('/api/admin/categories')
+      const response = await request('/api/admin/categories')
       const parsed = CategoriesListResponseSchema.parse(response)
 
       categories.value = parsed.categories
@@ -87,7 +94,7 @@ export function useMenuCategories() {
 
     try {
       isCreating.value = true
-      const response = await $fetch('/api/admin/categories', {
+      const response = await request('/api/admin/categories', {
         method: 'POST',
         body: { name: trimmedName }
       })
@@ -125,7 +132,7 @@ export function useMenuCategories() {
     try {
       updatingCategoryId.value = id
 
-      const response = await $fetch(`/api/admin/categories/${id}`, {
+      const response = await request(`/api/admin/categories/${id}`, {
         method: 'PATCH',
         body: {
           name: trimmedName,
@@ -167,7 +174,7 @@ export function useMenuCategories() {
     try {
       deletingCategoryId.value = id
 
-      const response = await $fetch(`/api/admin/categories/${id}`, {
+      const response = await request(`/api/admin/categories/${id}`, {
         method: 'DELETE'
       })
 
