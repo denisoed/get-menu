@@ -21,6 +21,35 @@ function logSupabaseError(action: string, error: PostgrestError) {
   })
 }
 
+type CategoryWriteInput = {
+  name: string
+  description?: string
+  position?: number
+}
+
+type CategoryWritePayload = {
+  name: string
+  description?: string | null
+  position?: number
+}
+
+function normalizeCategoryWritePayload(payload: CategoryWriteInput): CategoryWritePayload {
+  const normalized: CategoryWritePayload = {
+    name: payload.name.trim()
+  }
+
+  if (typeof payload.description === 'string') {
+    const trimmedDescription = payload.description.trim()
+    normalized.description = trimmedDescription.length > 0 ? trimmedDescription : null
+  }
+
+  if (typeof payload.position === 'number') {
+    normalized.position = payload.position
+  }
+
+  return normalized
+}
+
 function mapCategoryRow(row: unknown): CategoryModel {
   const parsed = CategoryRowSchema.safeParse(row)
 
@@ -144,11 +173,7 @@ export async function fetchCategories(): Promise<CategoryModel[]> {
 export async function createCategory(payload: CreateCategoryInput): Promise<CategoryModel> {
   const supabase = getSupabaseServiceClient()
 
-  const insert = {
-    name: payload.name.trim(),
-    description: payload.description?.trim() ?? null,
-    position: payload.position ?? null
-  }
+  const insert = normalizeCategoryWritePayload(payload)
 
   const { data, error } = await supabase
     .from('categories')
@@ -166,11 +191,7 @@ export async function createCategory(payload: CreateCategoryInput): Promise<Cate
 export async function updateCategory(id: string, payload: UpdateCategoryInput): Promise<CategoryModel> {
   const supabase = getSupabaseServiceClient()
 
-  const updatePayload = {
-    name: payload.name.trim(),
-    description: payload.description?.trim() ?? null,
-    position: payload.position ?? null
-  }
+  const updatePayload = normalizeCategoryWritePayload(payload)
 
   const { data, error } = await supabase
     .from('categories')

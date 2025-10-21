@@ -136,7 +136,7 @@ describe('Supabase categories service', () => {
 
     const created = await createCategory({ name: 'Напитки' })
 
-    expect(insertMock).toHaveBeenCalledWith({ name: 'Напитки', description: null, position: null })
+    expect(insertMock).toHaveBeenCalledWith({ name: 'Напитки' })
     expect(selectMock).toHaveBeenCalledWith('id, name, description, position, created_at, updated_at')
     expect(created).toEqual({
       id: '44444444-4444-4444-4444-444444444444',
@@ -166,6 +166,34 @@ describe('Supabase categories service', () => {
     })
   })
 
+  it('normalizes optional fields before creating a category', async () => {
+    const singleMock = vi.fn().mockResolvedValue({
+      data: {
+        id: '99999999-9999-9999-9999-999999999999',
+        name: 'Завтраки',
+        description: 'С раннего утра',
+        position: 5,
+        created_at: '2024-03-01T00:00:00Z',
+        updated_at: '2024-03-01T00:00:00Z'
+      },
+      error: null
+    })
+
+    const selectMock = vi.fn().mockReturnValue({ single: singleMock })
+    const insertMock = vi.fn().mockReturnValue({ select: selectMock })
+    const fromMock = vi.fn().mockReturnValue({ insert: insertMock })
+
+    mockedSupabaseFactory.mockReturnValue({ from: fromMock })
+
+    await createCategory({ name: '  Завтраки  ', description: '  С раннего утра  ', position: 5 })
+
+    expect(insertMock).toHaveBeenCalledWith({
+      name: 'Завтраки',
+      description: 'С раннего утра',
+      position: 5
+    })
+  })
+
   it('throws a conflict error when update target has been modified', async () => {
     const maybeSingleMock = vi.fn().mockResolvedValue({ data: null, error: null })
     const selectMock = vi.fn().mockReturnValue({ maybeSingle: maybeSingleMock })
@@ -185,6 +213,48 @@ describe('Supabase categories service', () => {
       statusCode: 409,
       data: { code: 'supabase_category_conflict' }
     })
+  })
+
+  it('normalizes optional fields before updating a category', async () => {
+    const maybeSingleMock = vi.fn().mockResolvedValue({
+      data: {
+        id: '22222222-2222-2222-2222-222222222222',
+        name: 'Обеды',
+        description: null,
+        position: 10,
+        created_at: '2024-01-01T00:00:00Z',
+        updated_at: '2024-01-02T00:00:00Z'
+      },
+      error: null
+    })
+
+    const selectMock = vi.fn().mockReturnValue({ maybeSingle: maybeSingleMock })
+    const eqMock = vi.fn().mockImplementation(function (this: unknown) {
+      return this
+    })
+    const updateBuilder = {
+      eq: eqMock,
+      select: selectMock
+    }
+    const updateMock = vi.fn().mockReturnValue(updateBuilder)
+    const fromMock = vi.fn().mockReturnValue({ update: updateMock })
+
+    mockedSupabaseFactory.mockReturnValue({ from: fromMock })
+
+    await updateCategory('22222222-2222-2222-2222-222222222222', {
+      name: '  Обеды  ',
+      description: '   ',
+      position: 10,
+      updatedAt: '2024-01-01T00:00:00Z'
+    })
+
+    expect(updateMock).toHaveBeenCalledWith({
+      name: 'Обеды',
+      description: null,
+      position: 10
+    })
+    expect(eqMock).toHaveBeenNthCalledWith(1, 'id', '22222222-2222-2222-2222-222222222222')
+    expect(eqMock).toHaveBeenNthCalledWith(2, 'updated_at', '2024-01-01T00:00:00Z')
   })
 
   it('translates Supabase no-rows error on update into a conflict', async () => {
