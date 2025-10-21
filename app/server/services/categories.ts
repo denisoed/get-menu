@@ -74,13 +74,39 @@ function handleSupabaseError(action: string, error: PostgrestError): H3Error {
     })
   }
 
+  if (error.code === 'PGRST116') {
+    if (action === 'update category') {
+      return createError({
+        statusCode: 409,
+        statusMessage: 'Category was modified by another user. Refresh and try again.',
+        message: 'Category was modified by another user. Refresh and try again.',
+        data: {
+          code: 'supabase_category_conflict',
+          details: error.details ?? error.message ?? null
+        }
+      })
+    }
+
+    if (action === 'delete category') {
+      return createError({
+        statusCode: 404,
+        statusMessage: 'Category not found or already removed.',
+        message: 'Category not found or already removed.',
+        data: {
+          code: 'supabase_category_not_found',
+          details: error.details ?? error.message ?? null
+        }
+      })
+    }
+  }
+
   return createError({
     statusCode: 502,
     statusMessage: 'Failed to process Supabase request for categories.',
     message: 'Failed to process Supabase request for categories.',
     data: {
       code: 'supabase_category_request_failed',
-      details: error.message
+      details: error.details ?? error.message ?? null
     }
   })
 }
