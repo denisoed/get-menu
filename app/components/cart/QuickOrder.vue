@@ -5,11 +5,15 @@
     :class="{ hidden: !isOpen || !hasItems, flex: isOpen && hasItems }"
   >
     <div class="absolute inset-0 bg-transparent backdrop-blur-sm" @click="close"></div>
-    <div class="w-full md:w-[720px] bg-white rounded-none md:rounded-2xl p-5 h-full md:h-auto md:max-h-[90vh] overflow-y-auto shadow-soft z-50 dark:bg-slate-950 dark:text-slate-100">
+    <div
+      class="w-full md:w-[720px] rounded-none md:rounded-2xl p-5 h-full md:h-auto md:max-h-[90vh] overflow-y-auto shadow-soft z-50"
+      :style="dialogStyle"
+    >
       <div class="flex items-start justify-between gap-4">
-        <h3 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Оформление заказа</h3>
+        <h3 class="text-xl font-semibold" :style="headingStyle">Оформление заказа</h3>
         <button
-          class="relative h-10 w-10 rounded-full bg-white text-slate-500 shadow-md ring-1 ring-slate-200 transition hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-slate-900/80 dark:text-slate-300 dark:ring-slate-700 dark:hover:bg-slate-800"
+          class="relative h-10 w-10 rounded-full shadow-md ring-1 transition focus:outline-none"
+          :style="closeButtonStyle"
           @click="close"
           aria-label="Закрыть"
         >
@@ -23,43 +27,46 @@
       </div>
       <form class="mt-4 grid md:grid-cols-2 gap-4" @submit.prevent="handleSubmit">
         <div class="grid gap-3">
-          <label class="text-sm text-slate-700 dark:text-slate-200">Имя
+          <label class="text-sm" :style="mutedStyle">Имя
             <input
               v-model="form.name"
               name="name"
               required
               enterkeyhint="done"
-              class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400"
+              class="mt-1 w-full rounded-xl border px-3 py-2"
+              :style="inputStyle"
               placeholder="Ваше имя"
             />
           </label>
-          <label class="text-sm text-slate-700 dark:text-slate-200">Телефон
+          <label class="text-sm" :style="mutedStyle">Телефон
             <input
               v-model="form.phone"
               name="phone"
               required
               enterkeyhint="done"
-              class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400"
+              class="mt-1 w-full rounded-xl border px-3 py-2"
+              :style="inputStyle"
               placeholder="+996..."
             />
           </label>
-          <label class="text-sm text-slate-700 dark:text-slate-200">Способ получения
-            <select v-model="form.type" name="type" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100">
+          <label class="text-sm" :style="mutedStyle">Способ получения
+            <select v-model="form.type" name="type" class="mt-1 w-full rounded-xl border px-3 py-2" :style="inputStyle">
               <option value="delivery">Доставка</option>
               <option value="pickup">Самовывоз</option>
             </select>
           </label>
-          <label class="text-sm text-slate-700 dark:text-slate-200" v-show="requiresAddress">Адрес (для доставки)
+          <label class="text-sm" :style="mutedStyle" v-show="requiresAddress">Адрес (для доставки)
             <input
               v-model="form.address"
               name="address"
               enterkeyhint="done"
-              class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400"
+              class="mt-1 w-full rounded-xl border px-3 py-2"
+              :style="inputStyle"
               placeholder="Улица, дом, подъезд"
             />
           </label>
-          <label class="text-sm text-slate-700 dark:text-slate-200">Время
-            <select v-model="form.time" name="time" class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100">
+          <label class="text-sm" :style="mutedStyle">Время
+            <select v-model="form.time" name="time" class="mt-1 w-full rounded-xl border px-3 py-2" :style="inputStyle">
               <option value="asap">Как можно скорее</option>
               <option value="30m">Через 30 минут</option>
               <option value="1h">Через 1 час</option>
@@ -67,40 +74,43 @@
           </label>
         </div>
         <div class="grid gap-3">
-          <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/80">
+          <div class="p-3 rounded-xl" :style="summaryCardStyle">
             <div class="flex items-center justify-between gap-3">
-              <div class="font-medium text-slate-800 dark:text-slate-100">Состав заказа</div>
-              <div class="text-xs text-slate-500 dark:text-slate-400">{{ groupedCart.length }} поз.</div>
+              <div class="font-medium" :style="headingStyle">Состав заказа</div>
+              <div class="text-xs" :style="mutedStyle">{{ groupedCart.length }} поз.</div>
             </div>
             <div class="mt-3 grid gap-3">
               <div
                 v-for="entry in groupedCart"
                 :key="entry.key"
-                class="rounded-xl border border-slate-200 bg-white/70 p-3 shadow-sm backdrop-blur-sm dark:border-slate-800 dark:bg-slate-950/70"
+                class="rounded-xl border p-3 shadow-sm backdrop-blur-sm"
+                :style="{ borderColor: theme.value.palette.border, backgroundColor: hexToRgba(theme.value.palette.surface, 0.7) }"
               >
                 <div class="flex items-start justify-between gap-3">
                   <div class="flex-1">
-                    <div class="text-sm font-semibold text-slate-900 dark:text-slate-100">{{ entry.item.name }}</div>
+                    <div class="text-sm font-semibold" :style="headingStyle">{{ entry.item.name }}</div>
                     <div
                       v-if="cartEntryDescription(entry)"
-                      class="mt-0.5 text-xs text-slate-500 dark:text-slate-400"
+                      class="mt-0.5 text-xs"
+                      :style="mutedStyle"
                     >
                       {{ cartEntryDescription(entry) }}
                     </div>
-                    <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-600 dark:text-slate-300">
-                      <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1 dark:bg-slate-800/60">
+                    <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs" :style="mutedStyle">
+                      <span class="inline-flex items-center gap-1 rounded-full px-2 py-1" :style="chipStyle">
                         Количество: <strong class="font-semibold">{{ entry.quantity }}</strong>
                       </span>
-                      <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1 dark:bg-slate-800/60">
+                      <span class="inline-flex items-center gap-1 rounded-full px-2 py-1" :style="chipStyle">
                         За шт.: <strong class="font-semibold">{{ fmt(entry.item.price) }}</strong>
                       </span>
                     </div>
                   </div>
                   <div class="flex flex-col items-end gap-2">
-                    <div class="text-sm font-semibold text-slate-900 dark:text-slate-100">{{ fmt(entry.lineTotal) }}</div>
+                    <div class="text-sm font-semibold" :style="headingStyle">{{ fmt(entry.lineTotal) }}</div>
                     <button
                       type="button"
-                      class="flex items-center gap-1 rounded-lg border border-red-200 px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-400 dark:border-red-500/40 dark:text-red-300 dark:hover:bg-red-500/10"
+                      class="flex items-center gap-1 rounded-lg border px-3 py-1 text-xs font-medium transition"
+                      :style="secondaryButtonStyle"
                       @click="removeFromCart(entry.key)"
                     >
                       Удалить
@@ -110,43 +120,46 @@
               </div>
               <div
                 v-if="!groupedCart.length"
-                class="rounded-xl border border-dashed border-slate-200 p-6 text-center text-sm text-slate-500 dark:border-slate-800 dark:text-slate-400"
+                class="rounded-xl border border-dashed p-6 text-center text-sm"
+                :style="{ borderColor: theme.value.palette.border, color: theme.value.palette.muted }"
               >
                 Корзина пуста. Добавьте блюда, чтобы оформить заказ.
               </div>
             </div>
-            <div class="mt-4 space-y-2 rounded-xl bg-white/60 p-3 text-sm text-slate-700 shadow-inner dark:bg-slate-900/60 dark:text-slate-200">
+            <div class="mt-4 space-y-2 rounded-xl p-3 text-sm shadow-inner" :style="summaryCardStyle">
               <div class="flex items-center justify-between">
                 <span>Сумма блюд</span>
-                <span class="font-medium text-slate-900 dark:text-slate-100">{{ fmt(totals.subtotal) }}</span>
+                <span class="font-medium" :style="headingStyle">{{ fmt(totals.subtotal) }}</span>
               </div>
               <div class="flex items-center justify-between" v-if="totals.delivery">
                 <span>Доставка</span>
-                <span class="font-medium text-slate-900 dark:text-slate-100">{{ fmt(totals.delivery) }}</span>
+                <span class="font-medium" :style="headingStyle">{{ fmt(totals.delivery) }}</span>
               </div>
-              <div class="flex items-center justify-between border-t border-slate-200 pt-2 font-semibold text-slate-900 dark:border-slate-800 dark:text-slate-100">
+              <div class="flex items-center justify-between border-t pt-2 font-semibold" :style="{ borderColor: theme.value.palette.border, color: theme.value.palette.text }">
                 <span>Итого</span>
                 <span>{{ fmt(totals.total) }}</span>
               </div>
             </div>
           </div>
-          <label class="text-sm text-slate-700 dark:text-slate-200">Комментарий курьеру
+          <label class="text-sm" :style="mutedStyle">Комментарий курьеру
             <textarea
               v-model="form.comment"
               name="comment"
               rows="4"
               enterkeyhint="done"
-              class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400"
+              class="mt-1 w-full rounded-xl border px-3 py-2"
+              :style="inputStyle"
               placeholder="Код домофона, пожелания…"
             ></textarea>
           </label>
-          <button class="rounded-xl bg-brand-600 text-white py-2.5 hover:bg-brand-700 disabled:opacity-50" :disabled="!hasItems">
+          <button class="rounded-xl py-2.5 transition disabled:opacity-50" :style="primaryButtonStyle" :disabled="!hasItems">
             Подтвердить заказ
           </button>
           <a
             :href="whatsappOrderLink"
             target="_blank"
-            class="rounded-xl border border-green-600 text-green-700 py-2 text-center hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-900/40"
+            class="rounded-xl border py-2 text-center transition"
+            :style="whatsappButtonStyle"
             :class="{ 'pointer-events-none opacity-60': !hasItems }"
           >
             Отправить в WhatsApp
@@ -163,6 +176,9 @@ import useDate from '~/composables/useDate'
 import { useCartStore } from '~/store/cart'
 import type { CartEntry } from '~/types/cart'
 import { buildCartLines, calculateCartTotals, cartEntryDescription, composeOrderMessage, groupCartItems } from '~/utils/cart'
+import { DEFAULT_MENU_THEME } from '~/config/menuThemes'
+import { hexToRgba, resolveMenuTheme } from '~/utils/theme'
+import type { ResolvedMenuTheme } from '~/types/theme'
 
 interface Settings {
   cafeName: string
@@ -173,6 +189,7 @@ interface Settings {
 interface Props {
   isOpen: boolean
   settings: Settings
+  theme?: ResolvedMenuTheme
 }
 
 const props = defineProps<Props>()
@@ -180,6 +197,66 @@ const emit = defineEmits<{ (e: 'update:is-open', value: boolean): void }>()
 
 const cartStore = useCartStore()
 const { fmt } = useDate()
+
+const theme = computed(() => props.theme ?? resolveMenuTheme(DEFAULT_MENU_THEME))
+
+const dialogStyle = computed(() => ({
+  backgroundColor: theme.value.palette.surface,
+  color: theme.value.palette.text,
+}))
+
+const headingStyle = computed(() => ({
+  color: theme.value.palette.text,
+  fontFamily: theme.value.fonts.heading,
+}))
+
+const mutedStyle = computed(() => ({
+  color: theme.value.palette.muted,
+}))
+
+const inputStyle = computed(() => ({
+  backgroundColor: theme.value.palette.surface,
+  borderColor: theme.value.palette.border,
+  color: theme.value.palette.text,
+}))
+
+const chipStyle = computed(() => ({
+  backgroundColor: theme.value.palette.subtle,
+  color: theme.value.palette.text,
+}))
+
+const summaryCardStyle = computed(() => ({
+  backgroundColor: hexToRgba(theme.value.palette.surface, 0.6),
+  color: theme.value.palette.text,
+}))
+
+const badgeStyle = computed(() => ({
+  backgroundColor: theme.value.palette.surface,
+  color: theme.value.palette.text,
+}))
+
+const primaryButtonStyle = computed(() => ({
+  backgroundColor: theme.value.palette.primary,
+  color: theme.value.palette.primaryContent,
+}))
+
+const secondaryButtonStyle = computed(() => ({
+  backgroundColor: theme.value.palette.surface,
+  color: theme.value.palette.text,
+  borderColor: theme.value.palette.border,
+}))
+
+const whatsappButtonStyle = computed(() => ({
+  borderColor: theme.value.palette.accent,
+  color: theme.value.palette.accent,
+  backgroundColor: 'transparent',
+}))
+
+const closeButtonStyle = computed(() => ({
+  backgroundColor: theme.value.palette.surface,
+  color: theme.value.palette.muted,
+  borderColor: theme.value.palette.border,
+}))
 
 const form = reactive({
   name: '',
