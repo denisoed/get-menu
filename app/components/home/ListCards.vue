@@ -16,7 +16,11 @@
       @toggle-favorite="props.toggleFavorite"
     />
   </div>
-  <div v-else class="rounded-xl border border-dashed border-slate-200 px-6 py-10 text-center text-slate-500 dark:border-slate-700 dark:text-slate-400">
+  <div
+    v-else
+    class="rounded-xl border border-dashed px-6 py-10 text-center text-sm"
+    :style="{ borderColor: 'var(--menu-theme-color-border)', color: 'var(--menu-theme-color-muted)' }"
+  >
     Ничего не найдено. Попробуйте изменить запрос.
   </div>
 
