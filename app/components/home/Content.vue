@@ -110,8 +110,8 @@
 
     <!-- Cart Drawer (sticky on desktop) -->
     <CartDrawer
-      :delivery-fee="settings.deliveryFee"
-      :min-order="settings.minOrder"
+      :delivery-fee="(settings.deliveryFee ?? 0)"
+      :min-order="(settings.minOrder ?? 0)"
       :whatsapp-phone="settings.whatsapp"
       :cafe-name="settings.cafeName"
       @checkout="openQuickOrder"
@@ -123,7 +123,7 @@
     :settings="{
       cafeName: settings.cafeName,
       whatsapp: settings.whatsapp,
-      deliveryFee: settings.deliveryFee,
+      deliveryFee: settings.deliveryFee ?? 0,
     }"
   />
 
@@ -152,17 +152,18 @@ import useDate from '~/composables/useDate'
 import { useFavorites } from '~/composables/useFavorites'
 import { useCartStore } from '~/store/cart'
 import BackButton from '~/components/ui/BackButton.vue'
-import type { MenuItem } from '~/types/menu'
+import type { MenuCafeSettings, MenuItem } from '~/types/menu'
 import type { CartEntry } from '~/types/cart'
 import { calculateCartTotals, groupCartItems } from '~/utils/cart'
 
 interface Props {
   menu: MenuItem[]
+  settings?: MenuCafeSettings
 }
 
 const props = defineProps<Props>()
 
-const settings = SETTINGS
+const settings = computed(() => props.settings ?? SETTINGS)
 const { fmt } = useDate()
 const cartStore = useCartStore()
 
@@ -208,13 +209,16 @@ function selectCategory (category: string) {
 
 const cartItems = computed(() => cartStore.cart as CartEntry[])
 const groupedCart = computed(() => groupCartItems(cartItems.value))
-const totals = computed(() => calculateCartTotals(groupedCart.value, settings.deliveryFee))
-const meetsMinOrder = computed(() => totals.value.total >= settings.minOrder)
+const totals = computed(() => calculateCartTotals(groupedCart.value, settings.value.deliveryFee ?? 0))
+const meetsMinOrder = computed(() => {
+  const minOrder = settings.value.minOrder ?? 0
+  return totals.value.total >= minOrder
+})
 
 const isQuickOrderOpen = ref(false)
 
 const whatsappGreetingLink = computed(() => {
-  const phone = settings.whatsapp.replace(/\D/g, '')
+  const phone = settings.value.whatsapp.replace(/\D/g, '')
   const text = encodeURIComponent('Здравствуйте! Хочу сделать заказ.')
   return `https://wa.me/${phone}?text=${text}`
 })

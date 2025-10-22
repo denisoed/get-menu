@@ -1,7 +1,7 @@
 <template>
   <LayoutAdminHeader />
 
-  <section class="bg-white dark:bg-slate-950">
+  <section class="bg-white dark:bg-slate-950 border-b border-slate-100 dark:border-slate-800">
     <div class="mx-auto container-capped px-4 py-10">
       <div class="mb-8">
         <BackButton fallback="/admin" />
@@ -60,7 +60,7 @@
                         <input
                           v-model="cafeForm.cafeName"
                           type="text"
-                          class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                          :class="formControlClass"
                           placeholder="Например, Кафе «Солнечное»"
                           required
                           enterkeyhint="done"
@@ -71,7 +71,7 @@
                         <input
                           v-model="cafeForm.phone"
                           type="tel"
-                          class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                          :class="formControlClass"
                           placeholder="+996 555 123 456"
                           required
                           enterkeyhint="done"
@@ -82,7 +82,7 @@
                         <input
                           v-model="cafeForm.whatsapp"
                           type="tel"
-                          class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                          :class="formControlClass"
                           placeholder="+996555123456"
                           required
                           enterkeyhint="done"
@@ -94,7 +94,7 @@
                           v-model.number="cafeForm.minOrder"
                           type="number"
                           min="0"
-                          class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                          :class="formControlClass"
                           placeholder="0"
                           enterkeyhint="done"
                         >
@@ -105,7 +105,7 @@
                           v-model.number="cafeForm.deliveryFee"
                           type="number"
                           min="0"
-                          class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                          :class="formControlClass"
                           placeholder="150"
                           enterkeyhint="done"
                         >
@@ -115,7 +115,7 @@
                         <input
                           v-model="cafeForm.address"
                           type="text"
-                          class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                          :class="formControlClass"
                           placeholder="г. Бишкек, пр. Чуй, 123"
                           enterkeyhint="done"
                         >
@@ -125,7 +125,7 @@
                         <textarea
                           v-model="cafeForm.announcement"
                           rows="3"
-                          class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                          :class="formControlClass"
                           placeholder="Расскажите о спецпредложениях или преимуществах"
                           enterkeyhint="done"
                         ></textarea>
@@ -137,7 +137,7 @@
                         <input
                           v-model="cafeForm.bannerImage"
                           type="url"
-                          class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                          :class="formControlClass"
                           placeholder="https://..."
                           enterkeyhint="done"
                         >
@@ -147,7 +147,7 @@
                         <input
                           v-model="cafeForm.bannerTitle"
                           type="text"
-                          class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                          :class="formControlClass"
                           placeholder="Горячие обеды · Быстро и вкусно"
                           enterkeyhint="done"
                         >
@@ -157,7 +157,7 @@
                         <input
                           v-model="cafeForm.bannerSubtitle"
                           type="text"
-                          class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                          :class="formControlClass"
                           placeholder="Доставка 30–45 минут"
                           enterkeyhint="done"
                         >
@@ -180,7 +180,7 @@
                         <input
                           v-model="cafeForm.openHours"
                           type="text"
-                          class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                          :class="formControlClass"
                           placeholder="Ежедневно 10:00–22:00"
                           enterkeyhint="done"
                         >
@@ -190,8 +190,9 @@
                         <textarea
                           v-model="cafeForm.scheduleDetails"
                           rows="4"
-                          class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                          placeholder="Пн–Пт: 10:00–22:00\nСб–Вс: 11:00–23:00"
+                          :class="formControlClass"
+                          placeholder="Пн–Пт: 10:00–22:00
+Сб–Вс: 11:00–23:00"
                           enterkeyhint="done"
                         ></textarea>
                       </label>
@@ -208,179 +209,179 @@
                     <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Позиции меню</h2>
                     <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
                       Добавляйте блюда, указывайте категории, цену и дополнительные опции.
-                </p>
-              </div>
-              <button
-                type="button"
-                class="inline-flex items-center gap-2 rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-soft transition hover:bg-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:bg-brand-500 dark:hover:bg-brand-400"
-                @click="addMenuItem()"
-              >
-                <span aria-hidden="true" class="text-lg leading-none">＋</span>
-                Новое блюдо
-              </button>
-            </div>
-
-            <MenuCategoryManager
-              :categories="categories"
-              :is-loading="areCategoriesLoading"
-              :load-error="categoriesLoadError"
-              :is-creating="isCreatingCategory"
-              :updating-category-id="updatingCategoryId"
-              :deleting-category-id="deletingCategoryId"
-              :on-reload="loadCategories"
-              :on-create-category="requestCategoryCreation"
-              :on-update-category="requestCategoryUpdate"
-              :on-delete-category="requestCategoryDeletion"
-            />
-
-            <div class="grid gap-6">
-              <div
-                v-for="(item, index) in menuItems"
-                :key="item.id"
-                class="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft dark:border-slate-800 dark:bg-slate-900"
-              >
-                <div class="flex flex-col gap-3 border-b border-slate-200 pb-4 dark:border-slate-800 md:flex-row md:items-start md:justify-between">
-                  <div>
-                    <div class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600 dark:text-brand-300">Блюдо {{ index + 1 }}</div>
-                    <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100">
-                      {{ item.name || 'Без названия' }}
-                    </h3>
+                    </p>
                   </div>
-                  <div class="flex flex-wrap items-center gap-2">
-                    <button
-                      type="button"
-                      class="inline-flex items-center gap-1 rounded-lg border border-slate-300 px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-brand-500 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:text-slate-300 dark:hover:border-brand-400 dark:hover:text-brand-300"
-                      @click="duplicateMenuItem(index)"
-                    >
-                      Дублировать
-                    </button>
-                    <button
-                      type="button"
-                      class="inline-flex items-center gap-1 rounded-lg border border-red-200 px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 dark:border-red-500/40 dark:text-red-300 dark:hover:bg-red-500/10"
-                      :disabled="menuItems.length === 1"
-                      :class="{ 'opacity-60 cursor-not-allowed': menuItems.length === 1 }"
-                      @click="removeMenuItem(index)"
-                    >
-                      Удалить
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    class="inline-flex items-center gap-2 rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-soft transition hover:bg-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:bg-brand-500 dark:hover:bg-brand-400"
+                    @click="addMenuItem()"
+                  >
+                    <span aria-hidden="true" class="text-lg leading-none">＋</span>
+                    Новое блюдо
+                  </button>
                 </div>
 
-                <div class="mt-4 grid gap-4 md:grid-cols-2">
-                  <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
-                    Название блюда
-                    <input
-                      v-model="item.name"
-                      type="text"
-                      class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                      placeholder="Пицца Маргарита"
-                      required
-                      enterkeyhint="done"
-                    >
-                  </label>
-                  <label class="text-sm text-slate-700 dark:text-slate-200">
-                    Категория
-                    <select
-                      v-model="item.category"
-                      class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                    >
-                      <option value="">Без категории</option>
-                      <option
-                        v-for="category in categories"
-                        :key="category.id"
-                        :value="category.name"
-                      >
-                        {{ category.name }}
-                      </option>
-                    </select>
-                    <p v-if="!categories.length" class="mt-1 text-xs text-slate-500 dark:text-slate-400">Создайте категорию выше, чтобы выбрать её для блюда.</p>
-                  </label>
-                  <label class="text-sm text-slate-700 dark:text-slate-200">
-                    Цена, KGS
-                    <input
-                      v-model.number="item.price"
-                      type="number"
-                      min="0"
-                      class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                      placeholder="320"
-                      enterkeyhint="done"
-                    >
-                  </label>
-                  <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
-                    Изображение (URL)
-                    <input
-                      v-model="item.img"
-                      type="url"
-                      class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                      placeholder="https://images.unsplash.com/..."
-                      enterkeyhint="done"
-                    >
-                  </label>
-                  <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
-                    Теги (через запятую)
-                    <input
-                      v-model="item.tags"
-                      type="text"
-                      class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                      placeholder="Хит, Острый"
-                      enterkeyhint="done"
-                    >
-                  </label>
-                  <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
-                    Описание
-                    <textarea
-                      v-model="item.description"
-                      rows="3"
-                      class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                      placeholder="Расскажите о составе или способе приготовления"
-                      enterkeyhint="done"
-                    ></textarea>
-                  </label>
-                </div>
+                <MenuCategoryManager
+                  :categories="categories"
+                  :is-loading="areCategoriesLoading"
+                  :load-error="categoriesLoadError"
+                  :is-creating="isCreatingCategory"
+                  :updating-category-id="updatingCategoryId"
+                  :deleting-category-id="deletingCategoryId"
+                  :on-reload="loadCategories"
+                  :on-create-category="requestCategoryCreation"
+                  :on-update-category="requestCategoryUpdate"
+                  :on-delete-category="requestCategoryDeletion"
+                />
 
-                <div class="mt-6 space-y-6">
-                  <div class="space-y-3">
-                    <div class="flex items-center justify-between">
-                      <h4 class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600 dark:text-brand-300">Размеры</h4>
-                      <button
-                        type="button"
-                        class="rounded-lg border border-slate-300 px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-brand-500 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:text-slate-300 dark:hover:border-brand-400 dark:hover:text-brand-300"
-                        @click="addOption(index, 'sizes')"
-                      >
-                        Добавить размер
-                      </button>
+                <div class="grid gap-6">
+                  <div
+                    v-for="(item, index) in menuItems"
+                    :key="item.id"
+                    class="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft dark:border-slate-800 dark:bg-slate-900"
+                  >
+                    <div class="flex flex-col gap-3 border-b border-slate-200 pb-4 dark:border-slate-800 md:flex-row md:items-start md:justify-between">
+                      <div>
+                        <div class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600 dark:text-brand-300">Блюдо {{ index + 1 }}</div>
+                        <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                          {{ item.name || 'Без названия' }}
+                        </h3>
+                      </div>
+                      <div class="flex flex-wrap items-center gap-2">
+                        <button
+                          type="button"
+                          class="inline-flex items-center gap-1 rounded-lg border border-slate-300 px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-brand-500 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:text-slate-300 dark:hover:border-brand-400 dark:hover:text-brand-300"
+                          @click="duplicateMenuItem(index)"
+                        >
+                          Дублировать
+                        </button>
+                        <button
+                          type="button"
+                          class="inline-flex items-center gap-1 rounded-lg border border-red-200 px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 dark:border-red-500/40 dark:text-red-300 dark:hover:bg-red-500/10"
+                          :disabled="menuItems.length === 1"
+                          @click="removeMenuItem(index)"
+                        >
+                          Удалить
+                        </button>
+                      </div>
                     </div>
-                    <div v-if="!item.options.sizes.length" class="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
-                      Укажите варианты размеров, если цена зависит от порции.
+
+                    <div class="mt-4 grid gap-4 md:grid-cols-2">
+                      <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
+                        Название блюда
+                        <input
+                          v-model="item.name"
+                          type="text"
+                          :class="formControlClass"
+                          placeholder="Например, Бургер «Классик»"
+                          enterkeyhint="done"
+                        >
+                      </label>
+                      <label class="text-sm text-slate-700 dark:text-slate-200">
+                        Категория
+                        <select
+                          v-model="item.category"
+                          :class="selectControlClass"
+                        >
+                          <option disabled value="">Выберите категорию</option>
+                          <option v-for="category in categories" :key="category.id" :value="category.name">
+                            {{ category.name }}
+                          </option>
+                        </select>
+                        <p v-if="!categories.length" class="mt-1 text-xs text-slate-500 dark:text-slate-400">Создайте категорию выше, чтобы выбрать её для блюда.</p>
+                      </label>
+                      <label class="text-sm text-slate-700 dark:text-slate-200">
+                        Стоимость, KGS
+                        <input
+                          v-model.number="item.price"
+                          type="number"
+                          min="0"
+                          :class="formControlClass"
+                          placeholder="290"
+                          enterkeyhint="done"
+                        >
+                      </label>
+                      <label class="text-sm text-slate-700 dark:text-slate-200">
+                        Метки (через запятую)
+                        <input
+                          v-model="item.tags"
+                          type="text"
+                          :class="formControlClass"
+                          placeholder="Хит, Острый, Вегетарианский"
+                          enterkeyhint="done"
+                        >
+                      </label>
+                      <label class="text-sm text-slate-700 dark:text-slate-200">
+                        Ссылка на фото
+                        <input
+                          v-model="item.img"
+                          type="url"
+                          :class="formControlClass"
+                          placeholder="https://..."
+                          enterkeyhint="done"
+                        >
+                      </label>
+                      <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
+                        Краткое описание
+                        <textarea
+                          v-model="item.description"
+                          rows="3"
+                          :class="formControlClass"
+                          placeholder="Расскажите, из чего состоит блюдо и что в нём особенного"
+                          enterkeyhint="done"
+                        ></textarea>
+                      </label>
                     </div>
-                    <div class="grid gap-4" v-else>
+
+                    <div class="mt-6 space-y-4">
+                      <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                        <h4 class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600 dark:text-brand-300">Размеры</h4>
+                        <button
+                          type="button"
+                          class="inline-flex items-center gap-1 rounded-lg border border-slate-300 px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-brand-500 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:text-slate-300 dark:hover:border-brand-400 dark:hover:text-brand-300"
+                          @click="addOption(index, 'sizes')"
+                        >
+                          Добавить размер
+                        </button>
+                      </div>
+
                       <div
-                        v-for="(size, sizeIndex) in item.options.sizes"
-                        :key="size.id"
-                        class="rounded-xl border border-slate-200 p-4 dark:border-slate-700"
+                        v-if="!item.options.sizes.length"
+                        class="rounded-xl border border-dashed border-slate-300 px-4 py-3 text-xs text-slate-500 dark:border-slate-700 dark:text-slate-400"
                       >
-                        <div class="grid gap-3 md:grid-cols-[1fr_auto] md:items-center">
-                          <label class="text-sm text-slate-700 dark:text-slate-200">
-                            Название размера
-                            <input
-                              v-model="size.label"
-                              type="text"
-                              class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                              placeholder="Стандарт"
-                              enterkeyhint="done"
-                            >
-                          </label>
-                          <div class="flex items-end justify-between gap-3 md:block">
+                        Если у блюда есть разные порции, добавьте их здесь.
+                      </div>
+
+                      <div class="space-y-3">
+                        <div
+                          v-for="(size, sizeIndex) in item.options.sizes"
+                          :key="size.id"
+                          class="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-900/60"
+                        >
+                          <div class="grid gap-3 md:grid-cols-[1fr_140px]">
+                            <label class="text-sm text-slate-700 dark:text-slate-200">
+                              Название размера
+                              <input
+                                v-model="size.label"
+                                type="text"
+                                :class="formControlClass"
+                                placeholder="Стандарт"
+                                enterkeyhint="done"
+                              >
+                            </label>
                             <label class="text-sm text-slate-700 dark:text-slate-200">
                               Наценка, KGS
                               <input
                                 v-model.number="size.add"
                                 type="number"
-                                class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                                placeholder="0"
+                                min="0"
+                                :class="formControlClass"
+                                placeholder="40"
                                 enterkeyhint="done"
                               >
                             </label>
+                          </div>
+                          <div class="mt-3 flex justify-end">
                             <button
                               type="button"
                               class="inline-flex items-center gap-1 rounded-lg border border-red-200 px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 dark:border-red-500/40 dark:text-red-300 dark:hover:bg-red-500/10"
@@ -392,50 +393,56 @@
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div class="space-y-3">
-                    <div class="flex items-center justify-between">
-                      <h4 class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600 dark:text-brand-300">Дополнения</h4>
-                      <button
-                        type="button"
-                        class="rounded-lg border border-slate-300 px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-brand-500 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:text-slate-300 dark:hover:border-brand-400 dark:hover:text-brand-300"
-                        @click="addOption(index, 'extras')"
-                      >
-                        Добавить дополнение
-                      </button>
-                    </div>
-                    <div v-if="!item.options.extras.length" class="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
-                      Добавьте соусы, топпинги или дополнительные ингредиенты.
-                    </div>
-                    <div class="grid gap-4" v-else>
+                    <div class="mt-6 space-y-4">
+                      <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                        <h4 class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600 dark:text-brand-300">Дополнения</h4>
+                        <button
+                          type="button"
+                          class="inline-flex items-center gap-1 rounded-lg border border-slate-300 px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-brand-500 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:text-slate-300 dark:hover:border-brand-400 dark:hover:text-brand-300"
+                          @click="addOption(index, 'extras')"
+                        >
+                          Добавить доп.
+                        </button>
+                      </div>
+
                       <div
-                        v-for="(extra, extraIndex) in item.options.extras"
-                        :key="extra.id"
-                        class="rounded-xl border border-slate-200 p-4 dark:border-slate-700"
+                        v-if="!item.options.extras.length"
+                        class="rounded-xl border border-dashed border-slate-300 px-4 py-3 text-xs text-slate-500 dark:border-slate-700 dark:text-slate-400"
                       >
-                        <div class="grid gap-3 md:grid-cols-[1fr_auto] md:items-center">
-                          <label class="text-sm text-slate-700 dark:text-slate-200">
-                            Название дополнения
-                            <input
-                              v-model="extra.label"
-                              type="text"
-                              class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                              placeholder="Сыр моцарелла"
-                              enterkeyhint="done"
-                            >
-                          </label>
-                          <div class="flex items-end justify-between gap-3 md:block">
+                        Здесь можно указать дополнения — соусы, гарниры или топпинги.
+                      </div>
+
+                      <div class="space-y-3">
+                        <div
+                          v-for="(extra, extraIndex) in item.options.extras"
+                          :key="extra.id"
+                          class="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-900/60"
+                        >
+                          <div class="grid gap-3 md:grid-cols-[1fr_140px]">
+                            <label class="text-sm text-slate-700 dark:text-slate-200">
+                              Название дополнения
+                              <input
+                                v-model="extra.label"
+                                type="text"
+                                :class="formControlClass"
+                                placeholder="Бекон"
+                                enterkeyhint="done"
+                              >
+                            </label>
                             <label class="text-sm text-slate-700 dark:text-slate-200">
                               Наценка, KGS
                               <input
                                 v-model.number="extra.add"
                                 type="number"
-                                class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                                min="0"
+                                :class="formControlClass"
                                 placeholder="70"
                                 enterkeyhint="done"
                               >
                             </label>
+                          </div>
+                          <div class="mt-3 flex justify-end">
                             <button
                               type="button"
                               class="inline-flex items-center gap-1 rounded-lg border border-red-200 px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 dark:border-red-500/40 dark:text-red-300 dark:hover:bg-red-500/10"
@@ -449,8 +456,6 @@
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
 
                 <div class="flex flex-col-reverse gap-3 border-t border-slate-200 pt-6 dark:border-slate-800 md:flex-row md:items-center md:justify-between">
                   <button
@@ -470,6 +475,21 @@
                   </button>
                 </div>
               </div>
+            </template>
+
+            <template #theme>
+              <MenuThemeEditor
+                v-model:theme="themeForm"
+                :preview-theme="previewTheme"
+                :preview-menu-items="previewMenuItems"
+                :preview-cafe="previewCafe"
+                :presets="themePresets"
+                :font-options="themeFontOptions"
+                :validation="themeValidation"
+                :warnings="themeWarnings"
+                :is-disabled="isSubmitting"
+                @reset="resetThemeToDefault"
+              />
             </template>
           </Tabs>
         </div>
@@ -496,9 +516,9 @@
             <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Предпросмотр</h3>
             <div class="mt-4 space-y-3 text-sm text-slate-600 dark:text-slate-300">
               <div class="font-medium text-slate-900 dark:text-slate-100">{{ cafeForm.cafeName || 'Название кафе' }}</div>
-              <div>Телефон: <span class="font-medium">{{ cafeForm.phone || '—' }}</span></div>
-              <div>WhatsApp: <span class="font-medium">{{ cafeForm.whatsapp || '—' }}</span></div>
-              <div>График: <span class="font-medium">{{ cafeForm.openHours || '—' }}</span></div>
+              <div>Телефон: <span class="font-medium text-slate-900 dark:text-slate-100">{{ cafeForm.phone || '—' }}</span></div>
+              <div>WhatsApp: <span class="font-medium text-slate-900 dark:text-slate-100">{{ cafeForm.whatsapp || '—' }}</span></div>
+              <div>График: <span class="font-medium text-slate-900 dark:text-slate-100">{{ cafeForm.openHours || '—' }}</span></div>
               <div class="pt-3 text-xs uppercase tracking-[0.2em] text-brand-600 dark:text-brand-300">Позиций</div>
               <div class="text-2xl font-semibold text-slate-900 dark:text-slate-100">{{ menuItems.length }}</div>
             </div>
@@ -511,11 +531,13 @@
   <LayoutAdminFooter />
 </template>
 
+
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
-import { useHead, useRoute } from '#imports'
+import { useHead, useRoute, useNuxtApp } from '#imports'
 import { useMenuCategories } from '~/composables/useMenuCategories'
 import MenuCategoryManager from '~/components/admin/MenuCategoryManager.vue'
+import MenuThemeEditor from '~/components/admin/MenuThemeEditor.vue'
 import BackButton from '~/components/ui/BackButton.vue'
 import Tabs from '~/components/ui/Tabs.vue'
 import type { AdminMenuDetails } from '~/types/admin-menu'
@@ -523,7 +545,10 @@ import type {
   CafeForm,
   EditableMenuItem,
   OptionType,
+  EditableMenuTheme,
 } from '~/types/admin-menu-editor'
+import { DEFAULT_MENU_THEME, MENU_THEME_PRESETS, MENU_THEME_FONT_OPTIONS } from '~/config/menuThemes'
+import { resolveMenuTheme, validateMenuTheme } from '~/utils/theme'
 
 const DEFAULT_PREFILL_ERROR = 'Failed to load menu data. Try refreshing the page.'
 
@@ -531,10 +556,20 @@ const route = useRoute()
 const editMenuIdQuery = route.query.edit
 const editMenuId = typeof editMenuIdQuery === 'string' ? editMenuIdQuery : null
 
+const nuxtApp = useNuxtApp()
+const request =
+  nuxtApp?.$fetch ??
+  (globalThis as unknown as { $fetch?: typeof $fetch }).$fetch
+
+if (!request) {
+  throw new Error('Nuxt $fetch instance is not available.')
+}
+
 const isEditing = computed(() => editMenuId !== null)
 const isPrefilling = ref(false)
 const prefillError = ref<string | null>(null)
 const editingMenuTitle = ref('')
+const editingMenuDetails = ref<AdminMenuDetails | null>(null)
 
 const headerKicker = computed(() => (isEditing.value ? 'Редактирование' : 'Новое меню'))
 const headerTitle = computed(() => (isEditing.value ? `Меню «${editingMenuTitle.value || '…'}»` : 'Создание меню'))
@@ -555,6 +590,11 @@ const tabs = [
     label: 'Список блюд',
     description: 'Позиции и настройки меню',
   },
+  {
+    value: 'theme',
+    label: 'Оформление',
+    description: 'Цвета, шрифты и предпросмотр меню',
+  },
 ]
 
 const activeTab = ref(tabs[0].value)
@@ -574,6 +614,16 @@ const cafeForm = reactive<CafeForm>({
   scheduleDetails: '',
 })
 
+const themeForm = reactive<EditableMenuTheme>(JSON.parse(JSON.stringify(DEFAULT_MENU_THEME)))
+const themeValidation = computed(() => validateMenuTheme(themeForm))
+const previewTheme = computed(() => resolveMenuTheme(themeForm))
+const themeHasErrors = computed(() => !themeValidation.value.isValid)
+const themeWarnings = computed(() => themeValidation.value.warnings)
+const themePresets = MENU_THEME_PRESETS
+const themeFontOptions = MENU_THEME_FONT_OPTIONS
+
+const formControlClass = 'mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500'
+const selectControlClass = `${formControlClass} text-sm`
 const {
   categories,
   isLoading: areCategoriesLoading,
@@ -588,6 +638,21 @@ const {
 } = useMenuCategories()
 const menuItems = ref<EditableMenuItem[]>([createMenuItem()])
 const isSubmitting = ref(false)
+
+const previewMenuItems = computed(() =>
+  menuItems.value.slice(0, 3).map(item => ({
+    id: item.id,
+    name: item.name || 'Без названия',
+    category: item.category || 'Категория',
+    price: item.price ?? 0,
+    tags: item.tags.split(',').map(tag => tag.trim()).filter(Boolean),
+  }))
+)
+
+const previewCafe = computed(() => ({
+  cafeName: cafeForm.cafeName || 'Название кафе',
+  announcement: cafeForm.announcement || 'Анонс или приветствие будет отображаться здесь',
+}))
 
 function createId () {
   return Math.random().toString(36).slice(2, 10)
@@ -682,6 +747,7 @@ function removeOption (itemIndex: number, type: OptionType, optionIndex: number)
 }
 
 function applyMenuDetails (details: AdminMenuDetails) {
+  editingMenuDetails.value = details
   editingMenuTitle.value = details.title
   Object.assign(cafeForm, details.cafe)
 
@@ -708,6 +774,63 @@ function applyMenuDetails (details: AdminMenuDetails) {
   }))
 
   menuItems.value = hydratedItems.length ? hydratedItems : [createMenuItem()]
+
+  Object.assign(themeForm, JSON.parse(JSON.stringify(details.theme)))
+}
+
+function resetThemeToDefault () {
+  Object.assign(themeForm, JSON.parse(JSON.stringify(DEFAULT_MENU_THEME)))
+}
+
+function buildMenuPayload (): AdminMenuDetails {
+  const base = editingMenuDetails.value
+  const id = base?.id ?? (editMenuId ?? `draft-${createId()}`)
+  const slug = base?.slug ?? (base?.title ? base.title.toLowerCase().replace(/\s+/g, '-') : `draft-${createId()}`)
+  const title = base?.title ?? (editingMenuTitle.value || cafeForm.cafeName || 'Новое меню')
+  const description = base?.description ?? ''
+
+  return {
+    id,
+    slug,
+    title,
+    description,
+    cafe: {
+      cafeName: cafeForm.cafeName,
+      phone: cafeForm.phone,
+      whatsapp: cafeForm.whatsapp,
+      minOrder: cafeForm.minOrder,
+      deliveryFee: cafeForm.deliveryFee,
+      address: cafeForm.address,
+      announcement: cafeForm.announcement,
+      bannerImage: cafeForm.bannerImage,
+      bannerTitle: cafeForm.bannerTitle,
+      bannerSubtitle: cafeForm.bannerSubtitle,
+      openHours: cafeForm.openHours,
+      scheduleDetails: cafeForm.scheduleDetails,
+    },
+    items: menuItems.value.map((item) => ({
+      id: item.id,
+      name: item.name,
+      category: item.category,
+      price: item.price,
+      img: item.img,
+      tags: item.tags.split(',').map(tag => tag.trim()).filter(Boolean),
+      description: item.description,
+      options: {
+        sizes: item.options.sizes.map((size) => ({
+          id: size.id,
+          label: size.label,
+          add: size.add,
+        })),
+        extras: item.options.extras.map((extra) => ({
+          id: extra.id,
+          label: extra.label,
+          add: extra.add,
+        })),
+      },
+    })),
+    theme: JSON.parse(JSON.stringify(themeForm)),
+  }
 }
 
 async function prefillMenu (menuId: string) {
@@ -739,14 +862,23 @@ async function prefillMenu (menuId: string) {
 async function handleSubmit () {
   try {
     isSubmitting.value = true
-    await new Promise(resolve => setTimeout(resolve, 800))
-    console.info('Submitting menu', {
-      mode: isEditing.value ? 'update' : 'create',
-      menuId: editMenuId,
-      cafeForm,
-      categories: categories.value,
-      menuItems: menuItems.value,
-    })
+    if (themeHasErrors.value) {
+      console.warn('Theme validation errors', themeValidation.value.errors)
+      activeTab.value = 'theme'
+      return
+    }
+    const payload = buildMenuPayload()
+
+    if (isEditing.value && editMenuId) {
+      await request(`/api/admin/menu/${editMenuId}`, {
+        method: 'PATCH',
+        body: payload,
+      })
+    } else {
+      console.info('Submitting menu draft', {
+        payload,
+      })
+    }
   } finally {
     isSubmitting.value = false
   }
