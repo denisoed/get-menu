@@ -111,6 +111,90 @@ export const MENU_THEME_PRESETS: MenuThemePreset[] = [
         overlayOpacity: 0.3,
       }
     }
+  },
+  {
+    id: 'cozy-bakery',
+    name: 'Уютная пекарня',
+    description: 'Тёплые сливочные тона и мягкие контрасты для домашней атмосферы.',
+    config: {
+      presetId: 'cozy-bakery',
+      palette: {
+        primary: '#d97706',
+        accent: '#fbbf24',
+        background: '#fff7ed',
+        surface: '#ffffff',
+        subtle: '#fde68a',
+        text: '#78350f',
+        muted: '#b45309',
+        border: '#fcd34d',
+      },
+      fonts: {
+        heading: MENU_THEME_FONTS['pt-serif'],
+        body: MENU_THEME_FONTS.inter,
+      },
+      background: {
+        type: 'color',
+        color: '#fff7ed',
+        image: null,
+        overlayOpacity: 0.2,
+      }
+    }
+  },
+  {
+    id: 'ocean-breeze',
+    name: 'Морской бриз',
+    description: 'Свежая голубая палитра с лёгкими акцентами для морских концепций.',
+    config: {
+      presetId: 'ocean-breeze',
+      palette: {
+        primary: '#0ea5e9',
+        accent: '#38bdf8',
+        background: '#ecfeff',
+        surface: '#ffffff',
+        subtle: '#cffafe',
+        text: '#0f172a',
+        muted: '#155e75',
+        border: '#bae6fd',
+      },
+      fonts: {
+        heading: MENU_THEME_FONTS.montserrat,
+        body: MENU_THEME_FONTS.inter,
+      },
+      background: {
+        type: 'image',
+        color: '#ecfeff',
+        image: 'https://images.unsplash.com/photo-1526367790999-0150786686a2?q=80&w=1600&auto=format&fit=crop',
+        overlayOpacity: 0.55,
+      }
+    }
+  },
+  {
+    id: 'velvet-lounge',
+    name: 'Бархатный лаундж',
+    description: 'Глубокие тёмные оттенки и яркие акценты для вечерних проектов.',
+    config: {
+      presetId: 'velvet-lounge',
+      palette: {
+        primary: '#c026d3',
+        accent: '#f472b6',
+        background: '#111827',
+        surface: '#1f2937',
+        subtle: '#312e81',
+        text: '#fdf4ff',
+        muted: '#c4b5fd',
+        border: '#4c1d95',
+      },
+      fonts: {
+        heading: MENU_THEME_FONTS['playfair-display'],
+        body: MENU_THEME_FONTS.inter,
+      },
+      background: {
+        type: 'image',
+        color: '#111827',
+        image: 'https://images.unsplash.com/photo-1481833761820-0509d3217039?q=80&w=1600&auto=format&fit=crop',
+        overlayOpacity: 0.7,
+      }
+    }
   }
 ]
 

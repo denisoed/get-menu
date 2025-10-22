@@ -50,43 +50,6 @@
       </section>
 
       <section class="rounded-2xl border p-6 shadow-soft" :style="styles.surface">
-        <h2 class="text-xl font-semibold" :style="styles.heading">Цветовая палитра</h2>
-        <p class="mt-1 text-sm" :style="styles.helper">Используйте HEX-значения или палитру ниже, чтобы настроить интерфейс меню.</p>
-        <div class="mt-4 grid gap-5 md:grid-cols-2">
-          <div
-            v-for="key in paletteKeys"
-            :key="key"
-            class="rounded-xl border p-4"
-            :style="styles.innerCard"
-          >
-            <label class="text-sm font-medium" :style="styles.heading">
-              {{ paletteLabels[key] }}
-              <span class="block text-xs font-normal" :style="styles.helper">{{ paletteHints[key] }}</span>
-              <div class="mt-3 flex items-center gap-3">
-                <input
-                  type="color"
-                  class="h-10 w-10 cursor-pointer rounded-full border"
-                  :value="theme.palette[key]"
-                  :style="styles.colorControl"
-                  :disabled="isDisabled"
-                  @input="handlePaletteEvent(key, $event)"
-                >
-                <input
-                  type="text"
-                  :value="theme.palette[key]"
-                  :class="controlClass"
-                  :style="styles.input"
-                  :disabled="isDisabled"
-                  placeholder="#ff6600"
-                  @input="handlePaletteEvent(key, $event)"
-                >
-              </div>
-            </label>
-          </div>
-        </div>
-      </section>
-
-      <section class="rounded-2xl border p-6 shadow-soft" :style="styles.surface">
         <h2 class="text-xl font-semibold" :style="styles.heading">Шрифты</h2>
         <div class="mt-4 grid gap-4 md:grid-cols-2">
           <label class="text-sm font-medium" :style="styles.heading">
@@ -242,7 +205,6 @@ import type { MenuThemeConfig, ResolvedMenuTheme } from '~/types/theme'
 import type { MenuThemePreset } from '~/config/menuThemes'
 import type { ThemeValidationResult } from '~/utils/theme'
 
-type PaletteKey = keyof MenuThemeConfig['palette']
 type FontKey = keyof MenuThemeConfig['fonts']
 
 type BackgroundType = MenuThemeConfig['background']['type']
@@ -286,30 +248,6 @@ const emit = defineEmits<{
 }>()
 
 const controlClass = 'mt-2 w-full rounded-xl border px-3 py-2 text-sm shadow-inner-sm focus:outline-none focus:ring-2 focus:ring-offset-2'
-
-const paletteKeys: PaletteKey[] = ['primary', 'accent', 'background', 'surface', 'subtle', 'text', 'muted', 'border']
-
-const paletteLabels: Record<PaletteKey, string> = {
-  primary: 'Основной (кнопки)',
-  accent: 'Акцент',
-  background: 'Фон страницы',
-  surface: 'Карточки',
-  subtle: 'Подложка',
-  text: 'Основной текст',
-  muted: 'Вторичный текст',
-  border: 'Границы',
-}
-
-const paletteHints: Record<PaletteKey, string> = {
-  primary: 'Используется для CTA и значков',
-  accent: 'Ссылки, бейджи и ховеры',
-  background: 'Фон всей страницы меню',
-  surface: 'Карточки и панели',
-  subtle: 'Фон служебных элементов',
-  text: 'Основной текст',
-  muted: 'Комментарии и описания',
-  border: 'Контуры и разделители',
-}
 
 const backgroundTypes: Array<{ value: BackgroundType; label: string }> = [
   { value: 'color', label: 'Цветовой фон' },
@@ -364,10 +302,6 @@ const styles = computed(() => {
       borderColor: palette.border,
       backgroundColor: palette.surface,
     },
-    innerCard: {
-      backgroundColor: hexToRgba(palette.surface, 0.85),
-      borderColor: palette.border,
-    },
     reset: {
       borderColor: palette.border,
       color: palette.text,
@@ -411,11 +345,6 @@ function applyPreset (presetId: string) {
   })
 }
 
-function onPaletteInput (key: PaletteKey, value: string) {
-  const next = { ...theme.value, palette: { ...theme.value.palette, [key]: value } }
-  emitTheme(next)
-}
-
 function onFontChange (key: FontKey, value: string) {
   const next = { ...theme.value, fonts: { ...theme.value.fonts, [key]: value } }
   emitTheme(next)
@@ -449,11 +378,6 @@ function onOverlayChange (value: number) {
   const clamped = Math.min(Math.max(value, 0), 1)
   const next = { ...theme.value, background: { ...theme.value.background, overlayOpacity: clamped } }
   emitTheme(next)
-}
-
-function handlePaletteEvent (key: PaletteKey, event: Event) {
-  const target = event.target as HTMLInputElement
-  onPaletteInput(key, target.value)
 }
 
 function handleFontEvent (key: FontKey, event: Event) {
