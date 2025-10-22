@@ -25,6 +25,7 @@
 ## Testing and verification
 - Run `npm test` (Vitest) after non-trivial changes.
 - If you add new functionality that can be unit-tested, include corresponding Vitest specs under `tests/`.
+- Always show a preview of the completed task on both mobile and desktop screens.
 
 ## Miscellaneous
 - Maintain Russian copywriting and tone in user-facing strings unless instructed otherwise.
