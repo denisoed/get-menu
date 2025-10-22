@@ -17,7 +17,7 @@
             Сбросить к дефолту
           </button>
         </div>
-        <div class="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div class="mt-4 grid gap-4 md:grid-cols-2">
           <button
             v-for="preset in presetThemes"
             :key="preset.id"
