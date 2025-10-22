@@ -93,8 +93,8 @@
 
       <section class="rounded-2xl border p-6 shadow-soft" :style="styles.surface">
         <h2 class="text-xl font-semibold" :style="styles.heading">Фон страницы</h2>
-        <div class="mt-4 space-y-4">
-          <fieldset class="flex flex-wrap gap-3">
+        <div class="mt-4 space-y-6">
+          <fieldset class="flex flex-wrap gap-2">
             <legend class="sr-only">Тип фона</legend>
             <label
               v-for="option in backgroundTypes"
@@ -109,53 +109,55 @@
                 :value="option.value"
                 :checked="theme.background.type === option.value"
                 :disabled="isDisabled"
-                @change="onBackgroundTypeChange(option.value)"
+                @change="handleBackgroundTypeEvent($event)"
               >
               {{ option.label }}
             </label>
           </fieldset>
 
-          <label class="text-sm font-medium" :style="styles.heading">
-            Цвет фона
-            <div class="mt-3 flex items-center gap-3">
+          <div class="grid gap-4 md:grid-cols-2">
+            <label class="flex flex-col gap-3 text-sm font-medium" :style="styles.heading">
+              Цвет фона
+              <div class="flex items-center gap-3">
+                <input
+                  type="color"
+                  class="h-10 w-10 cursor-pointer rounded-full border"
+                  :value="theme.background.color"
+                  :style="styles.colorControl"
+                  :disabled="isDisabled"
+                  @input="handleBackgroundColorEvent($event)"
+                >
+                <input
+                  type="text"
+                  :value="theme.background.color"
+                  :class="controlClass"
+                  :style="styles.input"
+                  :disabled="isDisabled"
+                  placeholder="#f8fafc"
+                  @input="handleBackgroundColorEvent($event)"
+                >
+              </div>
+            </label>
+
+            <label
+              v-if="theme.background.type === 'image'"
+              class="flex flex-col gap-3 text-sm font-medium md:col-span-2"
+              :style="styles.heading"
+            >
+              Ссылка на изображение
               <input
-                type="color"
-                class="h-10 w-10 cursor-pointer rounded-full border"
-                :value="theme.background.color"
-                :style="styles.colorControl"
-                :disabled="isDisabled"
-                @input="handleBackgroundColorEvent($event)"
-              >
-              <input
-                type="text"
-                :value="theme.background.color"
+                type="url"
+                :value="theme.background.image ?? ''"
                 :class="controlClass"
                 :style="styles.input"
                 :disabled="isDisabled"
-                placeholder="#f8fafc"
-                @input="handleBackgroundColorEvent($event)"
+                placeholder="https://images.unsplash.com/..."
+                @input="handleBackgroundImageEvent($event)"
               >
-            </div>
-          </label>
+            </label>
+          </div>
 
-          <label
-            v-if="theme.background.type === 'image'"
-            class="text-sm font-medium block"
-            :style="styles.heading"
-          >
-            Ссылка на изображение
-            <input
-              type="url"
-              :value="theme.background.image ?? ''"
-              :class="controlClass"
-              :style="styles.input"
-              :disabled="isDisabled"
-              placeholder="https://images.unsplash.com/..."
-              @input="handleBackgroundImageEvent($event)"
-            >
-          </label>
-
-          <label class="text-sm font-medium" :style="styles.heading">
+          <label class="flex flex-col gap-3 text-sm font-medium" :style="styles.heading">
             Прозрачность оверлея ({{ Math.round(theme.background.overlayOpacity * 100) }}%)
             <input
               type="range"
@@ -163,7 +165,7 @@
               max="1"
               step="0.05"
               :value="theme.background.overlayOpacity"
-              class="mt-3 w-full"
+              class="w-full"
               :style="styles.range"
               :disabled="isDisabled"
               @input="handleOverlayEvent($event)"
@@ -378,6 +380,12 @@ function onOverlayChange (value: number) {
   const clamped = Math.min(Math.max(value, 0), 1)
   const next = { ...theme.value, background: { ...theme.value.background, overlayOpacity: clamped } }
   emitTheme(next)
+}
+
+function handleBackgroundTypeEvent (event: Event) {
+  const target = event.target as HTMLInputElement
+  if (!target?.value) return
+  onBackgroundTypeChange(target.value as BackgroundType)
 }
 
 function handleFontEvent (key: FontKey, event: Event) {
