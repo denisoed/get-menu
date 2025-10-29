@@ -208,249 +208,279 @@
                     <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Позиции меню</h2>
                     <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
                       Добавляйте блюда, указывайте категории, цену и дополнительные опции.
-                </p>
-              </div>
-              <button
-                type="button"
-                class="inline-flex items-center gap-2 rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-soft transition hover:bg-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:bg-brand-500 dark:hover:bg-brand-400"
-                @click="addMenuItem()"
-              >
-                <span aria-hidden="true" class="text-lg leading-none">＋</span>
-                Новое блюдо
-              </button>
-            </div>
-
-            <MenuCategoryManager
-              :categories="categories"
-              :is-loading="areCategoriesLoading"
-              :load-error="categoriesLoadError"
-              :is-creating="isCreatingCategory"
-              :updating-category-id="updatingCategoryId"
-              :deleting-category-id="deletingCategoryId"
-              :on-reload="loadCategories"
-              :on-create-category="requestCategoryCreation"
-              :on-update-category="requestCategoryUpdate"
-              :on-delete-category="requestCategoryDeletion"
-            />
-
-            <div class="grid gap-6">
-              <div
-                v-for="(item, index) in menuItems"
-                :key="item.id"
-                class="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft dark:border-slate-800 dark:bg-slate-900"
-              >
-                <div class="flex flex-col gap-3 border-b border-slate-200 pb-4 dark:border-slate-800 md:flex-row md:items-start md:justify-between">
-                  <div>
-                    <div class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600 dark:text-brand-300">Блюдо {{ index + 1 }}</div>
-                    <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100">
-                      {{ item.name || 'Без названия' }}
-                    </h3>
+                    </p>
                   </div>
-                  <div class="flex flex-wrap items-center gap-2">
-                    <button
-                      type="button"
-                      class="inline-flex items-center gap-1 rounded-lg border border-slate-300 px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-brand-500 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:text-slate-300 dark:hover:border-brand-400 dark:hover:text-brand-300"
-                      @click="duplicateMenuItem(index)"
-                    >
-                      Дублировать
-                    </button>
-                    <button
-                      type="button"
-                      class="inline-flex items-center gap-1 rounded-lg border border-red-200 px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 dark:border-red-500/40 dark:text-red-300 dark:hover:bg-red-500/10"
-                      :disabled="menuItems.length === 1"
-                      :class="{ 'opacity-60 cursor-not-allowed': menuItems.length === 1 }"
-                      @click="removeMenuItem(index)"
-                    >
-                      Удалить
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    class="inline-flex items-center gap-2 rounded-full bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-soft transition hover:bg-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:bg-brand-500 dark:hover:bg-brand-400"
+                    @click="addMenuItem()"
+                  >
+                    <span aria-hidden="true" class="text-lg leading-none">＋</span>
+                    Новое блюдо
+                  </button>
                 </div>
 
-                <div class="mt-4 grid gap-4 md:grid-cols-2">
-                  <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
-                    Название блюда
-                    <input
-                      v-model="item.name"
-                      type="text"
-                      class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                      placeholder="Пицца Маргарита"
-                      required
-                      enterkeyhint="done"
-                    >
-                  </label>
-                  <label class="text-sm text-slate-700 dark:text-slate-200">
-                    Категория
-                    <select
-                      v-model="item.category"
-                      class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                    >
-                      <option value="">Без категории</option>
-                      <option
-                        v-for="category in categories"
-                        :key="category.id"
-                        :value="category.name"
-                      >
-                        {{ category.name }}
-                      </option>
-                    </select>
-                    <p v-if="!categories.length" class="mt-1 text-xs text-slate-500 dark:text-slate-400">Создайте категорию выше, чтобы выбрать её для блюда.</p>
-                  </label>
-                  <label class="text-sm text-slate-700 dark:text-slate-200">
-                    Цена, KGS
-                    <input
-                      v-model.number="item.price"
-                      type="number"
-                      min="0"
-                      class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                      placeholder="320"
-                      enterkeyhint="done"
-                    >
-                  </label>
-                  <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
-                    Изображение (URL)
-                    <input
-                      v-model="item.img"
-                      type="url"
-                      class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                      placeholder="https://images.unsplash.com/..."
-                      enterkeyhint="done"
-                    >
-                  </label>
-                  <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
-                    Теги (через запятую)
-                    <input
-                      v-model="item.tags"
-                      type="text"
-                      class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                      placeholder="Хит, Острый"
-                      enterkeyhint="done"
-                    >
-                  </label>
-                  <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
-                    Описание
-                    <textarea
-                      v-model="item.description"
-                      rows="3"
-                      class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                      placeholder="Расскажите о составе или способе приготовления"
-                      enterkeyhint="done"
-                    ></textarea>
-                  </label>
-                </div>
+                <MenuCategoryManager
+                  :categories="categories"
+                  :is-loading="areCategoriesLoading"
+                  :load-error="categoriesLoadError"
+                  :is-creating="isCreatingCategory"
+                  :updating-category-id="updatingCategoryId"
+                  :deleting-category-id="deletingCategoryId"
+                  :on-reload="loadCategories"
+                  :on-create-category="requestCategoryCreation"
+                  :on-update-category="requestCategoryUpdate"
+                  :on-delete-category="requestCategoryDeletion"
+                />
 
-                <div class="mt-6 space-y-6">
-                  <div class="space-y-3">
-                    <div class="flex items-center justify-between">
-                      <h4 class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600 dark:text-brand-300">Размеры</h4>
-                      <button
-                        type="button"
-                        class="rounded-lg border border-slate-300 px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-brand-500 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:text-slate-300 dark:hover:border-brand-400 dark:hover:text-brand-300"
-                        @click="addOption(index, 'sizes')"
-                      >
-                        Добавить размер
-                      </button>
+                <div class="grid gap-6">
+                  <div
+                    v-for="(item, index) in menuItems"
+                    :key="item.id"
+                    class="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft dark:border-slate-800 dark:bg-slate-900"
+                  >
+                    <div
+                      class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between"
+                      :class="item.isCollapsed ? '' : 'border-b border-slate-200 pb-4 dark:border-slate-800'"
+                    >
+                      <div>
+                        <div class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600 dark:text-brand-300">Блюдо {{ index + 1 }}</div>
+                        <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100">
+                          {{ item.name || 'Без названия' }}
+                        </h3>
+                      </div>
+                      <div class="flex flex-wrap items-center gap-2">
+                        <button
+                          type="button"
+                          class="inline-flex items-center gap-1 rounded-lg border border-slate-300 px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-brand-500 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:text-slate-300 dark:hover:border-brand-400 dark:hover:text-brand-300"
+                          :aria-expanded="!item.isCollapsed"
+                          :aria-label="item.isCollapsed ? 'Развернуть карточку блюда' : 'Свернуть карточку блюда'"
+                          @click="toggleMenuItemCollapse(index)"
+                        >
+                          <span>{{ item.isCollapsed ? 'Развернуть' : 'Свернуть' }}</span>
+                          <span aria-hidden="true" class="text-base leading-none">{{ item.isCollapsed ? '↓' : '↑' }}</span>
+                        </button>
+                        <button
+                          type="button"
+                          class="inline-flex items-center gap-1 rounded-lg border border-slate-300 px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-brand-500 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:text-slate-300 dark:hover:border-brand-400 dark:hover:text-brand-300"
+                          @click="duplicateMenuItem(index)"
+                        >
+                          Дублировать
+                        </button>
+                        <button
+                          type="button"
+                          class="inline-flex items-center gap-1 rounded-lg border border-red-200 px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 dark:border-red-500/40 dark:text-red-300 dark:hover:bg-red-500/10"
+                          :disabled="menuItems.length === 1"
+                          :class="{ 'opacity-60 cursor-not-allowed': menuItems.length === 1 }"
+                          @click="removeMenuItem(index)"
+                        >
+                          Удалить
+                        </button>
+                      </div>
                     </div>
-                    <div v-if="!item.options.sizes.length" class="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
-                      Укажите варианты размеров, если цена зависит от порции.
-                    </div>
-                    <div class="grid gap-4" v-else>
-                      <div
-                        v-for="(size, sizeIndex) in item.options.sizes"
-                        :key="size.id"
-                        class="rounded-xl border border-slate-200 p-4 dark:border-slate-700"
-                      >
-                        <div class="grid gap-3 md:grid-cols-[1fr_auto] md:items-center">
-                          <label class="text-sm text-slate-700 dark:text-slate-200">
-                            Название размера
-                            <input
-                              v-model="size.label"
-                              type="text"
-                              class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                              placeholder="Стандарт"
-                              enterkeyhint="done"
+
+                    <div
+                      v-if="!item.isCollapsed"
+                      class="mt-4 space-y-6"
+                    >
+                      <div class="grid gap-4 md:grid-cols-2">
+                        <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
+                          Название блюда
+                          <input
+                            v-model="item.name"
+                            type="text"
+                            class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                            placeholder="Пицца Маргарита"
+                            required
+                            enterkeyhint="done"
+                          >
+                        </label>
+                        <label class="text-sm text-slate-700 dark:text-slate-200">
+                          Категория
+                          <select
+                            v-model="item.category"
+                            class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                          >
+                            <option value="">Без категории</option>
+                            <option
+                              v-for="category in categories"
+                              :key="category.id"
+                              :value="category.name"
                             >
-                          </label>
-                          <div class="flex items-end justify-between gap-3 md:block">
-                            <label class="text-sm text-slate-700 dark:text-slate-200">
-                              Наценка, KGS
-                              <input
-                                v-model.number="size.add"
-                                type="number"
-                                class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                                placeholder="0"
-                                enterkeyhint="done"
-                              >
-                            </label>
+                              {{ category.name }}
+                            </option>
+                          </select>
+                          <p v-if="!categories.length" class="mt-1 text-xs text-slate-500 dark:text-slate-400">Создайте категорию выше, чтобы выбрать её для блюда.</p>
+                        </label>
+                        <label class="text-sm text-slate-700 dark:text-slate-200">
+                          Цена, KGS
+                          <input
+                            v-model.number="item.price"
+                            type="number"
+                            min="0"
+                            class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                            placeholder="320"
+                            enterkeyhint="done"
+                          >
+                        </label>
+                        <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
+                          Изображение (URL)
+                          <input
+                            v-model="item.img"
+                            type="url"
+                            class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                            placeholder="https://images.unsplash.com/..."
+                            enterkeyhint="done"
+                          >
+                        </label>
+                        <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
+                          Теги (через запятую)
+                          <input
+                            v-model="item.tags"
+                            type="text"
+                            class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                            placeholder="Хит, Острый"
+                            enterkeyhint="done"
+                          >
+                        </label>
+                        <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
+                          Описание
+                          <textarea
+                            v-model="item.description"
+                            rows="3"
+                            class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                            placeholder="Расскажите о составе или способе приготовления"
+                            enterkeyhint="done"
+                          ></textarea>
+                        </label>
+                      </div>
+
+                      <div class="space-y-6">
+                        <div class="space-y-3">
+                          <div class="flex items-center justify-between">
+                            <h4 class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600 dark:text-brand-300">Размеры</h4>
                             <button
                               type="button"
-                              class="inline-flex items-center gap-1 rounded-lg border border-red-200 px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 dark:border-red-500/40 dark:text-red-300 dark:hover:bg-red-500/10"
-                              @click="removeOption(index, 'sizes', sizeIndex)"
+                              class="rounded-lg border border-slate-300 px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-brand-500 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:text-slate-300 dark:hover:border-brand-400 dark:hover:text-brand-300"
+                              @click="addOption(index, 'sizes')"
                             >
-                              Удалить
+                              Добавить размер
                             </button>
+                          </div>
+                          <div
+                            v-if="!item.options.sizes.length"
+                            class="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400"
+                          >
+                            Укажите варианты размеров, если цена зависит от порции.
+                          </div>
+                          <div
+                            v-else
+                            class="grid gap-4"
+                          >
+                            <div
+                              v-for="(size, sizeIndex) in item.options.sizes"
+                              :key="size.id"
+                              class="rounded-xl border border-slate-200 p-4 dark:border-slate-700"
+                            >
+                              <div class="grid gap-3 md:grid-cols-[1fr_auto] md:items-center">
+                                <label class="text-sm text-slate-700 dark:text-slate-200">
+                                  Название размера
+                                  <input
+                                    v-model="size.label"
+                                    type="text"
+                                    class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                                    placeholder="Стандарт"
+                                    enterkeyhint="done"
+                                  >
+                                </label>
+                                <div class="flex items-end justify-between gap-3 md:block">
+                                  <label class="text-sm text-slate-700 dark:text-slate-200">
+                                    Наценка, KGS
+                                    <input
+                                      v-model.number="size.add"
+                                      type="number"
+                                      class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                                      placeholder="0"
+                                      enterkeyhint="done"
+                                    >
+                                  </label>
+                                  <button
+                                    type="button"
+                                    class="inline-flex items-center gap-1 rounded-lg border border-red-200 px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 dark:border-red-500/40 dark:text-red-300 dark:hover:bg-red-500/10"
+                                    @click="removeOption(index, 'sizes', sizeIndex)"
+                                  >
+                                    Удалить
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="space-y-3">
+                          <div class="flex items-center justify-between">
+                            <h4 class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600 dark:text-brand-300">Дополнения</h4>
+                            <button
+                              type="button"
+                              class="rounded-lg border border-slate-300 px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-brand-500 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:text-slate-300 dark:hover:border-brand-400 dark:hover:text-brand-300"
+                              @click="addOption(index, 'extras')"
+                            >
+                              Добавить дополнение
+                            </button>
+                          </div>
+                          <div
+                            v-if="!item.options.extras.length"
+                            class="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400"
+                          >
+                            Добавьте соусы, топпинги или дополнительные ингредиенты.
+                          </div>
+                          <div
+                            v-else
+                            class="grid gap-4"
+                          >
+                            <div
+                              v-for="(extra, extraIndex) in item.options.extras"
+                              :key="extra.id"
+                              class="rounded-xl border border-slate-200 p-4 dark:border-slate-700"
+                            >
+                              <div class="grid gap-3 md:grid-cols-[1fr_auto] md:items-center">
+                                <label class="text-sm text-slate-700 dark:text-slate-200">
+                                  Название дополнения
+                                  <input
+                                    v-model="extra.label"
+                                    type="text"
+                                    class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                                    placeholder="Сыр моцарелла"
+                                    enterkeyhint="done"
+                                  >
+                                </label>
+                                <div class="flex items-end justify-between gap-3 md:block">
+                                  <label class="text-sm text-slate-700 dark:text-slate-200">
+                                    Наценка, KGS
+                                    <input
+                                      v-model.number="extra.add"
+                                      type="number"
+                                      class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                                      placeholder="70"
+                                      enterkeyhint="done"
+                                    >
+                                  </label>
+                                  <button
+                                    type="button"
+                                    class="inline-flex items-center gap-1 rounded-lg border border-red-200 px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 dark:border-red-500/40 dark:text-red-300 dark:hover:bg-red-500/10"
+                                    @click="removeOption(index, 'extras', extraIndex)"
+                                  >
+                                    Удалить
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-
-                  <div class="space-y-3">
-                    <div class="flex items-center justify-between">
-                      <h4 class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600 dark:text-brand-300">Дополнения</h4>
-                      <button
-                        type="button"
-                        class="rounded-lg border border-slate-300 px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-brand-500 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:text-slate-300 dark:hover:border-brand-400 dark:hover:text-brand-300"
-                        @click="addOption(index, 'extras')"
-                      >
-                        Добавить дополнение
-                      </button>
-                    </div>
-                    <div v-if="!item.options.extras.length" class="rounded-xl border border-dashed border-slate-200 p-4 text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
-                      Добавьте соусы, топпинги или дополнительные ингредиенты.
-                    </div>
-                    <div class="grid gap-4" v-else>
-                      <div
-                        v-for="(extra, extraIndex) in item.options.extras"
-                        :key="extra.id"
-                        class="rounded-xl border border-slate-200 p-4 dark:border-slate-700"
-                      >
-                        <div class="grid gap-3 md:grid-cols-[1fr_auto] md:items-center">
-                          <label class="text-sm text-slate-700 dark:text-slate-200">
-                            Название дополнения
-                            <input
-                              v-model="extra.label"
-                              type="text"
-                              class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                              placeholder="Сыр моцарелла"
-                              enterkeyhint="done"
-                            >
-                          </label>
-                          <div class="flex items-end justify-between gap-3 md:block">
-                            <label class="text-sm text-slate-700 dark:text-slate-200">
-                              Наценка, KGS
-                              <input
-                                v-model.number="extra.add"
-                                type="number"
-                                class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                                placeholder="70"
-                                enterkeyhint="done"
-                              >
-                            </label>
-                            <button
-                              type="button"
-                              class="inline-flex items-center gap-1 rounded-lg border border-red-200 px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 dark:border-red-500/40 dark:text-red-300 dark:hover:bg-red-500/10"
-                              @click="removeOption(index, 'extras', extraIndex)"
-                            >
-                              Удалить
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
-              </div>
-            </div>
 
                 <div class="flex flex-col-reverse gap-3 border-t border-slate-200 pt-6 dark:border-slate-800 md:flex-row md:items-center md:justify-between">
                   <button
@@ -470,7 +500,7 @@
                   </button>
                 </div>
               </div>
-            </template>
+          </template>
           </Tabs>
         </div>
 
@@ -599,6 +629,7 @@ function createMenuItem (base?: EditableMenuItem): EditableMenuItem {
     clone.id = createId()
     clone.options.sizes = clone.options.sizes.map(option => ({ ...option, id: createId() }))
     clone.options.extras = clone.options.extras.map(option => ({ ...option, id: createId() }))
+    clone.isCollapsed = false
     return clone
   }
 
@@ -610,6 +641,7 @@ function createMenuItem (base?: EditableMenuItem): EditableMenuItem {
     img: '',
     tags: '',
     description: '',
+    isCollapsed: false,
     options: {
       sizes: [],
       extras: [],
@@ -681,6 +713,11 @@ function removeOption (itemIndex: number, type: OptionType, optionIndex: number)
   menuItems.value[itemIndex].options[type].splice(optionIndex, 1)
 }
 
+function toggleMenuItemCollapse (index: number) {
+  const target = menuItems.value[index]
+  target.isCollapsed = !target.isCollapsed
+}
+
 function applyMenuDetails (details: AdminMenuDetails) {
   editingMenuTitle.value = details.title
   Object.assign(cafeForm, details.cafe)
@@ -693,6 +730,7 @@ function applyMenuDetails (details: AdminMenuDetails) {
     img: item.img,
     tags: item.tags.join(', '),
     description: item.description,
+    isCollapsed: false,
     options: {
       sizes: item.options.sizes.map((size) => ({
         id: createId(),

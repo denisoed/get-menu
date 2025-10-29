@@ -18,6 +18,7 @@ export interface EditableMenuItem {
   img: string
   tags: string
   description: string
+  isCollapsed: boolean
   options: {
     sizes: EditableOption[]
     extras: EditableOption[]
