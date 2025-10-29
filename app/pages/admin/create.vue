@@ -632,7 +632,7 @@ function createMenuItem (base?: EditableMenuItem): EditableMenuItem {
     clone.id = createId()
     clone.options.sizes = clone.options.sizes.map(option => ({ ...option, id: createId() }))
     clone.options.extras = clone.options.extras.map(option => ({ ...option, id: createId() }))
-    clone.isCollapsed = false
+    clone.isCollapsed = true
     return clone
   }
 
@@ -733,7 +733,7 @@ function applyMenuDetails (details: AdminMenuDetails) {
     img: item.img,
     tags: item.tags.join(', '),
     description: item.description,
-    isCollapsed: false,
+    isCollapsed: true,
     options: {
       sizes: item.options.sizes.map((size) => ({
         id: createId(),
