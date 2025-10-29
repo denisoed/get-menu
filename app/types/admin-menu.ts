@@ -3,6 +3,7 @@ export interface AdminMenuDetails {
   slug: string
   title: string
   description: string
+  isPublished: boolean
   cafe: {
     cafeName: string
     phone: string
