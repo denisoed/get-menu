@@ -1,35 +1,25 @@
 <template>
   <LayoutAppHeader
-    :settings="cafeSettings"
-    :theme="theme"
+    :settings="settings"
     @open-quick-order="openQuickOrderFromPage"
   />
-  <HomeContent
-    ref="homeContentRef"
-    :menu="menu"
-    :settings="cafeSettings"
-    :theme="theme"
-  />
-  <LayoutAppFooter
-    :settings="cafeSettings"
-    :theme="theme"
-  />
+  <HomeContent :menu="menu" ref="homeContentRef" />
+  <LayoutAppFooter :settings="settings" />
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watchEffect } from 'vue'
-import { useRoute, createError, useHead } from '#imports'
+import { useRoute, createError } from '#imports'
 import { SETTINGS } from '~/config/settings'
-import { DEFAULT_MENU_THEME } from '~/config/menuThemes'
-import type { PublicMenuPayload } from '~/types/menu'
-import type { MenuThemeConfig } from '~/types/theme'
+import type { MenuItem } from '~/types/menu'
 
+const settings = SETTINGS
 const homeContentRef = ref<{ openQuickOrder: () => void } | null>(null)
 
 const route = useRoute()
 const slug = computed(() => route.params.slug as string)
 
-const { data, error } = await useFetch<PublicMenuPayload>(
+const { data, error } = await useFetch<MenuItem[]>(
   () => `/api/menu/${slug.value}`,
   {
     watch: [slug],
@@ -46,23 +36,7 @@ watchEffect(() => {
   }
 })
 
-const payload = computed(() => data.value)
-
-const menu = computed(() => payload.value?.menu ?? [])
-const cafeSettings = computed(() => payload.value?.cafe ?? SETTINGS)
-const theme = computed<MenuThemeConfig>(() => payload.value?.theme ?? DEFAULT_MENU_THEME)
-
-useHead(() => ({
-  title: payload.value ? `${payload.value.title} — Get Menu` : 'Меню — Get Menu',
-  meta: payload.value?.description
-    ? [
-        {
-          name: 'description',
-          content: payload.value.description,
-        },
-      ]
-    : [],
-}))
+const menu = computed(() => data.value || [])
 
 function openQuickOrderFromPage () {
   homeContentRef.value?.openQuickOrder()

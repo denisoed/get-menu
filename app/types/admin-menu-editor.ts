@@ -1,5 +1,4 @@
 import type { CategoryModel } from '~/schemas/categories'
-import type { MenuThemeConfig } from '~/types/theme'
 
 export type OptionType = 'sizes' | 'extras'
 
@@ -39,5 +38,3 @@ export interface CafeForm {
   openHours: string
   scheduleDetails: string
 }
-
-export type EditableMenuTheme = MenuThemeConfig
