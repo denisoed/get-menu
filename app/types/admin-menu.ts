@@ -1,5 +1,3 @@
-import type { MenuThemeConfig } from '~/types/theme'
-
 export interface AdminMenuDetails {
   id: string
   slug: string
@@ -29,8 +27,7 @@ export interface AdminMenuDetails {
     description: string
     options: {
       sizes: Array<{ id: string; label: string; add: number | null }>
-    extras: Array<{ id: string; label: string; add: number | null }>
+      extras: Array<{ id: string; label: string; add: number | null }>
     }
   }>
-  theme: MenuThemeConfig
 }
