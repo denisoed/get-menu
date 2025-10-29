@@ -7,6 +7,7 @@ const MENU_DETAILS: Record<string, AdminMenuDetails> = {
     slug: 'main-menu',
     title: 'Основное меню',
     description: 'Базовое меню с популярными блюдами кафе.',
+    isPublished: true,
     cafe: {
       cafeName: 'Кафе «Солнечное»',
       phone: '+996 555 123 456',
@@ -75,6 +76,7 @@ const MENU_DETAILS: Record<string, AdminMenuDetails> = {
     slug: 'letnee-menu',
     title: 'Летнее сезонное меню',
     description: 'Сезонные блюда и напитки для жарких дней.',
+    isPublished: false,
     cafe: {
       cafeName: 'Летний бар',
       phone: '+996 700 987 654',
@@ -117,6 +119,7 @@ const MENU_DETAILS: Record<string, AdminMenuDetails> = {
     slug: 'corporate-packages',
     title: 'Корпоративные наборы',
     description: 'Решения для офисов и мероприятий.',
+    isPublished: true,
     cafe: {
       cafeName: 'Get Menu Catering',
       phone: '+996 770 555 000',

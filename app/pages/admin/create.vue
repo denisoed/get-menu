@@ -46,6 +46,38 @@
           >
             <template #general>
               <div class="space-y-8">
+                <div
+                  v-if="isEditing"
+                  class="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft dark:border-slate-800 dark:bg-slate-900"
+                >
+                  <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <div>
+                      <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Публикация меню</h2>
+                      <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                        {{ publicationHelperText }}
+                      </p>
+                    </div>
+                    <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-4">
+                      <button
+                        type="button"
+                        role="switch"
+                        class="relative inline-flex h-9 w-16 flex-shrink-0 items-center rounded-full border border-transparent transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+                        :class="isPublished ? 'bg-brand-600 dark:bg-brand-500' : 'bg-slate-200 dark:bg-slate-700'"
+                        :aria-checked="isPublished"
+                        @click="togglePublication"
+                        @keydown.enter.prevent="togglePublication"
+                        @keydown.space.prevent="togglePublication"
+                      >
+                        <span class="sr-only">Переключить статус публикации</span>
+                        <span
+                          class="inline-block h-7 w-7 transform rounded-full bg-white shadow-sm transition dark:bg-slate-900"
+                          :class="isPublished ? 'translate-x-7' : 'translate-x-1'"
+                        />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
                 <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft dark:border-slate-800 dark:bg-slate-900">
                   <div class="space-y-6">
                     <div>
@@ -568,6 +600,7 @@ const isEditing = computed(() => editMenuId !== null)
 const isPrefilling = ref(false)
 const prefillError = ref<string | null>(null)
 const editingMenuTitle = ref('')
+const isPublished = ref(false)
 
 const headerKicker = computed(() => (isEditing.value ? 'Редактирование' : 'Новое меню'))
 const headerTitle = computed(() => (isEditing.value ? `Меню «${editingMenuTitle.value || '…'}»` : 'Создание меню'))
@@ -575,6 +608,12 @@ const headerDescription = computed(() =>
   isEditing.value
     ? 'Обновите контактные данные, расписание и блюда, чтобы актуализировать ссылку.'
     : 'Заполните контактные данные, рабочий график и добавьте блюда. Вы сможете опубликовать меню и поделиться ссылкой сразу после сохранения.'
+)
+
+const publicationHelperText = computed(() =>
+  isPublished.value
+    ? 'Меню будет доступно гостям по ссылке. Отключите, чтобы скрыть его и внести правки.'
+    : 'Черновик виден только вам. Включите публикацию, когда будете готовы поделиться меню.'
 )
 
 const tabs = [
@@ -670,6 +709,10 @@ function handleCategoryRemoved ({ name }: { name: string }) {
   })
 }
 
+function togglePublication () {
+  isPublished.value = !isPublished.value
+}
+
 async function requestCategoryCreation (name: string) {
   await createRemoteCategory(name)
 }
@@ -723,6 +766,7 @@ function toggleMenuItemCollapse (index: number) {
 
 function applyMenuDetails (details: AdminMenuDetails) {
   editingMenuTitle.value = details.title
+  isPublished.value = details.isPublished
   Object.assign(cafeForm, details.cafe)
 
   const hydratedItems = details.items.map((item) => ({
@@ -784,6 +828,7 @@ async function handleSubmit () {
     console.info('Submitting menu', {
       mode: isEditing.value ? 'update' : 'create',
       menuId: editMenuId,
+      isPublished: isPublished.value,
       cafeForm,
       categories: categories.value,
       menuItems: menuItems.value,
