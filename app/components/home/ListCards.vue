@@ -11,7 +11,6 @@
       :img="item.img"
       :description="item.description"
       :is-favorite="props.isFavorite(item.id)"
-      @add-to-cart="handleQuickAdd"
       @toggle-favorite="props.toggleFavorite"
       @open-details="openItemDetails"
     />
@@ -69,18 +68,6 @@ function handleAddToCart(data: { id: string; sizeIdx: number | null; extrasIdx: 
   if (!item) return
 
   cartStore.addToCart(createCartEntry(item, data))
-}
-
-function handleQuickAdd(id: string) {
-  const item = props.menu.find(entry => entry.id === id)
-  if (!item) return
-
-  if (item.options?.sizes?.length || item.options?.extras?.length) {
-    openItemDetails(id)
-    return
-  }
-
-  cartStore.addToCart(createCartEntry(item))
 }
 
 function createCartEntry (

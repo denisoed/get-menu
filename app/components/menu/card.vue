@@ -24,10 +24,11 @@
       <div class="mt-3 flex items-center gap-2">
         <div class="ml-auto flex items-center gap-2">
           <button
+            type="button"
             class="px-3 py-2 text-sm rounded-xl bg-brand-600 text-white hover:bg-brand-700"
-            @click.stop="$emit('add-to-cart', id)"
+            @click.stop="handleCardClick"
           >
-            В корзину
+            Выбрать
           </button>
           <button
             type="button"
@@ -81,7 +82,6 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  'add-to-cart': [id: string];
   'toggle-favorite': [id: string];
   'open-details': [id: string];
 }>();
