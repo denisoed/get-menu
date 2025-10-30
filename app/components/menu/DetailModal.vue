@@ -93,7 +93,7 @@
             </div>
           </div>
 
-          <div class="mt-auto flex flex-nowrap items-center gap-3">
+          <div class="sticky bottom-0 mt-auto flex flex-nowrap items-center gap-3 bg-white pt-4 dark:bg-slate-950">
             <button
               class="flex-1 rounded-xl bg-brand-600 py-3 text-white hover:bg-brand-700"
               @click="handleAddToCart"
