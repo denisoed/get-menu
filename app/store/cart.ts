@@ -1,7 +1,7 @@
-import type { MenuItem } from '~/types/menu'
+import type { CartEntry } from '~/types/cart'
 
 interface IState {
-  cart: MenuItem[]
+  cart: CartEntry[]
 }
 
 export const useCartStore = defineStore('cartStore', {
@@ -9,8 +9,13 @@ export const useCartStore = defineStore('cartStore', {
     cart: [],
   }),
   actions: {
-    addToCart (item: MenuItem) {
-      this.cart = [...this.cart, item]
+    addToCart (item: CartEntry, quantity = 1) {
+      const safeQuantity = Number.isFinite(quantity) ? Math.max(1, Math.floor(quantity)) : 1
+      const clones = Array.from({ length: safeQuantity }, () => ({
+        ...item,
+        extrasLabels: item.extrasLabels ? [...item.extrasLabels] : undefined,
+      }))
+      this.cart = [...this.cart, ...clones]
     },
   },
 })

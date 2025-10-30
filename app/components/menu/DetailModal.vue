@@ -94,6 +94,10 @@
           </div>
 
           <div class="sticky bottom-0 mt-auto flex flex-nowrap items-center gap-3 bg-white pt-4 dark:bg-slate-950">
+            <UiQuantitySelector
+              v-model="quantity"
+              class="shrink-0"
+            />
             <button
               class="flex-1 rounded-xl bg-brand-600 py-3 text-white hover:bg-brand-700"
               @click="handleAddToCart"
@@ -152,12 +156,13 @@ const props = defineProps<Props>()
 const formatPrice = (price: number) => props.formatPrice(price)
 const emit = defineEmits<{
   (e: 'close'): void
-  (e: 'add-to-cart', payload: { id: string; sizeIdx: number | null; extrasIdx: number[] }): void
+  (e: 'add-to-cart', payload: { id: string; sizeIdx: number | null; extrasIdx: number[]; quantity: number }): void
   (e: 'toggle-favorite', id: string): void
 }>()
 
 const selectedSizeIdx = ref<number | null>(null)
 const selectedExtrasIdx = ref<number[]>([])
+const quantity = ref(1)
 
 const sizeOptions = computed(() => props.item?.options?.sizes ?? [])
 const extrasOptions = computed(() => props.item?.options?.extras ?? [])
@@ -166,11 +171,13 @@ watch(() => props.item, (next) => {
   if (!next) {
     selectedSizeIdx.value = null
     selectedExtrasIdx.value = []
+    quantity.value = 1
     return
   }
 
   selectedSizeIdx.value = next.options?.sizes?.length ? 0 : null
   selectedExtrasIdx.value = []
+  quantity.value = 1
 }, { immediate: true })
 
 const sizeAddon = computed(() => {
@@ -220,6 +227,7 @@ function handleAddToCart () {
     id: props.item.id,
     sizeIdx: selectedSizeIdx.value,
     extrasIdx: [...selectedExtrasIdx.value].sort((a, b) => a - b),
+    quantity: quantity.value,
   })
   close()
 }
