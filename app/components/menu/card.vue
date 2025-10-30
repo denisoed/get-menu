@@ -24,8 +24,8 @@
     </div>
     <div class="p-4 flex-1 flex flex-col">
       <div>
-        <div class="font-semibold text-brand-700 text-base dark:text-brand-300">{{ fmt(price) }}</div>
-        <h4 class="mt-1 font-semibold text-base leading-snug text-slate-900 dark:text-slate-100">{{ name }}</h4>
+        <div class="font-semibold text-brand-700 text-sm sm:text-base dark:text-brand-300">{{ fmt(price) }}</div>
+        <h4 class="mt-1 font-semibold text-sm sm:text-base leading-snug text-slate-900 dark:text-slate-100">{{ name }}</h4>
       </div>
       <div class="mt-auto flex items-center gap-2 pt-4">
         <button
