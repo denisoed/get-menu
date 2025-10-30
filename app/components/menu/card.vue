@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-soft flex flex-col dark:bg-slate-950 dark:border-slate-800 cursor-pointer"
+    class="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-soft flex h-full flex-col dark:bg-slate-950 dark:border-slate-800 cursor-pointer"
     role="button"
     tabindex="0"
     @click="handleCardClick"
@@ -23,9 +23,11 @@
       </div>
     </div>
     <div class="p-4 flex-1 flex flex-col">
-      <div class="font-semibold text-brand-700 text-base dark:text-brand-300">{{ fmt(price) }}</div>
-      <h4 class="mt-1 font-semibold text-base leading-snug text-slate-900 dark:text-slate-100">{{ name }}</h4>
-      <div class="mt-4 flex items-center gap-2">
+      <div>
+        <div class="font-semibold text-brand-700 text-base dark:text-brand-300">{{ fmt(price) }}</div>
+        <h4 class="mt-1 font-semibold text-base leading-snug text-slate-900 dark:text-slate-100">{{ name }}</h4>
+      </div>
+      <div class="mt-auto flex items-center gap-2 pt-4">
         <button
           type="button"
           class="h-10 w-10 flex items-center justify-center rounded-xl border transition-colors"
