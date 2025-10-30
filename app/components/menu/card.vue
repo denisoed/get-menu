@@ -1,5 +1,12 @@
 <template>
-  <div class="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-soft flex flex-col dark:bg-slate-950 dark:border-slate-800">
+  <div
+    class="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-soft flex flex-col dark:bg-slate-950 dark:border-slate-800 cursor-pointer"
+    role="button"
+    tabindex="0"
+    @click="handleCardClick"
+    @keydown.enter.prevent="handleCardClick"
+    @keydown.space.prevent="handleCardClick"
+  >
     <img :src="img" :alt="name" class="h-44 w-full object-cover">
     <div class="p-4 flex-1 flex flex-col">
       <div class="flex items-start justify-between gap-3">
@@ -18,14 +25,14 @@
         <button
           v-if="options"
           class="px-3 py-2 text-sm rounded-xl border border-slate-200 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
-          @click="$emit('open-options', { id, name, category, price, tags, img, options })"
+          @click.stop="$emit('open-options', { id, name, category, price, tags, img, options, description })"
         >
           Выбрать
         </button>
         <div class="ml-auto flex items-center gap-2">
           <button
             class="px-3 py-2 text-sm rounded-xl bg-brand-600 text-white hover:bg-brand-700"
-            @click="$emit('add-to-cart', id)"
+            @click.stop="$emit('add-to-cart', id)"
           >
             В корзину
           </button>
@@ -69,13 +76,14 @@ import useDate from '../../composables/useDate';
 
 const { fmt } = useDate();
 
-defineProps<{
+const props = defineProps<{
   id: string;
   name: string;
   category: string;
   price: number;
   tags: string[];
   img: string;
+  description?: string;
   options?: {
     sizes?: Array<{ label: string; add?: number }>;
     extras?: Array<{ label: string; add?: number }>;
@@ -83,7 +91,7 @@ defineProps<{
   isFavorite?: boolean;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   'add-to-cart': [id: string];
   'open-options': [item: {
     id: string;
@@ -92,11 +100,17 @@ defineEmits<{
     price: number;
     tags: string[];
     img: string;
+    description?: string;
     options: {
       sizes?: Array<{ label: string; add?: number }>;
       extras?: Array<{ label: string; add?: number }>;
     };
   }];
   'toggle-favorite': [id: string];
+  'open-details': [id: string];
 }>();
+
+function handleCardClick () {
+  emit('open-details', props.id);
+}
 </script>
