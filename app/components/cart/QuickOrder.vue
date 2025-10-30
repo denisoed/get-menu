@@ -140,17 +140,14 @@
               placeholder="Код домофона, пожелания…"
             ></textarea>
           </label>
-          <button class="rounded-xl bg-brand-600 text-white py-2.5 hover:bg-brand-700 disabled:opacity-50" :disabled="!hasItems">
-            Подтвердить заказ
-          </button>
-          <a
-            :href="whatsappOrderLink"
-            target="_blank"
-            class="rounded-xl border border-green-600 text-green-700 py-2 text-center hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-900/40"
-            :class="{ 'pointer-events-none opacity-60': !hasItems }"
-          >
-            Отправить в WhatsApp
-          </a>
+          <div class="sticky bottom-0 mt-auto bg-white pt-3 dark:bg-slate-950">
+            <button
+              class="w-full rounded-xl bg-brand-600 py-3 text-white hover:bg-brand-700 disabled:opacity-50"
+              :disabled="!hasItems"
+            >
+              Подтвердить заказ
+            </button>
+          </div>
         </div>
       </form>
     </div>
