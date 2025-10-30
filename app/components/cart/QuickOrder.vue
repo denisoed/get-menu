@@ -140,33 +140,13 @@
               placeholder="Код домофона, пожелания…"
             ></textarea>
           </label>
-          <div class="sticky bottom-0 mt-auto flex flex-nowrap items-center gap-3 bg-white pt-3 dark:bg-slate-950">
+          <div class="sticky bottom-0 mt-auto bg-white pt-3 dark:bg-slate-950">
             <button
-              class="flex-1 rounded-xl bg-brand-600 py-3 text-white hover:bg-brand-700 disabled:opacity-50"
+              class="w-full rounded-xl bg-brand-600 py-3 text-white hover:bg-brand-700 disabled:opacity-50"
               :disabled="!hasItems"
             >
               Подтвердить заказ
             </button>
-            <a
-              :href="whatsappOrderLink"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-green-600 text-green-600 transition hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-green-500/60 dark:text-green-400 dark:hover:bg-green-900/30"
-              :class="{ 'pointer-events-none opacity-60': !hasItems }"
-              :aria-disabled="!hasItems"
-            >
-              <svg
-                class="h-5 w-5"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.472-.149-.67.15-.197.297-.767.966-.94 1.164-.173.198-.347.223-.644.074-.297-.149-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.607.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.372-.025-.521-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.007-.372-.009-.571-.009-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479s1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.226 1.36.194 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.29.173-1.413-.074-.124-.272-.198-.57-.347Zm-5.421 5.617h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884Z"
-                />
-              </svg>
-              <span class="sr-only">Отправить в WhatsApp</span>
-            </a>
           </div>
         </div>
       </form>
