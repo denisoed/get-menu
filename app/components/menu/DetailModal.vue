@@ -4,7 +4,7 @@
     class="fixed inset-0 z-50 flex items-end md:items-center justify-center"
   >
     <div class="absolute inset-0 bg-transparent backdrop-blur-sm" @click="close"></div>
-    <div class="relative w-full md:w-[720px] h-full md:h-auto md:max-h-[90vh] overflow-y-auto bg-white rounded-t-3xl md:rounded-2xl shadow-soft p-5 dark:bg-slate-950 dark:text-slate-100">
+    <div class="relative w-full md:w-[720px] h-full md:h-auto md:max-h-[90vh] overflow-y-auto bg-white rounded-none md:rounded-2xl shadow-soft p-5 dark:bg-slate-950 dark:text-slate-100">
       <div class="flex items-start justify-between gap-4">
         <div>
           <div class="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">{{ item.category }}</div>
@@ -93,7 +93,7 @@
             </div>
           </div>
 
-          <div class="mt-auto flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div class="mt-auto flex flex-nowrap items-center gap-3">
             <button
               class="flex-1 rounded-xl bg-brand-600 py-3 text-white hover:bg-brand-700"
               @click="handleAddToCart"
@@ -103,10 +103,32 @@
             <button
               v-if="item"
               type="button"
-              class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-600 transition hover:border-brand-200 hover:text-brand-600 dark:border-slate-700 dark:text-slate-300 dark:hover:border-brand-500"
+              class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border transition"
+              :class="isFavorite
+                ? 'border-brand-200 bg-brand-50 text-brand-600 dark:border-brand-500 dark:bg-brand-900/40 dark:text-brand-300'
+                : 'border-slate-200 text-slate-400 hover:border-brand-200 hover:text-brand-600 dark:border-slate-700 dark:text-slate-300 dark:hover:border-brand-300'"
+              :aria-pressed="isFavorite"
+              :title="favoriteLabel"
               @click="toggleFavorite"
             >
-              <span>{{ favoriteLabel }}</span>
+              <svg
+                class="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  v-if="isFavorite"
+                  d="M3.172 5.172a4 4 0 0 1 5.656 0L10 6.343l1.172-1.171a4 4 0 1 1 5.656 5.656l-6.01 6.01a.75.75 0 0 1-1.06 0l-6.01-6.01a4 4 0 0 1 0-5.656Z"
+                />
+                <path
+                  v-else
+                  fill-rule="evenodd"
+                  d="M3.172 5.172a4 4 0 0 1 5.656 0L10 6.343l1.172-1.171a4 4 0 1 1 5.656 5.656l-6.01 6.01a.75.75 0 0 1-1.06 0l-6.01-6.01a4 4 0 0 1 0-5.656Zm1.06 1.06a2.5 2.5 0 0 0 0 3.536L10 15.475l5.768-5.707a2.5 2.5 0 0 0-3.536-3.536L10 8.465l-1.232-1.231a2.5 2.5 0 0 0-3.536 0Z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <span class="sr-only">{{ favoriteLabel }}</span>
             </button>
           </div>
         </div>
@@ -166,9 +188,14 @@ const totalPrice = computed(() => {
   return props.item.price + sizeAddon.value + extrasAddon.value
 })
 
+const isFavorite = computed(() => {
+  if (!props.item) return false
+  return props.isFavorite(props.item.id)
+})
+
 const favoriteLabel = computed(() => {
   if (!props.item) return 'В избранное'
-  return props.isFavorite(props.item.id) ? 'В избранном' : 'В избранное'
+  return isFavorite.value ? 'В избранном' : 'В избранное'
 })
 
 function selectSize (index: number) {
