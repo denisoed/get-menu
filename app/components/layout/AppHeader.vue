@@ -1,5 +1,8 @@
 <template>
-  <div id="topbar" class="w-full bg-white/70 dark:bg-slate-950/70 backdrop-blur sticky top-0 z-40 shadow-soft">
+  <div
+    id="topbar"
+    class="hidden md:block w-full bg-white/70 dark:bg-slate-950/70 backdrop-blur sticky top-0 z-40 shadow-soft"
+  >
     <div class="mx-auto container-capped px-4 py-2 flex items-center justify-between gap-2 text-slate-700 dark:text-slate-200">
       <div class="flex items-center gap-3">
         <button id="themeToggle" class="px-3 py-1 rounded-full text-sm border border-slate-200 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800" @click="toggleTheme">

@@ -33,7 +33,10 @@
   </header>
 
   <!-- Controls: Search + Categories -->
-  <section id="controls" class="sticky top-[46px] z-30 bg-white/70 backdrop-blur border-b border-slate-100 dark:bg-slate-950/80 dark:border-slate-800">
+  <section
+    id="controls"
+    class="sticky top-0 z-30 bg-white/70 backdrop-blur border-b border-slate-100 dark:bg-slate-950/80 dark:border-slate-800"
+  >
     <div class="mx-auto container-capped px-4 py-3 flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
       <div class="relative w-full md:w-1/2">
         <input
