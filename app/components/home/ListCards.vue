@@ -9,23 +9,27 @@
       :price="item.price"
       :tags="item.tags || []"
       :img="item.img"
+      :description="item.description"
       :options="item.options"
       :is-favorite="props.isFavorite(item.id)"
       @open-options="openOptionsDialog"
       @add-to-cart="handleQuickAdd"
       @toggle-favorite="props.toggleFavorite"
+      @open-details="openItemDetails"
     />
   </div>
   <div v-else class="rounded-xl border border-dashed border-slate-200 px-6 py-10 text-center text-slate-500 dark:border-slate-700 dark:text-slate-400">
     Ничего не найдено. Попробуйте изменить запрос.
   </div>
 
-  <DialogOptions 
-    :is-visible="showOptionsDialog" 
-    :item="selectedItem" 
+  <MenuDetailModal
+    :is-open="showDetailsModal"
+    :item="selectedItem"
     :format-price="props.formatPrice"
-    @close="closeOptionsDialog"
+    :is-favorite="props.isFavorite"
+    @close="closeDetailsModal"
     @add-to-cart="handleAddToCart"
+    @toggle-favorite="props.toggleFavorite"
   />
 </template>
 
@@ -47,21 +51,24 @@ const props = defineProps<Props>();
 const cartStore = useCartStore()
 
 // Dialog state
-const showOptionsDialog = ref(false);
-const selectedItem = ref<MenuItem | null>(null);
+const showDetailsModal = ref(false)
+const selectedItem = ref<MenuItem | null>(null)
 
 function openOptionsDialog(item: MenuItem) {
-  if (!item.options) {
-    handleQuickAdd(item.id);
-    return;
-  }
-  selectedItem.value = item;
-  showOptionsDialog.value = true;
+  openItemDetails(item.id)
 }
 
-function closeOptionsDialog() {
-  showOptionsDialog.value = false;
-  selectedItem.value = null;
+function openItemDetails (id: string) {
+  const item = props.menu.find(entry => entry.id === id)
+  if (!item) return
+
+  selectedItem.value = item
+  showDetailsModal.value = true
+}
+
+function closeDetailsModal () {
+  showDetailsModal.value = false
+  selectedItem.value = null
 }
 
 function handleAddToCart(data: { id: string; sizeIdx: number | null; extrasIdx: number[] }) {
@@ -74,6 +81,11 @@ function handleAddToCart(data: { id: string; sizeIdx: number | null; extrasIdx: 
 function handleQuickAdd(id: string) {
   const item = props.menu.find(entry => entry.id === id)
   if (!item) return
+
+  if (item.options?.sizes?.length || item.options?.extras?.length) {
+    openItemDetails(id)
+    return
+  }
 
   cartStore.addToCart(createCartEntry(item))
 }
