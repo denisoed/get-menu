@@ -94,11 +94,12 @@ function closeDetailsModal () {
   selectedItem.value = null
 }
 
-function handleAddToCart(data: { id: string; sizeIdx: number | null; extrasIdx: number[] }) {
+function handleAddToCart(data: { id: string; sizeIdx: number | null; extrasIdx: number[]; quantity: number }) {
   const item = props.menu.find(entry => entry.id === data.id)
   if (!item) return
 
-  cartStore.addToCart(createCartEntry(item, data))
+  const entry = createCartEntry(item, { sizeIdx: data.sizeIdx, extrasIdx: data.extrasIdx })
+  cartStore.addToCart(entry, data.quantity)
 }
 
 function createCartEntry (

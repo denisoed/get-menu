@@ -28,6 +28,36 @@
         <div class="space-y-3">
           <div class="relative overflow-hidden rounded-2xl bg-slate-100 aspect-square">
             <img :src="item.img" :alt="item.name" class="h-full w-full object-cover" />
+            <button
+              v-if="item"
+              type="button"
+              class="absolute right-3 top-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-slate-500 shadow-md ring-1 ring-slate-200 backdrop-blur transition hover:bg-white hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-slate-950/80 dark:text-slate-300 dark:ring-slate-700 dark:hover:bg-slate-900"
+              :class="isFavorite
+                ? 'text-brand-600 dark:text-brand-300'
+                : 'hover:text-brand-600 dark:hover:text-brand-300'"
+              :aria-pressed="isFavorite"
+              :title="favoriteLabel"
+              @click="toggleFavorite"
+            >
+              <svg
+                class="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  v-if="isFavorite"
+                  d="M3.172 5.172a4 4 0 0 1 5.656 0L10 6.343l1.172-1.171a4 4 0 1 1 5.656 5.656l-6.01 6.01a.75.75 0 0 1-1.06 0l-6.01-6.01a4 4 0 0 1 0-5.656Z"
+                />
+                <path
+                  v-else
+                  fill-rule="evenodd"
+                  d="M3.172 5.172a4 4 0 0 1 5.656 0L10 6.343l1.172-1.171a4 4 0 1 1 5.656 5.656l-6.01 6.01a.75.75 0 0 1-1.06 0l-6.01-6.01a4 4 0 0 1 0-5.656Zm1.06 1.06a2.5 2.5 0 0 0 0 3.536L10 15.475l5.768-5.707a2.5 2.5 0 0 0-3.536-3.536L10 8.465l-1.232-1.231a2.5 2.5 0 0 0-3.536 0Z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <span class="sr-only">{{ favoriteLabel }}</span>
+            </button>
           </div>
           <div class="flex flex-wrap gap-2">
             <span
@@ -94,41 +124,15 @@
           </div>
 
           <div class="sticky bottom-0 mt-auto flex flex-nowrap items-center gap-3 bg-white pt-4 dark:bg-slate-950">
+            <UiQuantitySelector
+              v-model="quantity"
+              class="shrink-0"
+            />
             <button
               class="flex-1 rounded-xl bg-brand-600 py-3 text-white hover:bg-brand-700"
               @click="handleAddToCart"
             >
-              Добавить в корзину
-            </button>
-            <button
-              v-if="item"
-              type="button"
-              class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border transition"
-              :class="isFavorite
-                ? 'border-brand-200 bg-brand-50 text-brand-600 dark:border-brand-500 dark:bg-brand-900/40 dark:text-brand-300'
-                : 'border-slate-200 text-slate-400 hover:border-brand-200 hover:text-brand-600 dark:border-slate-700 dark:text-slate-300 dark:hover:border-brand-300'"
-              :aria-pressed="isFavorite"
-              :title="favoriteLabel"
-              @click="toggleFavorite"
-            >
-              <svg
-                class="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  v-if="isFavorite"
-                  d="M3.172 5.172a4 4 0 0 1 5.656 0L10 6.343l1.172-1.171a4 4 0 1 1 5.656 5.656l-6.01 6.01a.75.75 0 0 1-1.06 0l-6.01-6.01a4 4 0 0 1 0-5.656Z"
-                />
-                <path
-                  v-else
-                  fill-rule="evenodd"
-                  d="M3.172 5.172a4 4 0 0 1 5.656 0L10 6.343l1.172-1.171a4 4 0 1 1 5.656 5.656l-6.01 6.01a.75.75 0 0 1-1.06 0l-6.01-6.01a4 4 0 0 1 0-5.656Zm1.06 1.06a2.5 2.5 0 0 0 0 3.536L10 15.475l5.768-5.707a2.5 2.5 0 0 0-3.536-3.536L10 8.465l-1.232-1.231a2.5 2.5 0 0 0-3.536 0Z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-              <span class="sr-only">{{ favoriteLabel }}</span>
+              В корзину
             </button>
           </div>
         </div>
@@ -152,12 +156,13 @@ const props = defineProps<Props>()
 const formatPrice = (price: number) => props.formatPrice(price)
 const emit = defineEmits<{
   (e: 'close'): void
-  (e: 'add-to-cart', payload: { id: string; sizeIdx: number | null; extrasIdx: number[] }): void
+  (e: 'add-to-cart', payload: { id: string; sizeIdx: number | null; extrasIdx: number[]; quantity: number }): void
   (e: 'toggle-favorite', id: string): void
 }>()
 
 const selectedSizeIdx = ref<number | null>(null)
 const selectedExtrasIdx = ref<number[]>([])
+const quantity = ref(1)
 
 const sizeOptions = computed(() => props.item?.options?.sizes ?? [])
 const extrasOptions = computed(() => props.item?.options?.extras ?? [])
@@ -166,11 +171,13 @@ watch(() => props.item, (next) => {
   if (!next) {
     selectedSizeIdx.value = null
     selectedExtrasIdx.value = []
+    quantity.value = 1
     return
   }
 
   selectedSizeIdx.value = next.options?.sizes?.length ? 0 : null
   selectedExtrasIdx.value = []
+  quantity.value = 1
 }, { immediate: true })
 
 const sizeAddon = computed(() => {
@@ -220,6 +227,7 @@ function handleAddToCart () {
     id: props.item.id,
     sizeIdx: selectedSizeIdx.value,
     extrasIdx: [...selectedExtrasIdx.value].sort((a, b) => a - b),
+    quantity: quantity.value,
   })
   close()
 }
