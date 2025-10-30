@@ -10,9 +10,7 @@
       :tags="item.tags || []"
       :img="item.img"
       :description="item.description"
-      :options="item.options"
       :is-favorite="props.isFavorite(item.id)"
-      @open-options="openOptionsDialog"
       @add-to-cart="handleQuickAdd"
       @toggle-favorite="props.toggleFavorite"
       @open-details="openItemDetails"
@@ -50,13 +48,8 @@ const props = defineProps<Props>();
 
 const cartStore = useCartStore()
 
-// Dialog state
 const showDetailsModal = ref(false)
 const selectedItem = ref<MenuItem | null>(null)
-
-function openOptionsDialog(item: MenuItem) {
-  openItemDetails(item.id)
-}
 
 function openItemDetails (id: string) {
   const item = props.menu.find(entry => entry.id === id)

@@ -22,13 +22,6 @@
         </div>
       </div>
       <div class="mt-3 flex items-center gap-2">
-        <button
-          v-if="options"
-          class="px-3 py-2 text-sm rounded-xl border border-slate-200 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
-          @click.stop="$emit('open-options', { id, name, category, price, tags, img, options, description })"
-        >
-          Выбрать
-        </button>
         <div class="ml-auto flex items-center gap-2">
           <button
             class="px-3 py-2 text-sm rounded-xl bg-brand-600 text-white hover:bg-brand-700"
@@ -84,28 +77,11 @@ const props = defineProps<{
   tags: string[];
   img: string;
   description?: string;
-  options?: {
-    sizes?: Array<{ label: string; add?: number }>;
-    extras?: Array<{ label: string; add?: number }>;
-  };
   isFavorite?: boolean;
 }>();
 
 const emit = defineEmits<{
   'add-to-cart': [id: string];
-  'open-options': [item: {
-    id: string;
-    name: string;
-    category: string;
-    price: number;
-    tags: string[];
-    img: string;
-    description?: string;
-    options: {
-      sizes?: Array<{ label: string; add?: number }>;
-      extras?: Array<{ label: string; add?: number }>;
-    };
-  }];
   'toggle-favorite': [id: string];
   'open-details': [id: string];
 }>();
