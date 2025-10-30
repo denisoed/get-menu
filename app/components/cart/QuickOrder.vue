@@ -140,17 +140,34 @@
               placeholder="Код домофона, пожелания…"
             ></textarea>
           </label>
-          <button class="rounded-xl bg-brand-600 text-white py-2.5 hover:bg-brand-700 disabled:opacity-50" :disabled="!hasItems">
-            Подтвердить заказ
-          </button>
-          <a
-            :href="whatsappOrderLink"
-            target="_blank"
-            class="rounded-xl border border-green-600 text-green-700 py-2 text-center hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-900/40"
-            :class="{ 'pointer-events-none opacity-60': !hasItems }"
-          >
-            Отправить в WhatsApp
-          </a>
+          <div class="sticky bottom-0 mt-auto flex flex-nowrap items-center gap-3 bg-white pt-3 dark:bg-slate-950">
+            <button
+              class="flex-1 rounded-xl bg-brand-600 py-3 text-white hover:bg-brand-700 disabled:opacity-50"
+              :disabled="!hasItems"
+            >
+              Подтвердить заказ
+            </button>
+            <a
+              :href="whatsappOrderLink"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-green-600 text-green-600 transition hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-green-500/60 dark:text-green-400 dark:hover:bg-green-900/30"
+              :class="{ 'pointer-events-none opacity-60': !hasItems }"
+              :aria-disabled="!hasItems"
+            >
+              <svg
+                class="h-5 w-5"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  d="M12 2.25a9.75 9.75 0 0 0-8.36 14.94l-.96 3.59a1 1 0 0 0 1.22 1.22l3.59-.96A9.75 9.75 0 1 0 12 2.25Zm0 1.5a8.25 8.25 0 1 1-3.96 15.53 1 1 0 0 0-.66-.07l-2.47.66.66-2.47a1 1 0 0 0-.07-.66A8.25 8.25 0 0 1 12 3.75Zm-2.16 4.7a1 1 0 0 0-.73.36 3.34 3.34 0 0 0-.74 2.26 5.71 5.71 0 0 0 1 2.42 9.58 9.58 0 0 0 3.68 3.68 5.7 5.7 0 0 0 2.42 1 3.34 3.34 0 0 0 2.26-.74 1 1 0 0 0 .36-.73 1 1 0 0 0-.28-.74l-1.48-1.48a1 1 0 0 0-.74-.3 1 1 0 0 0-.74.32l-.36.42a.3.3 0 0 1-.28.1 4.52 4.52 0 0 1-2.13-1.18 4.52 4.52 0 0 1-1.18-2.13.3.3 0 0 1 .1-.28l.42-.36a1 1 0 0 0 .32-.74 1 1 0 0 0-.3-.74l-1.48-1.48a1 1 0 0 0-.74-.28Z"
+                />
+              </svg>
+              <span class="sr-only">Отправить в WhatsApp</span>
+            </a>
+          </div>
         </div>
       </form>
     </div>
