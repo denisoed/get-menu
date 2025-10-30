@@ -1,5 +1,8 @@
 <template>
-  <div v-if="menu.length" class="grid sm:grid-cols-2 lg:grid-cols-2 gap-4">
+  <div
+    v-if="menu.length"
+    class="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4"
+  >
     <MenuCard
       v-for="item in menu"
       :key="item.id"
