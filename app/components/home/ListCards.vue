@@ -16,7 +16,6 @@
           :key="item.id"
           :id="item.id"
           :name="item.name"
-          :category="item.category"
           :price="item.price"
           :tags="item.tags || []"
           :img="item.img"
