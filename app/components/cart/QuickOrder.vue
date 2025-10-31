@@ -10,7 +10,7 @@
         <h3 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Оформление заказа</h3>
         <button
           class="relative h-10 w-10 rounded-full bg-white text-slate-500 shadow-md ring-1 ring-slate-200 transition hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-slate-900/80 dark:text-slate-300 dark:ring-slate-700 dark:hover:bg-slate-800"
-          @click="close"
+          @click="handleCloseButton"
           aria-label="Закрыть"
         >
           <span
@@ -262,6 +262,16 @@ watch(() => props.isOpen, (isOpen) => {
 
 function close () {
   emit('update:is-open', false)
+}
+
+function handleCloseButton () {
+  if (isCompleted.value) {
+    resetForm()
+    resetCompletion()
+    cartStore.cart = []
+  }
+
+  close()
 }
 
 function resetCompletion () {
