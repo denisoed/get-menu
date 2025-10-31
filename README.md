@@ -82,3 +82,10 @@ Check out the [deployment documentation](https://nuxt.com/docs/getting-started/d
 4. В Supabase создайте таблицу `menus`, которая описывает коллекции блюд (например, "Летнее меню"). Таблица должна содержать, как минимум, поля `id`, `name`, `slug`, `description`, `is_active`, `position`, временные границы действия и временные метки. Отдельная таблица `dishes` будет ссылаться на `menus.id` для хранения блюд.
 
 The admin menu API is available at `GET /api/admin/menu` once the server is running. It returns an object with `menus` and `error` fields suitable for future admin UI integration.
+
+## Быстрое редактирование меню
+
+- Руководство администратора: [`docs/admin/menu-quick-edit.md`](docs/admin/menu-quick-edit.md)
+- API эндпоинты: [`docs/api/menu-quick-edit.md`](docs/api/menu-quick-edit.md)
+
+Основной пользовательский поток: открыть существующее меню, нажать кнопку ✏️ «Быстрое редактирование», описать изменения, проверить предложения AI и подтвердить применение.
