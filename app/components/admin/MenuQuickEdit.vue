@@ -5,16 +5,14 @@
       class="fixed bottom-6 right-6 z-50 flex flex-row-reverse items-stretch gap-3"
     >
       <button
+        v-if="!isInlineOpen"
         type="button"
         class="inline-flex items-center gap-2 rounded-full bg-brand-600 px-6 py-3 text-sm font-semibold text-white shadow-soft transition hover:bg-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:bg-brand-500 dark:hover:bg-brand-400"
-        :aria-expanded="isInlineOpen"
         aria-controls="quick-edit-inline"
-        @click="toggleInline"
+        @click="openInline"
       >
         <span aria-hidden="true" class="text-lg">✏️</span>
-        <span class="hidden sm:inline">
-          {{ isInlineOpen ? 'Скрыть быстрый ввод' : 'Быстрое редактирование' }}
-        </span>
+        <span class="hidden sm:inline">Быстрое редактирование</span>
         <span class="sm:hidden">Правки</span>
         <span
           v-if="savedNotesCount"
@@ -53,8 +51,10 @@
             <button
               type="submit"
               class="inline-flex h-11 items-center justify-center rounded-full bg-brand-600 px-4 text-sm font-semibold text-white transition hover:bg-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-400 disabled:opacity-60 dark:bg-brand-500 dark:hover:bg-brand-400"
+              aria-label="Сохранить заметку"
+              title="Сохранить заметку"
             >
-              Сохранить
+              <span aria-hidden="true" class="text-lg">✔️</span>
             </button>
           </div>
 
@@ -494,15 +494,6 @@ function openInline() {
 
 function handleInlineCollapse() {
   isInlineOpen.value = false
-}
-
-function toggleInline() {
-  if (isInlineOpen.value) {
-    handleInlineCollapse()
-    return
-  }
-
-  openInline()
 }
 
 function resetSavedIndicator() {
