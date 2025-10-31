@@ -21,7 +21,50 @@
           </span>
         </button>
       </div>
-      <form class="mt-4 grid md:grid-cols-2 gap-4" @submit.prevent="handleSubmit">
+      <div
+        v-if="isCompleted"
+        class="mt-8 flex h-full flex-col items-center justify-center"
+      >
+        <div
+          class="relative w-full max-w-md overflow-hidden rounded-3xl border border-slate-100 bg-white/90 p-8 text-center shadow-soft backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/80"
+        >
+          <div
+            aria-hidden="true"
+            class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(249,115,22,0.12),_transparent_70%)] dark:bg-[radial-gradient(circle_at_top,_rgba(249,115,22,0.22),_transparent_75%)]"
+          ></div>
+          <div class="relative flex flex-col items-center gap-6">
+            <div class="inline-flex items-center justify-center rounded-3xl bg-gradient-to-br from-brand-500 via-brand-600 to-brand-700 p-[3px] shadow-lg">
+              <div class="grid h-20 w-20 place-items-center rounded-[1.25rem] bg-white text-brand-600 dark:bg-slate-950/80 dark:text-brand-300">
+                <svg
+                  aria-hidden="true"
+                  class="h-10 w-10"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="m4.5 12.75 6 6 9-13.5" />
+                </svg>
+              </div>
+            </div>
+            <div class="space-y-2 text-slate-600 dark:text-slate-300">
+              <div class="text-2xl font-semibold leading-tight text-slate-900 dark:text-slate-100">Заказ оформлен</div>
+              <div class="text-sm">⏳ Отправляем в кафе…</div>
+              <div class="text-sm">📩 Подробности придут в чат</div>
+            </div>
+            <div class="flex flex-col items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+              <div class="relative h-12 w-12">
+                <div class="absolute inset-0 animate-spin rounded-full border-4 border-brand-400/30 border-t-brand-500 dark:border-brand-500/20 dark:border-t-brand-400"></div>
+                <div class="absolute inset-2 rounded-full bg-brand-500/10 dark:bg-brand-500/20"></div>
+              </div>
+              <span>Мини-приложение закроется автоматически</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <form v-else class="mt-4 grid md:grid-cols-2 gap-4" @submit.prevent="handleSubmit">
         <div class="grid gap-3">
           <label class="text-sm text-slate-700 dark:text-slate-200">Имя
             <input
@@ -157,11 +200,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, watch } from 'vue'
+import { computed, reactive, ref, watch, onBeforeUnmount } from 'vue'
 import useDate from '~/composables/useDate'
 import { useCartStore } from '~/store/cart'
 import type { CartEntry, GroupedCartItem } from '~/types/cart'
-import { buildCartLines, calculateCartTotals, cartEntryDescription, composeOrderMessage, groupCartItems } from '~/utils/cart'
+import { calculateCartTotals, cartEntryDescription, groupCartItems } from '~/utils/cart'
 
 interface Settings {
   cafeName: string
@@ -194,36 +237,57 @@ const groupedCart = computed(() => groupCartItems(cartItems.value))
 const totals = computed(() => calculateCartTotals(groupedCart.value, props.settings.deliveryFee))
 const hasItems = computed(() => groupedCart.value.length > 0)
 
-const quickOrderLines = computed(() => buildCartLines(groupedCart.value, fmt, totals.value))
-
-const quickOrderMessage = computed(() => composeOrderMessage(props.settings.cafeName, quickOrderLines.value, {
-  customer: {
-    name: form.name,
-    phone: form.phone,
-    type: form.type,
-    address: form.address,
-    time: form.time,
-    comment: form.comment,
-  },
-}))
-
-const whatsappOrderLink = computed(() => {
-  if (!hasItems.value) return '#'
-  const phone = props.settings.whatsapp.replace(/\D/g, '')
-  return `https://wa.me/${phone}?text=${encodeURIComponent(quickOrderMessage.value)}`
-})
-
 const requiresAddress = computed(() => form.type === 'delivery')
 
+const isCompleted = ref(false)
+let closeTimer: ReturnType<typeof window.setTimeout> | undefined
+
 watch(() => props.isOpen, (isOpen) => {
-  if (!isOpen) return
+  if (!isOpen) {
+    resetCompletion()
+    return
+  }
   if (!hasItems.value) {
     emit('update:is-open', false)
   }
 })
 
 function close () {
+  clearCloseTimer()
   emit('update:is-open', false)
+}
+
+function resetCompletion () {
+  clearCloseTimer()
+  isCompleted.value = false
+}
+
+function clearCloseTimer () {
+  if (closeTimer !== undefined) {
+    window.clearTimeout(closeTimer)
+    closeTimer = undefined
+  }
+}
+
+function closeMiniApp () {
+  if (!process.client) {
+    return false
+  }
+
+  const webApp = window.Telegram?.WebApp
+
+  if (!webApp) {
+    return false
+  }
+
+  try {
+    webApp.close?.()
+    return true
+  } catch (error) {
+    console.warn('[telegram]', 'Failed to close mini app', error)
+  }
+
+  return false
 }
 
 function updateQuantity (entry: GroupedCartItem, nextQuantity: number) {
@@ -261,9 +325,24 @@ function removeFromCart (key: string) {
 
 function handleSubmit () {
   if (!hasItems.value) return
-  if (process.client) {
-    window.open(whatsappOrderLink.value, '_blank')
+  if (isCompleted.value) return
+
+  isCompleted.value = true
+
+  if (!process.client) {
+    return
   }
-  close()
+
+  clearCloseTimer()
+  closeTimer = window.setTimeout(() => {
+    const closed = closeMiniApp()
+    if (!closed) {
+      close()
+    }
+  }, 2500)
 }
+
+onBeforeUnmount(() => {
+  clearCloseTimer()
+})
 </script>
