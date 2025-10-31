@@ -361,8 +361,13 @@
                     class="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft dark:border-slate-800 dark:bg-slate-900"
                   >
                     <div
-                      class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between"
+                      class="flex cursor-pointer flex-col gap-3 md:flex-row md:items-start md:justify-between"
                       :class="item.isCollapsed ? '' : 'border-b border-slate-200 pb-4 dark:border-slate-800'"
+                      role="button"
+                      tabindex="0"
+                      @click="toggleMenuItemCollapse(index)"
+                      @keydown.enter.prevent="toggleMenuItemCollapse(index)"
+                      @keydown.space.prevent="toggleMenuItemCollapse(index)"
                     >
                       <div>
                         <div class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600 dark:text-brand-300">Блюдо {{ index + 1 }}</div>
@@ -376,7 +381,7 @@
                           class="inline-flex items-center gap-1 rounded-lg border border-slate-300 px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-brand-500 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:text-slate-300 dark:hover:border-brand-400 dark:hover:text-brand-300"
                           :aria-expanded="!item.isCollapsed"
                           :aria-label="item.isCollapsed ? 'Развернуть карточку блюда' : 'Свернуть карточку блюда'"
-                          @click="toggleMenuItemCollapse(index)"
+                          @click.stop="toggleMenuItemCollapse(index)"
                         >
                           <span>{{ item.isCollapsed ? 'Развернуть' : 'Свернуть' }}</span>
                           <span aria-hidden="true" class="text-base leading-none">{{ item.isCollapsed ? '↓' : '↑' }}</span>
