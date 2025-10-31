@@ -81,6 +81,95 @@
                 <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft dark:border-slate-800 dark:bg-slate-900">
                   <div class="space-y-6">
                     <div>
+                      <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Адрес меню</h2>
+                      <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                        Придумайте человеко-понятное имя сабдомена — ссылка будет вида <span class="font-medium text-slate-700 dark:text-slate-200">example{{ SUBDOMAIN_SUFFIX }}</span>.
+                      </p>
+                    </div>
+
+                    <div v-if="isEditing" class="space-y-3">
+                      <label class="block text-sm text-slate-700 dark:text-slate-200">
+                        Сабдомен меню
+                        <div class="relative mt-1">
+                          <input
+                            :value="subdomainValue"
+                            type="text"
+                            readonly
+                            class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 pr-36 text-sm font-medium text-slate-700 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-200 dark:focus:ring-brand-500"
+                          >
+                          <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-slate-500 dark:text-slate-400">
+                            {{ SUBDOMAIN_SUFFIX }}
+                          </span>
+                        </div>
+                      </label>
+                      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <p class="text-sm text-slate-500 dark:text-slate-400">
+                          Полная ссылка:
+                          <span class="font-medium text-slate-900 dark:text-slate-100">{{ subdomainUrl || '—' }}</span>
+                        </p>
+                        <button
+                          type="button"
+                          class="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-soft transition hover:bg-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 disabled:opacity-60 dark:bg-brand-500 dark:hover:bg-brand-400"
+                          :disabled="!subdomainUrl"
+                          @click="copySubdomain"
+                        >
+                          <span aria-hidden="true">📋</span>
+                          Скопировать ссылку
+                        </button>
+                      </div>
+                      <p
+                        v-if="copyFeedbackMessage"
+                        class="text-sm"
+                        :class="copyFeedbackToneClass"
+                        aria-live="polite"
+                      >
+                        {{ copyFeedbackMessage }}
+                      </p>
+                    </div>
+
+                    <div v-else>
+                      <label class="block text-sm text-slate-700 dark:text-slate-200" :for="subdomainFieldId">
+                        Сабдомен меню
+                        <div class="relative mt-1">
+                          <input
+                            :id="subdomainFieldId"
+                            v-model="subdomainValue"
+                            type="text"
+                            class="w-full rounded-xl border px-3 py-2 pr-36 shadow-inner-sm focus:ring-2 dark:bg-slate-950 dark:text-slate-100"
+                            :class="shouldShowSubdomainError
+                              ? 'border-red-500 focus:border-red-500 focus:ring-red-200 dark:border-red-500 dark:focus:ring-red-500'
+                              : 'border-slate-200 focus:border-brand-500 focus:ring-brand-200 dark:border-slate-700 dark:focus:ring-brand-500'"
+                            placeholder="Например, super-restaurant"
+                            autocomplete="off"
+                            autocapitalize="none"
+                            spellcheck="false"
+                            maxlength="30"
+                            enterkeyhint="done"
+                            :aria-invalid="shouldShowSubdomainError ? 'true' : 'false'"
+                            :aria-describedby="subdomainHelperId"
+                            @input="handleSubdomainInput"
+                            @blur="handleSubdomainBlur"
+                          >
+                          <span class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-slate-500 dark:text-slate-400">
+                            {{ SUBDOMAIN_SUFFIX }}
+                          </span>
+                        </div>
+                      </label>
+                      <p
+                        :id="subdomainHelperId"
+                        class="mt-2 text-sm"
+                        :class="subdomainHelperToneClass"
+                        aria-live="polite"
+                      >
+                        {{ subdomainHelperMessage }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft dark:border-slate-800 dark:bg-slate-900">
+                  <div class="space-y-6">
+                    <div>
                       <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Контакты и витрина</h2>
                       <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
                         Укажите данные, которые увидят гости на странице меню.
@@ -528,7 +617,7 @@
                   <button
                     type="submit"
                     class="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 disabled:opacity-60 dark:bg-brand-500 dark:hover:bg-brand-400"
-                    :disabled="isSubmitting"
+                    :disabled="isSubmitDisabled"
                   >
                     <span v-if="isSubmitting" class="h-2 w-2 animate-ping rounded-full bg-white"></span>
                     Сохранить меню
@@ -577,7 +666,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import { useHead, useRoute } from '#imports'
 import { useMenuCategories } from '~/composables/useMenuCategories'
 import MenuCategoryManager from '~/components/admin/MenuCategoryManager.vue'
@@ -631,6 +720,96 @@ const tabs = [
 
 const activeTab = ref(tabs[0].value)
 
+const SUBDOMAIN_SUFFIX = '.get-menu.com'
+const subdomainFieldId = 'menu-subdomain'
+const subdomainHelperId = 'menu-subdomain-helper'
+
+type HelperTone = 'muted' | 'error' | 'success'
+
+const subdomainValue = ref('')
+const isSubdomainDirty = ref(false)
+const isSubdomainBlurred = ref(false)
+const isCheckingSubdomain = ref(false)
+const isSubdomainAvailable = ref<boolean | null>(null)
+const availabilityError = ref<string | null>(null)
+const reservedSubdomain = ref<string | null>(null)
+
+const subdomainFormatError = computed(() => validateSubdomain(subdomainValue.value))
+const shouldShowSubdomainError = computed(
+  () => (isSubdomainDirty.value || isSubdomainBlurred.value) && Boolean(subdomainFormatError.value || availabilityError.value)
+)
+const subdomainErrorMessage = computed(() => {
+  if (subdomainFormatError.value) {
+    return subdomainFormatError.value
+  }
+
+  if (availabilityError.value) {
+    return availabilityError.value
+  }
+
+  return ''
+})
+const canShowSubdomainSuccess = computed(
+  () =>
+    (isSubdomainDirty.value || isSubdomainBlurred.value) && !subdomainFormatError.value && isSubdomainAvailable.value === true
+)
+const subdomainHelper = computed<{ message: string; tone: HelperTone }>(() => {
+  if (shouldShowSubdomainError.value) {
+    return { message: subdomainErrorMessage.value, tone: 'error' }
+  }
+
+  if (isCheckingSubdomain.value) {
+    return { message: 'Проверяем доступность…', tone: 'muted' }
+  }
+
+  if (canShowSubdomainSuccess.value) {
+    return { message: 'Адрес свободен — можно использовать.', tone: 'success' }
+  }
+
+  return {
+    message: 'Используйте латинские буквы, цифры и дефис. Длина — 3–30 символов.',
+    tone: 'muted',
+  }
+})
+const subdomainHelperMessage = computed(() => subdomainHelper.value.message)
+const subdomainHelperToneClass = computed(() => {
+  switch (subdomainHelper.value.tone) {
+    case 'error':
+      return 'text-red-600 dark:text-red-400'
+    case 'success':
+      return 'text-emerald-600 dark:text-emerald-400'
+    default:
+      return 'text-slate-500 dark:text-slate-400'
+  }
+})
+
+const subdomainHostname = computed(() => (subdomainValue.value ? `${subdomainValue.value}${SUBDOMAIN_SUFFIX}` : ''))
+const subdomainUrl = computed(() => (subdomainHostname.value ? `https://${subdomainHostname.value}` : ''))
+
+const copyState = ref<'idle' | 'success' | 'error'>('idle')
+const copyFeedbackMessage = computed(() => {
+  if (copyState.value === 'success') {
+    return 'Ссылка скопирована.'
+  }
+
+  if (copyState.value === 'error') {
+    return 'Не удалось скопировать ссылку. Скопируйте вручную.'
+  }
+
+  return ''
+})
+const copyFeedbackToneClass = computed(() => {
+  if (copyState.value === 'error') {
+    return 'text-red-600 dark:text-red-400'
+  }
+
+  if (copyState.value === 'success') {
+    return 'text-emerald-600 dark:text-emerald-400'
+  }
+
+  return 'text-slate-500 dark:text-slate-400'
+})
+
 const cafeForm = reactive<CafeForm>({
   cafeName: '',
   phone: '',
@@ -660,6 +839,269 @@ const {
 } = useMenuCategories()
 const menuItems = ref<EditableMenuItem[]>([createMenuItem()])
 const isSubmitting = ref(false)
+const isSubmitDisabled = computed(() => {
+  if (isSubmitting.value) {
+    return true
+  }
+
+  if (isEditing.value) {
+    return false
+  }
+
+  if (!subdomainValue.value) {
+    return true
+  }
+
+  if (subdomainFormatError.value) {
+    return true
+  }
+
+  if (isCheckingSubdomain.value) {
+    return true
+  }
+
+  return isSubdomainAvailable.value !== true
+})
+
+let availabilityCheckTimeout: ReturnType<typeof setTimeout> | null = null
+let availabilityCheckToken = 0
+let copyFeedbackTimeout: ReturnType<typeof setTimeout> | null = null
+
+interface SubdomainAvailabilityResponse {
+  available: boolean
+  message?: string
+}
+
+watch(subdomainValue, (value) => {
+  if (isEditing.value) {
+    return
+  }
+
+  if (!isSubdomainDirty.value && !isSubdomainBlurred.value) {
+    availabilityError.value = null
+    return
+  }
+
+  resetAvailabilityState()
+
+  if (!subdomainFormatError.value && value) {
+    availabilityCheckTimeout = setTimeout(() => {
+      verifySubdomainAvailability(value)
+    }, 400)
+  }
+})
+
+onBeforeUnmount(() => {
+  if (availabilityCheckTimeout) {
+    clearTimeout(availabilityCheckTimeout)
+    availabilityCheckTimeout = null
+  }
+
+  if (copyFeedbackTimeout) {
+    clearTimeout(copyFeedbackTimeout)
+    copyFeedbackTimeout = null
+  }
+})
+
+function resetAvailabilityState () {
+  if (availabilityCheckTimeout) {
+    clearTimeout(availabilityCheckTimeout)
+    availabilityCheckTimeout = null
+  }
+
+  availabilityCheckToken++
+  availabilityError.value = null
+  isSubdomainAvailable.value = null
+  isCheckingSubdomain.value = false
+}
+
+function handleSubdomainInput () {
+  if (isEditing.value) {
+    return
+  }
+
+  isSubdomainDirty.value = true
+
+  const sanitized = subdomainValue.value.toLowerCase().replace(/\s+/g, '-')
+
+  if (sanitized !== subdomainValue.value) {
+    subdomainValue.value = sanitized
+  }
+}
+
+function handleSubdomainBlur () {
+  if (isEditing.value) {
+    return
+  }
+
+  if (!isSubdomainDirty.value) {
+    isSubdomainDirty.value = true
+  }
+
+  isSubdomainBlurred.value = true
+
+  if (!subdomainFormatError.value && subdomainValue.value && isSubdomainAvailable.value !== true) {
+    resetAvailabilityState()
+    verifySubdomainAvailability(subdomainValue.value)
+  }
+}
+
+function validateSubdomain (value: string): string | null {
+  if (!value) {
+    return 'Укажите адрес меню.'
+  }
+
+  if (value.length < 3 || value.length > 30) {
+    return 'Длина адреса — от 3 до 30 символов.'
+  }
+
+  if (!/^[a-z]/.test(value)) {
+    return 'Адрес должен начинаться с латинской буквы.'
+  }
+
+  if (!/^[a-z0-9-]+$/.test(value)) {
+    return 'Используйте только латинские буквы, цифры и дефис.'
+  }
+
+  if (value.endsWith('-')) {
+    return 'Адрес не может заканчиваться дефисом.'
+  }
+
+  return null
+}
+
+function setCopyState (state: 'idle' | 'success' | 'error') {
+  copyState.value = state
+
+  if (copyFeedbackTimeout) {
+    clearTimeout(copyFeedbackTimeout)
+    copyFeedbackTimeout = null
+  }
+
+  if (state !== 'idle') {
+    copyFeedbackTimeout = setTimeout(() => {
+      copyState.value = 'idle'
+      copyFeedbackTimeout = null
+    }, 2000)
+  }
+}
+
+function fallbackCopy (value: string): boolean {
+  if (typeof document === 'undefined') {
+    return false
+  }
+
+  const textarea = document.createElement('textarea')
+  textarea.value = value
+  textarea.setAttribute('readonly', '')
+  textarea.style.position = 'fixed'
+  textarea.style.top = '-9999px'
+  document.body.appendChild(textarea)
+  textarea.select()
+  textarea.setSelectionRange(0, textarea.value.length)
+  const result = document.execCommand('copy')
+  document.body.removeChild(textarea)
+  return result
+}
+
+async function copySubdomain () {
+  if (!subdomainUrl.value || import.meta.server) {
+    return
+  }
+
+  try {
+    await navigator.clipboard.writeText(subdomainUrl.value)
+    setCopyState('success')
+  } catch (error) {
+    const fallbackResult = fallbackCopy(subdomainUrl.value)
+    setCopyState(fallbackResult ? 'success' : 'error')
+  }
+}
+
+async function verifySubdomainAvailability (value: string) {
+  if (!value) {
+    return
+  }
+
+  if (reservedSubdomain.value && value === reservedSubdomain.value) {
+    availabilityError.value = null
+    isSubdomainAvailable.value = true
+    return
+  }
+
+  const currentToken = ++availabilityCheckToken
+  isCheckingSubdomain.value = true
+
+  try {
+    const { data, error } = await useFetch<SubdomainAvailabilityResponse>(`/api/admin/subdomain/${value}`)
+
+    if (currentToken !== availabilityCheckToken) {
+      return
+    }
+
+    if (error.value) {
+      availabilityError.value = error.value.statusMessage || 'Не удалось проверить доступность. Попробуйте позже.'
+      isSubdomainAvailable.value = null
+      return
+    }
+
+    const result = data.value
+
+    if (!result) {
+      availabilityError.value = 'Не удалось проверить доступность. Попробуйте позже.'
+      isSubdomainAvailable.value = null
+      return
+    }
+
+    if (!result.available) {
+      availabilityError.value = result.message || 'Этот адрес уже занят. Попробуйте другое имя.'
+      isSubdomainAvailable.value = false
+      return
+    }
+
+    availabilityError.value = null
+    isSubdomainAvailable.value = true
+  } catch (error) {
+    if (currentToken !== availabilityCheckToken) {
+      return
+    }
+
+    console.error('Failed to verify subdomain availability', error)
+    availabilityError.value = 'Не удалось проверить доступность. Попробуйте позже.'
+    isSubdomainAvailable.value = null
+  } finally {
+    if (currentToken === availabilityCheckToken) {
+      isCheckingSubdomain.value = false
+    }
+  }
+}
+
+async function ensureSubdomainReady () {
+  if (isEditing.value) {
+    return true
+  }
+
+  isSubdomainDirty.value = true
+  isSubdomainBlurred.value = true
+
+  if (subdomainFormatError.value) {
+    return false
+  }
+
+  if (!subdomainValue.value) {
+    availabilityError.value = null
+    return false
+  }
+
+  if (isSubdomainAvailable.value === true) {
+    return true
+  }
+
+  resetAvailabilityState()
+  await verifySubdomainAvailability(subdomainValue.value)
+
+  return isSubdomainAvailable.value === true
+}
 
 function createId () {
   return Math.random().toString(36).slice(2, 10)
@@ -767,6 +1209,13 @@ function toggleMenuItemCollapse (index: number) {
 function applyMenuDetails (details: AdminMenuDetails) {
   editingMenuTitle.value = details.title
   isPublished.value = details.isPublished
+  reservedSubdomain.value = details.subdomain
+  subdomainValue.value = details.subdomain
+  availabilityError.value = null
+  isSubdomainDirty.value = false
+  isSubdomainBlurred.value = false
+  isSubdomainAvailable.value = true
+  setCopyState('idle')
   Object.assign(cafeForm, details.cafe)
 
   const hydratedItems = details.items.map((item) => ({
@@ -822,6 +1271,12 @@ async function prefillMenu (menuId: string) {
 }
 
 async function handleSubmit () {
+  const canSubmit = await ensureSubdomainReady()
+
+  if (!canSubmit) {
+    return
+  }
+
   try {
     isSubmitting.value = true
     await new Promise(resolve => setTimeout(resolve, 800))
@@ -829,6 +1284,8 @@ async function handleSubmit () {
       mode: isEditing.value ? 'update' : 'create',
       menuId: editMenuId,
       isPublished: isPublished.value,
+      subdomain: subdomainValue.value,
+      subdomainUrl: subdomainUrl.value,
       cafeForm,
       categories: categories.value,
       menuItems: menuItems.value,

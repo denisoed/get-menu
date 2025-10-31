@@ -1,6 +1,7 @@
 export interface AdminMenuDetails {
   id: string
   slug: string
+  subdomain: string
   title: string
   description: string
   isPublished: boolean
