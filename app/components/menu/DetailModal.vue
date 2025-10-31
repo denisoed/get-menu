@@ -31,10 +31,10 @@
             <button
               v-if="item"
               type="button"
-              class="absolute right-3 top-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-slate-500 shadow-md ring-1 ring-slate-200 backdrop-blur transition hover:bg-white hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-slate-950/80 dark:text-slate-300 dark:ring-slate-700 dark:hover:bg-slate-900"
+              class="absolute right-3 top-3 inline-flex h-10 w-10 items-center justify-center rounded-full shadow-md ring-1 backdrop-blur transition focus:outline-none focus:ring-2 focus:ring-brand-500"
               :class="isFavorite
-                ? 'text-brand-600 dark:text-brand-300'
-                : 'hover:text-brand-600 dark:hover:text-brand-300'"
+                ? 'bg-brand-600 text-white ring-brand-500 hover:bg-brand-700 dark:bg-brand-500 dark:text-slate-950 dark:ring-brand-400 dark:hover:bg-brand-400'
+                : 'bg-white/90 text-slate-500 ring-slate-200 hover:bg-white hover:text-brand-600 dark:bg-slate-950/80 dark:text-slate-300 dark:ring-slate-700 dark:hover:bg-slate-900 dark:hover:text-brand-300'"
               :aria-pressed="isFavorite"
               :title="favoriteLabel"
               @click="toggleFavorite"
