@@ -123,7 +123,7 @@
             </div>
           </div>
 
-          <div class="sticky bottom-0 mt-auto flex flex-nowrap items-center gap-3 bg-white pt-4 dark:bg-slate-950">
+          <div class="sticky bottom-0 mt-auto flex flex-nowrap items-center gap-3 bg-white dark:bg-slate-950">
             <UiQuantitySelector
               v-model="quantity"
               class="shrink-0"
@@ -180,20 +180,24 @@ watch(() => props.item, (next) => {
   quantity.value = 1
 }, { immediate: true })
 
-const sizeAddon = computed(() => {
-  if (selectedSizeIdx.value == null) return 0
-  return sizeOptions.value[selectedSizeIdx.value]?.add ?? 0
+const basePrice = computed(() => props.item?.price ?? 0)
+
+const selectedSizePrice = computed(() => {
+  if (!props.item || selectedSizeIdx.value === null) return 0
+  return props.item.options?.sizes?.[selectedSizeIdx.value]?.add ?? 0
 })
 
-const extrasAddon = computed(() => selectedExtrasIdx.value.reduce((sum, idx) => {
-  const extra = extrasOptions.value[idx]
-  return sum + (extra?.add ?? 0)
-}, 0))
-
-const totalPrice = computed(() => {
-  if (!props.item) return 0
-  return props.item.price + sizeAddon.value + extrasAddon.value
+const selectedExtrasPrice = computed(() => {
+  if (!props.item?.options?.extras?.length) return 0
+  return selectedExtrasIdx.value.reduce((total, extraIdx) => {
+    const extra = props.item?.options?.extras?.[extraIdx]
+    return total + (extra?.add ?? 0)
+  }, 0)
 })
+
+const unitPrice = computed(() => basePrice.value + selectedSizePrice.value + selectedExtrasPrice.value)
+
+const totalPrice = computed(() => unitPrice.value * quantity.value)
 
 const isFavorite = computed(() => {
   if (!props.item) return false
