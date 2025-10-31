@@ -23,6 +23,7 @@ interface FetchErrorPayload {
 }
 
 export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickEditOptions) {
+  const nuxtApp = useNuxtApp()
   const isOpen = ref(false)
   const step = ref<'input' | 'confirm' | 'success'>('input')
   const instructions = ref('')
@@ -35,8 +36,12 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
   const errorMessage = ref<string | null>(null)
   const lastUpdatedAt = ref<string | null>(null)
 
-  const { $fetch } = useNuxtApp()
+  const { $fetch } = nuxtApp
   const notifications = useNotifications()
+
+  const quickNotes = ref<string[]>([])
+  const skipNextInstructionsSync = ref(false)
+  const skipNextNotesSync = ref(false)
 
   const draftKey = computed(() => {
     if (!menuId.value) {
@@ -44,6 +49,14 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
     }
 
     return `menu-quick-edit:draft:${encodeURIComponent(menuId.value)}`
+  })
+
+  const notesDraftKey = computed(() => {
+    if (!menuId.value) {
+      return null
+    }
+
+    return `menu-quick-edit:notes:${encodeURIComponent(menuId.value)}`
   })
 
   const skipDraftPersist = ref(false)
@@ -64,11 +77,23 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
   function setInstructionsSilently(value: string) {
     if (instructions.value === value) {
       skipDraftPersist.value = false
-      return
+      return false
     }
 
     skipDraftPersist.value = true
     instructions.value = value
+    return true
+  }
+
+  function formatQuickNotes(notes: string[]) {
+    return notes.map((entry, index) => `${index + 1}. ${entry}`).join('\n')
+  }
+
+  function parseQuickNotes(value: string) {
+    return value
+      .split(/\n+/)
+      .map((line) => line.replace(/^[-•]\s+/, '').replace(/^\d+[\.)]\s+/, '').trim())
+      .filter((line) => line.length > 0)
   }
 
   function readDraftFromStorage(id: string) {
@@ -100,6 +125,55 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
     }
   }
 
+  function readNotesFromStorage(id: string) {
+    const storage = getDraftStorage()
+
+    if (!storage) {
+      return null
+    }
+
+    try {
+      const stored = storage.getItem(`menu-quick-edit:notes:${encodeURIComponent(id)}`)
+
+      if (!stored) {
+        return null
+      }
+
+      const parsed = JSON.parse(stored)
+
+      if (!Array.isArray(parsed)) {
+        return []
+      }
+
+      return parsed
+        .map((entry) => (typeof entry === 'string' ? entry : String(entry ?? '')))
+        .map((entry) => entry.trim())
+        .filter((entry) => entry.length > 0)
+    } catch (error) {
+      console.warn('Failed to read quick edit notes', error)
+      return []
+    }
+  }
+
+  function persistNotes(notes: string[]) {
+    const storage = getDraftStorage()
+
+    if (!storage || !notesDraftKey.value) {
+      return
+    }
+
+    try {
+      if (!notes.length) {
+        storage.removeItem(notesDraftKey.value)
+        return
+      }
+
+      storage.setItem(notesDraftKey.value, JSON.stringify(notes))
+    } catch (error) {
+      console.warn('Failed to persist quick edit notes', error)
+    }
+  }
+
   function removeDraft() {
     const storage = getDraftStorage()
 
@@ -114,6 +188,20 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
     }
   }
 
+  function removeNotes() {
+    const storage = getDraftStorage()
+
+    if (!storage || !notesDraftKey.value) {
+      return
+    }
+
+    try {
+      storage.removeItem(notesDraftKey.value)
+    } catch (error) {
+      console.warn('Failed to remove quick edit notes', error)
+    }
+  }
+
   function hydrateDraft() {
     if (!menuId.value) {
       return
@@ -122,7 +210,25 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
     const stored = readDraftFromStorage(menuId.value)
 
     if (stored !== null) {
-      setInstructionsSilently(stored)
+      skipNextNotesSync.value = true
+      const instructionsChanged = setInstructionsSilently(stored)
+
+      if (!instructionsChanged) {
+        skipNextNotesSync.value = false
+      }
+    }
+  }
+
+  function hydrateQuickNotes() {
+    if (!menuId.value) {
+      return
+    }
+
+    const stored = readNotesFromStorage(menuId.value)
+
+    if (stored !== null) {
+      skipNextInstructionsSync.value = true
+      quickNotes.value = stored
     }
   }
 
@@ -136,7 +242,8 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
     diff,
     selectedDiffIds,
     errorMessage,
-    lastUpdatedAt
+    lastUpdatedAt,
+    quickNotes
   })
 
   const isAvailable = computed(() => Boolean(menuId.value))
@@ -150,34 +257,108 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
   watch(instructions, (value) => {
     if (skipDraftPersist.value) {
       skipDraftPersist.value = false
+    } else if (draftKey.value) {
+      persistDraft(value)
+    }
+
+    if (skipNextNotesSync.value) {
+      skipNextNotesSync.value = false
       return
     }
 
-    if (!draftKey.value) {
-      return
-    }
-
-    persistDraft(value)
+    const parsed = parseQuickNotes(value)
+    skipNextInstructionsSync.value = true
+    quickNotes.value = parsed
+    persistNotes(parsed)
   })
 
   watch(menuId, (next) => {
     if (!next) {
-      setInstructionsSilently('')
+      const instructionsChanged = setInstructionsSilently('')
+      skipNextNotesSync.value = instructionsChanged
+
+      if (quickNotes.value.length) {
+        skipNextInstructionsSync.value = true
+        quickNotes.value = []
+      } else {
+        skipNextInstructionsSync.value = false
+      }
+
       return
     }
 
-    const stored = readDraftFromStorage(next)
+    const storedNotes = readNotesFromStorage(next)
+    const storedDraft = readDraftFromStorage(next)
 
-    if (stored !== null) {
-      setInstructionsSilently(stored)
+    if (storedNotes && storedNotes.length) {
+      skipNextInstructionsSync.value = true
+      quickNotes.value = storedNotes
+      const formatted = formatQuickNotes(storedNotes)
+      skipNextNotesSync.value = true
+      const instructionsChanged = setInstructionsSilently(formatted)
+
+      if (!instructionsChanged) {
+        skipNextNotesSync.value = false
+      }
+    } else if (storedDraft !== null) {
+      skipNextNotesSync.value = true
+      const instructionsChanged = setInstructionsSilently(storedDraft)
+      const parsed = parseQuickNotes(storedDraft)
+      skipNextInstructionsSync.value = true
+      quickNotes.value = parsed
+      persistNotes(parsed)
+
+      if (!instructionsChanged) {
+        skipNextNotesSync.value = false
+      }
     } else {
-      setInstructionsSilently('')
+      skipNextNotesSync.value = true
+      const instructionsChanged = setInstructionsSilently('')
+
+      if (!instructionsChanged) {
+        skipNextNotesSync.value = false
+      }
+
+      if (quickNotes.value.length) {
+        skipNextInstructionsSync.value = true
+        quickNotes.value = []
+      } else {
+        skipNextInstructionsSync.value = false
+      }
     }
   }, { immediate: true })
 
+  watch(quickNotes, (notes) => {
+    if (skipNextInstructionsSync.value) {
+      skipNextInstructionsSync.value = false
+      return
+    }
+
+    const formatted = formatQuickNotes(notes)
+    skipNextNotesSync.value = true
+    const instructionsChanged = setInstructionsSilently(formatted)
+
+    if (!instructionsChanged) {
+      skipNextNotesSync.value = false
+    } else if (draftKey.value) {
+      persistDraft(formatted)
+    }
+
+    persistNotes(notes)
+  })
+
   function clearInstructions() {
     removeDraft()
-    setInstructionsSilently('')
+    removeNotes()
+    const instructionsChanged = setInstructionsSilently('')
+    skipNextNotesSync.value = instructionsChanged
+
+    if (quickNotes.value.length) {
+      skipNextInstructionsSync.value = true
+      quickNotes.value = []
+    } else {
+      skipNextInstructionsSync.value = false
+    }
     instructionsError.value = null
   }
 
@@ -200,6 +381,7 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
     }
 
     hydrateDraft()
+    hydrateQuickNotes()
     isOpen.value = true
     step.value = diff.value ? 'confirm' : 'input'
   }
@@ -390,6 +572,46 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
     }
   }
 
+  function addQuickNote(note: string) {
+    const trimmed = note.trim()
+
+    if (!trimmed) {
+      return false
+    }
+
+    quickNotes.value = [...quickNotes.value, trimmed]
+    void nuxtApp.callHook('analytics:quick-edit', {
+      action: 'note_saved',
+      notesCount: quickNotes.value.length,
+      length: trimmed.length
+    })
+
+    return true
+  }
+
+  function removeQuickNote(index: number) {
+    if (index < 0 || index >= quickNotes.value.length) {
+      return
+    }
+
+    quickNotes.value = quickNotes.value.filter((_, entryIndex) => entryIndex !== index)
+
+    void nuxtApp.callHook('analytics:quick-edit', {
+      action: 'note_removed',
+      notesCount: quickNotes.value.length
+    })
+  }
+
+  function replaceQuickNotes(notes: string[]) {
+    const normalized = notes.map((entry) => entry.trim()).filter((entry) => entry.length > 0)
+    quickNotes.value = normalized
+
+    void nuxtApp.callHook('analytics:quick-edit', {
+      action: 'notes_replaced',
+      notesCount: quickNotes.value.length
+    })
+  }
+
   return {
     state,
     isAvailable,
@@ -406,7 +628,10 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
     canApply,
     selectedItems,
     instructionsLimit,
-    menuTitle
+    menuTitle,
+    addQuickNote,
+    removeQuickNote,
+    replaceQuickNotes
   }
 }
 

@@ -6,10 +6,12 @@ import type { QuickEditAiDiff } from '~/types/menu-quick-edit'
 import { useMenuQuickEdit } from '~/composables/useMenuQuickEdit'
 
 const fetchMock = vi.fn()
+const callHookMock = vi.fn()
 
 vi.mock('#imports', () => ({
   useNuxtApp: () => ({
-    $fetch: fetchMock
+    $fetch: fetchMock,
+    callHook: callHookMock
   })
 }))
 
@@ -26,8 +28,15 @@ describe('useMenuQuickEdit draft persistence', () => {
   let localStorageMock: Storage
   let setItemSpy: ReturnType<typeof vi.fn>
 
+  async function flushReactivity() {
+    await nextTick()
+    await nextTick()
+    await nextTick()
+  }
+
   beforeEach(() => {
     fetchMock.mockReset()
+    callHookMock.mockReset()
     storageMap = new Map<string, string>()
 
     const getItemSpy = vi.fn((key: string) => (storageMap.has(key) ? storageMap.get(key)! : null))
@@ -76,36 +85,102 @@ describe('useMenuQuickEdit draft persistence', () => {
     storageMap.set(key, 'Сохранённый текст')
 
     const quickEdit = createBinding('menu-42')
-    await nextTick()
+    await flushReactivity()
 
     expect(quickEdit.state.instructions).toBe('Сохранённый текст')
 
     quickEdit.state.instructions = 'Новое описание меню'
-    await nextTick()
-    await nextTick()
+    await flushReactivity()
 
-    expect(setItemSpy).toHaveBeenCalled()
     expect(storageMap.get(key)).toBe('Новое описание меню')
-    expect(setItemSpy).toHaveBeenLastCalledWith(key, 'Новое описание меню')
+  })
+
+  it('persists quick notes and formats instructions when saved via helper', async () => {
+    const draftKey = 'menu-quick-edit:draft:menu-12'
+    const notesKey = 'menu-quick-edit:notes:menu-12'
+    const quickEdit = createBinding('menu-12')
+    const note = 'Обновить описание и цену блюда до 360'
+
+    await flushReactivity()
+
+    const saved = quickEdit.addQuickNote(note)
+
+    expect(saved).toBe(true)
+
+    await flushReactivity()
+
+    expect(quickEdit.state.quickNotes).toEqual([note])
+    expect(quickEdit.state.instructions).toBe('1. Обновить описание и цену блюда до 360')
+    expect(storageMap.get(draftKey)).toBe('1. Обновить описание и цену блюда до 360')
+    expect(storageMap.get(notesKey)).toBe(JSON.stringify([note]))
+    expect(callHookMock).toHaveBeenCalledTimes(1)
+    expect(callHookMock).toHaveBeenCalledWith('analytics:quick-edit', {
+      action: 'note_saved',
+      notesCount: 1,
+      length: note.length
+    })
+  })
+
+  it('derives quick notes from manual instruction edits', async () => {
+    const notesKey = 'menu-quick-edit:notes:menu-31'
+    const quickEdit = createBinding('menu-31')
+
+    await flushReactivity()
+
+    quickEdit.state.instructions = '1. Первое изменение\n- Второе изменение'
+
+    await flushReactivity()
+
+    expect(quickEdit.state.quickNotes).toEqual(['Первое изменение', 'Второе изменение'])
+    expect(storageMap.get(notesKey)).toBe(JSON.stringify(['Первое изменение', 'Второе изменение']))
+  })
+
+  it('removes individual quick notes and reports analytics event', async () => {
+    const notesKey = 'menu-quick-edit:notes:menu-61'
+    const quickEdit = createBinding('menu-61')
+
+    await flushReactivity()
+
+    quickEdit.addQuickNote('Первый пункт')
+    quickEdit.addQuickNote('Второй пункт')
+
+    await flushReactivity()
+
+    expect(quickEdit.state.quickNotes).toEqual(['Первый пункт', 'Второй пункт'])
+    expect(storageMap.get(notesKey)).toBe(JSON.stringify(['Первый пункт', 'Второй пункт']))
+
+    callHookMock.mockClear()
+
+    quickEdit.removeQuickNote(0)
+
+    await flushReactivity()
+
+    expect(quickEdit.state.quickNotes).toEqual(['Второй пункт'])
+    expect(storageMap.get(notesKey)).toBe(JSON.stringify(['Второй пункт']))
+    expect(callHookMock).toHaveBeenCalledWith('analytics:quick-edit', {
+      action: 'note_removed',
+      notesCount: 1
+    })
   })
 
   it('clears draft manually without re-saving blank value', async () => {
     const key = 'menu-quick-edit:draft:menu-17'
     const quickEdit = createBinding('menu-17')
 
-    await nextTick()
+    await flushReactivity()
 
     quickEdit.state.instructions = 'Черновик для очистки'
-    await nextTick()
-    await nextTick()
+    await flushReactivity()
     expect(setItemSpy).toHaveBeenCalled()
     expect(storageMap.get(key)).toBe('Черновик для очистки')
 
     quickEdit.clearInstructions()
-    await nextTick()
+    await flushReactivity()
 
     expect(quickEdit.state.instructions).toBe('')
+    expect(quickEdit.state.quickNotes).toEqual([])
     expect(storageMap.has(key)).toBe(false)
+    expect(storageMap.has('menu-quick-edit:notes:menu-17')).toBe(false)
   })
 
   it('removes draft from storage after successful apply', async () => {
