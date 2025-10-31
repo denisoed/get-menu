@@ -21,7 +21,18 @@
           </span>
         </button>
       </div>
-      <form class="mt-4 grid md:grid-cols-2 gap-4" @submit.prevent="handleSubmit">
+      <div
+        v-if="isCompleted"
+        class="mt-6 flex h-full flex-col items-center justify-center gap-4 text-center text-slate-700 dark:text-slate-200"
+      >
+        <div>
+          <div class="text-xl font-semibold text-slate-900 dark:text-slate-100">Заказ оформлен ✅</div>
+          <div class="mt-2 text-sm">⏳ Отправляем в кафе…</div>
+          <div class="text-sm">📩 Подробности придут в чат</div>
+        </div>
+        <div class="mt-4 h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-brand-500"></div>
+      </div>
+      <form v-else class="mt-4 grid md:grid-cols-2 gap-4" @submit.prevent="handleSubmit">
         <div class="grid gap-3">
           <label class="text-sm text-slate-700 dark:text-slate-200">Имя
             <input
@@ -157,11 +168,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, watch } from 'vue'
+import { computed, reactive, ref, watch, onBeforeUnmount } from 'vue'
 import useDate from '~/composables/useDate'
 import { useCartStore } from '~/store/cart'
 import type { CartEntry, GroupedCartItem } from '~/types/cart'
-import { buildCartLines, calculateCartTotals, cartEntryDescription, composeOrderMessage, groupCartItems } from '~/utils/cart'
+import { calculateCartTotals, cartEntryDescription, groupCartItems } from '~/utils/cart'
 
 interface Settings {
   cafeName: string
@@ -194,36 +205,57 @@ const groupedCart = computed(() => groupCartItems(cartItems.value))
 const totals = computed(() => calculateCartTotals(groupedCart.value, props.settings.deliveryFee))
 const hasItems = computed(() => groupedCart.value.length > 0)
 
-const quickOrderLines = computed(() => buildCartLines(groupedCart.value, fmt, totals.value))
-
-const quickOrderMessage = computed(() => composeOrderMessage(props.settings.cafeName, quickOrderLines.value, {
-  customer: {
-    name: form.name,
-    phone: form.phone,
-    type: form.type,
-    address: form.address,
-    time: form.time,
-    comment: form.comment,
-  },
-}))
-
-const whatsappOrderLink = computed(() => {
-  if (!hasItems.value) return '#'
-  const phone = props.settings.whatsapp.replace(/\D/g, '')
-  return `https://wa.me/${phone}?text=${encodeURIComponent(quickOrderMessage.value)}`
-})
-
 const requiresAddress = computed(() => form.type === 'delivery')
 
+const isCompleted = ref(false)
+let closeTimer: ReturnType<typeof window.setTimeout> | undefined
+
 watch(() => props.isOpen, (isOpen) => {
-  if (!isOpen) return
+  if (!isOpen) {
+    resetCompletion()
+    return
+  }
   if (!hasItems.value) {
     emit('update:is-open', false)
   }
 })
 
 function close () {
+  clearCloseTimer()
   emit('update:is-open', false)
+}
+
+function resetCompletion () {
+  clearCloseTimer()
+  isCompleted.value = false
+}
+
+function clearCloseTimer () {
+  if (closeTimer !== undefined) {
+    window.clearTimeout(closeTimer)
+    closeTimer = undefined
+  }
+}
+
+function closeMiniApp () {
+  if (!process.client) {
+    return false
+  }
+
+  const webApp = window.Telegram?.WebApp
+
+  if (!webApp) {
+    return false
+  }
+
+  try {
+    webApp.close?.()
+    return true
+  } catch (error) {
+    console.warn('[telegram]', 'Failed to close mini app', error)
+  }
+
+  return false
 }
 
 function updateQuantity (entry: GroupedCartItem, nextQuantity: number) {
@@ -261,9 +293,24 @@ function removeFromCart (key: string) {
 
 function handleSubmit () {
   if (!hasItems.value) return
-  if (process.client) {
-    window.open(whatsappOrderLink.value, '_blank')
+  if (isCompleted.value) return
+
+  isCompleted.value = true
+
+  if (!process.client) {
+    return
   }
-  close()
+
+  clearCloseTimer()
+  closeTimer = window.setTimeout(() => {
+    const closed = closeMiniApp()
+    if (!closed) {
+      close()
+    }
+  }, 2500)
 }
+
+onBeforeUnmount(() => {
+  clearCloseTimer()
+})
 </script>
