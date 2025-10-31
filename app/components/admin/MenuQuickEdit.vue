@@ -25,7 +25,7 @@
           tabindex="-1"
           @keyup.esc.prevent.stop="quickEdit.close()"
         >
-          <header class="flex items-start justify-between gap-4">
+          <header class="static flex items-start justify-between gap-4">
             <div>
               <p class="text-xs uppercase tracking-[0.2em] text-brand-600 dark:text-brand-300">
                 Меню «{{ quickEdit.menuTitle || '...' }}»
@@ -84,7 +84,7 @@
                       {{ quickEdit.state.instructionsError }}
                     </span>
                   </div>
-                  <div class="sticky bottom-0 mt-auto bg-white pt-4 dark:bg-slate-950">
+                  <div class="mt-auto bg-white pt-4 dark:bg-slate-950">
                     <button
                       type="button"
                       class="w-full rounded-xl bg-brand-600 py-3 text-white hover:bg-brand-700 disabled:opacity-50"
