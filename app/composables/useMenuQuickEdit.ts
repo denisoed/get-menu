@@ -53,14 +53,18 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
 
   const isAvailable = computed(() => Boolean(menuId.value))
 
-  watch(menuId, () => {
-    if (!menuId.value && isOpen.value) {
-      close()
+  watch(menuId, (next, prev) => {
+    if (!next && isOpen.value) {
+      close({ reset: true })
+      return
+    }
+
+    if (prev && next && prev !== next) {
+      resetState()
     }
   })
 
-  function close() {
-    isOpen.value = false
+  function resetState(options: { preserveLastUpdated?: boolean } = {}) {
     step.value = 'input'
     instructions.value = ''
     instructionsError.value = null
@@ -69,7 +73,24 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
     diff.value = null
     selectedDiffIds.value = new Set<string>()
     errorMessage.value = null
-    lastUpdatedAt.value = null
+
+    if (!options.preserveLastUpdated) {
+      lastUpdatedAt.value = null
+    }
+  }
+
+  function close(options: { reset?: boolean } = {}) {
+    isOpen.value = false
+
+    if (options.reset || step.value === 'success') {
+      resetState()
+      return
+    }
+
+    instructionsError.value = null
+    isRequestingDiff.value = false
+    isApplying.value = false
+    errorMessage.value = null
   }
 
   function open() {
@@ -179,11 +200,12 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
   }
 
   function startOver() {
-    step.value = 'input'
+    resetState({ preserveLastUpdated: true })
+  }
+
+  function clearInstructions() {
     instructions.value = ''
-    diff.value = null
-    selectedDiffIds.value = new Set()
-    errorMessage.value = null
+    instructionsError.value = null
   }
 
   function mergeLocalItems(payload: QuickEditApplyResponse) {
@@ -250,6 +272,7 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
 
       mergeLocalItems(response)
       notifications.success(`Изменения применены (${response.appliedCount} блюд).`)
+      instructions.value = ''
       step.value = 'success'
       lastUpdatedAt.value = new Date().toISOString()
 
@@ -278,6 +301,7 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
     clearSelection,
     backToEdit,
     startOver,
+    clearInstructions,
     applyChanges,
     canApply,
     selectedItems,

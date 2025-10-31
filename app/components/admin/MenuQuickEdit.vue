@@ -70,13 +70,25 @@
                   </div>
                   <label class="flex flex-1 flex-col text-sm font-medium text-slate-700 dark:text-slate-200">
                     Инструкция для AI
-                    <textarea
-                      v-model="quickEdit.state.instructions"
-                      class="mt-2 flex-1 min-h-[240px] w-full resize-none rounded-2xl border border-slate-200 px-4 py-3 text-sm shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:ring-brand-500"
-                      :maxlength="quickEdit.instructionsLimit"
-                      placeholder="Например: у блюда Пицца Маргарита подними цену до 690 и добавь тег новинка"
-                      autocomplete="off"
-                    />
+                    <div class="relative mt-2 flex-1">
+                      <textarea
+                        v-model="quickEdit.state.instructions"
+                        class="min-h-[240px] w-full resize-none rounded-2xl border border-slate-200 px-4 pr-12 py-3 text-sm shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:ring-brand-500"
+                        :maxlength="quickEdit.instructionsLimit"
+                        placeholder="Например: у блюда Пицца Маргарита подними цену до 690 и добавь тег новинка"
+                        autocomplete="off"
+                      />
+                      <button
+                        v-if="quickEdit.state.instructions"
+                        type="button"
+                        class="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-400 transition hover:text-slate-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 disabled:opacity-40 dark:text-slate-500 dark:hover:text-slate-300"
+                        :disabled="quickEdit.state.isRequestingDiff"
+                        @click="quickEdit.clearInstructions()"
+                      >
+                        <span class="sr-only">Очистить текст</span>
+                        <span aria-hidden="true" class="text-lg leading-none">✕</span>
+                      </button>
+                    </div>
                   </label>
                   <div class="flex flex-col gap-2 text-xs text-slate-500 dark:text-slate-400 sm:flex-row sm:items-center sm:justify-between">
                     <span>{{ quickEdit.state.instructions.length }} / {{ quickEdit.instructionsLimit }} символов</span>
