@@ -1,7 +1,6 @@
 <template>
   <div>
     <button
-      v-if="quickEdit.isAvailable"
       type="button"
       class="fixed bottom-6 right-6 z-40 inline-flex items-center gap-2 rounded-full bg-brand-600 px-5 py-3 text-sm font-semibold text-white shadow-soft transition hover:bg-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-400 dark:bg-brand-500 dark:hover:bg-brand-400"
       @click="quickEdit.open()"
