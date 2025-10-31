@@ -54,12 +54,21 @@
               <div class="text-sm">⏳ Отправляем в кафе…</div>
               <div class="text-sm">📩 Подробности придут в чат</div>
             </div>
-            <div class="flex flex-col items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-              <div class="relative h-12 w-12">
-                <div class="absolute inset-0 animate-spin rounded-full border-4 border-brand-400/30 border-t-brand-500 dark:border-brand-500/20 dark:border-t-brand-400"></div>
-                <div class="absolute inset-2 rounded-full bg-brand-500/10 dark:bg-brand-500/20"></div>
-              </div>
-              <span>Мини-приложение закроется автоматически</span>
+            <div class="flex w-full flex-nowrap items-center justify-center gap-3 pt-2">
+              <button
+                type="button"
+                class="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-400 dark:border-slate-700 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:text-slate-100"
+                @click="handleFinish"
+              >
+                Завершить
+              </button>
+              <button
+                type="button"
+                class="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900"
+                @click="handleContinue"
+              >
+                Продолжить
+              </button>
             </div>
           </div>
         </div>
@@ -200,7 +209,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref, watch, onBeforeUnmount } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import useDate from '~/composables/useDate'
 import { useCartStore } from '~/store/cart'
 import type { CartEntry, GroupedCartItem } from '~/types/cart'
@@ -240,7 +249,6 @@ const hasItems = computed(() => groupedCart.value.length > 0)
 const requiresAddress = computed(() => form.type === 'delivery')
 
 const isCompleted = ref(false)
-let closeTimer: ReturnType<typeof window.setTimeout> | undefined
 
 watch(() => props.isOpen, (isOpen) => {
   if (!isOpen) {
@@ -253,20 +261,20 @@ watch(() => props.isOpen, (isOpen) => {
 })
 
 function close () {
-  clearCloseTimer()
   emit('update:is-open', false)
 }
 
 function resetCompletion () {
-  clearCloseTimer()
   isCompleted.value = false
 }
 
-function clearCloseTimer () {
-  if (closeTimer !== undefined) {
-    window.clearTimeout(closeTimer)
-    closeTimer = undefined
-  }
+function resetForm () {
+  form.name = ''
+  form.phone = ''
+  form.type = 'delivery'
+  form.address = ''
+  form.time = 'asap'
+  form.comment = ''
 }
 
 function closeMiniApp () {
@@ -288,6 +296,20 @@ function closeMiniApp () {
   }
 
   return false
+}
+
+function handleFinish () {
+  const closed = closeMiniApp()
+  if (!closed) {
+    close()
+  }
+}
+
+function handleContinue () {
+  resetForm()
+  resetCompletion()
+  cartStore.cart = []
+  close()
 }
 
 function updateQuantity (entry: GroupedCartItem, nextQuantity: number) {
@@ -328,21 +350,5 @@ function handleSubmit () {
   if (isCompleted.value) return
 
   isCompleted.value = true
-
-  if (!process.client) {
-    return
-  }
-
-  clearCloseTimer()
-  closeTimer = window.setTimeout(() => {
-    const closed = closeMiniApp()
-    if (!closed) {
-      close()
-    }
-  }, 2500)
 }
-
-onBeforeUnmount(() => {
-  clearCloseTimer()
-})
 </script>
