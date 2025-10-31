@@ -47,45 +47,59 @@
             </button>
           </header>
 
-          <section class="mt-4 flex-1 overflow-y-auto text-sm text-slate-700 dark:text-slate-300">
-            <div v-if="quickEdit.state.step === 'input'" class="space-y-4">
-              <p>
-                Опишите на естественном языке, какие блюда и что нужно поменять. AI предложит список изменений
-                и попросит подтверждение.
-              </p>
-              <div
-                v-if="quickEdit.state.errorMessage"
-                class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-200"
-              >
-                {{ quickEdit.state.errorMessage }}
-              </div>
-              <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-xs text-slate-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-400">
-                <p class="font-semibold text-slate-600 dark:text-slate-200">Примеры запросов:</p>
-                <ul class="mt-2 space-y-1">
-                  <li>• «У блюда Пицца Маргарита подними цену до 690, добавь тег “Новинка”»</li>
-                  <li>• «Бургер Классик: обнови описание, добавь, что котлета теперь из говядины»</li>
-                </ul>
-              </div>
-              <label class="block text-sm font-medium text-slate-700 dark:text-slate-200">
-                Инструкция для AI
-                <textarea
-                  v-model="quickEdit.state.instructions"
-                  rows="6"
-                  class="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:ring-brand-500"
-                  :maxlength="quickEdit.instructionsLimit"
-                  placeholder="Например: у блюда Пицца Маргарита подними цену до 690 и добавь тег новинка"
-                  autocomplete="off"
-                />
-              </label>
-              <div class="flex flex-col gap-2 text-xs text-slate-500 dark:text-slate-400 sm:flex-row sm:items-center sm:justify-between">
-                <span>{{ quickEdit.state.instructions.length }} / {{ quickEdit.instructionsLimit }} символов</span>
-                <span v-if="quickEdit.state.instructionsError" class="text-red-500 dark:text-red-400">
-                  {{ quickEdit.state.instructionsError }}
-                </span>
+          <section class="mt-4 flex-1 overflow-hidden text-sm text-slate-700 dark:text-slate-300">
+            <div v-if="quickEdit.state.step === 'input'" class="flex h-full flex-col">
+              <div class="flex-1 overflow-y-auto">
+                <div class="flex min-h-full flex-col gap-4">
+                  <p>
+                    Опишите на естественном языке, какие блюда и что нужно поменять. AI предложит список изменений
+                    и попросит подтверждение.
+                  </p>
+                  <div
+                    v-if="quickEdit.state.errorMessage"
+                    class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-200"
+                  >
+                    {{ quickEdit.state.errorMessage }}
+                  </div>
+                  <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4 text-xs text-slate-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-400">
+                    <p class="font-semibold text-slate-600 dark:text-slate-200">Примеры запросов:</p>
+                    <ul class="mt-2 space-y-1">
+                      <li>• «У блюда Пицца Маргарита подними цену до 690, добавь тег “Новинка”»</li>
+                      <li>• «Бургер Классик: обнови описание, добавь, что котлета теперь из говядины»</li>
+                    </ul>
+                  </div>
+                  <label class="flex flex-1 flex-col text-sm font-medium text-slate-700 dark:text-slate-200">
+                    Инструкция для AI
+                    <textarea
+                      v-model="quickEdit.state.instructions"
+                      class="mt-2 flex-1 min-h-[240px] w-full resize-none rounded-2xl border border-slate-200 px-4 py-3 text-sm shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:ring-brand-500"
+                      :maxlength="quickEdit.instructionsLimit"
+                      placeholder="Например: у блюда Пицца Маргарита подними цену до 690 и добавь тег новинка"
+                      autocomplete="off"
+                    />
+                  </label>
+                  <div class="flex flex-col gap-2 text-xs text-slate-500 dark:text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+                    <span>{{ quickEdit.state.instructions.length }} / {{ quickEdit.instructionsLimit }} символов</span>
+                    <span v-if="quickEdit.state.instructionsError" class="text-red-500 dark:text-red-400">
+                      {{ quickEdit.state.instructionsError }}
+                    </span>
+                  </div>
+                  <div class="sticky bottom-0 mt-auto bg-white pt-4 dark:bg-slate-950">
+                    <button
+                      type="button"
+                      class="w-full rounded-xl bg-brand-600 py-3 text-white hover:bg-brand-700 disabled:opacity-50"
+                      :disabled="quickEdit.state.isRequestingDiff"
+                      @click="quickEdit.requestDiff()"
+                    >
+                      <span v-if="quickEdit.state.isRequestingDiff" class="mr-2 inline-block h-2 w-2 animate-ping rounded-full bg-white"></span>
+                      Отправить на обработку
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div v-else-if="quickEdit.state.step === 'confirm'" class="space-y-4">
+            <div v-else-if="quickEdit.state.step === 'confirm'" class="h-full space-y-4 overflow-y-auto">
               <p class="text-sm">
                 Проверьте предлагаемые изменения и снимите галочки с тех блюд, которые не нужно обновлять.
               </p>
@@ -167,7 +181,7 @@
               </ul>
             </div>
 
-            <div v-else class="space-y-4">
+            <div v-else class="h-full space-y-4 overflow-y-auto">
               <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-5 text-sm text-emerald-800 dark:border-emerald-500/40 dark:bg-emerald-500/10 dark:text-emerald-200">
                 <p class="font-semibold">Изменения применены</p>
                 <p class="mt-1">Проверьте блюда в списке — они уже обновлены. Вы всегда можете отправить ещё одну инструкцию.</p>
@@ -181,7 +195,10 @@
             </div>
           </section>
 
-          <footer class="mt-4 flex flex-col gap-3 border-t border-slate-200 pt-4 sm:flex-row sm:items-center sm:justify-between dark:border-slate-800">
+          <footer
+            v-if="quickEdit.state.step !== 'input'"
+            class="mt-4 flex flex-col gap-3 border-t border-slate-200 pt-4 sm:flex-row sm:items-center sm:justify-between dark:border-slate-800"
+          >
             <div v-if="quickEdit.state.step === 'confirm'" class="text-xs text-slate-500 dark:text-slate-400">
               Выбрано {{ quickEdit.selectedItems.length }} из {{ quickEdit.state.diff?.items.length || 0 }} блюд
             </div>
@@ -197,25 +214,7 @@
                 Исправить запрос
               </button>
               <button
-                v-else
-                type="button"
-                class="inline-flex items-center justify-center rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-slate-400 hover:text-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-500 dark:hover:text-slate-100"
-                @click="quickEdit.close()"
-              >
-                Закрыть
-              </button>
-              <button
-                v-if="quickEdit.state.step === 'input'"
-                type="button"
-                class="inline-flex items-center justify-center rounded-full bg-brand-600 px-6 py-2 text-sm font-semibold text-white transition hover:bg-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-400 disabled:opacity-60 dark:bg-brand-500 dark:hover:bg-brand-400"
-                :disabled="quickEdit.state.isRequestingDiff"
-                @click="quickEdit.requestDiff()"
-              >
-                <span v-if="quickEdit.state.isRequestingDiff" class="mr-2 h-2 w-2 animate-ping rounded-full bg-white"></span>
-                Отправить на обработку
-              </button>
-              <button
-                v-else-if="quickEdit.state.step === 'confirm'"
+                v-if="quickEdit.state.step === 'confirm'"
                 type="button"
                 class="inline-flex items-center justify-center rounded-full bg-brand-600 px-6 py-2 text-sm font-semibold text-white transition hover:bg-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-400 disabled:opacity-60 dark:bg-brand-500 dark:hover:bg-brand-400"
                 :disabled="!quickEdit.canApply || quickEdit.state.isApplying"
