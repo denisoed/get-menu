@@ -53,23 +53,67 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
 
   const isAvailable = computed(() => Boolean(menuId.value))
 
-  watch(menuId, () => {
-    if (!menuId.value && isOpen.value) {
-      close()
-    }
+  const instructionsMemory = new Map<string, string>()
+
+  watch(
+    menuId,
+    (next, prev) => {
+      if (prev) {
+        instructionsMemory.set(prev, instructions.value)
+      }
+
+      if (!next) {
+        if (isOpen.value) {
+          close({ reset: true })
+        } else {
+          resetState()
+        }
+
+        return
+      }
+
+      if (!prev || next !== prev) {
+        resetState({ preserveInstructions: true })
+        instructions.value = instructionsMemory.get(next) ?? ''
+      }
+    },
+    { immediate: true }
+  )
+
+  watch(instructions, (value) => {
+    if (!menuId.value) return
+    instructionsMemory.set(menuId.value, value)
   })
 
-  function close() {
-    isOpen.value = false
+  function resetState(options: { preserveLastUpdated?: boolean; preserveInstructions?: boolean } = {}) {
     step.value = 'input'
-    instructions.value = ''
+    if (!options.preserveInstructions) {
+      instructions.value = ''
+    }
     instructionsError.value = null
     isRequestingDiff.value = false
     isApplying.value = false
     diff.value = null
     selectedDiffIds.value = new Set<string>()
     errorMessage.value = null
-    lastUpdatedAt.value = null
+
+    if (!options.preserveLastUpdated) {
+      lastUpdatedAt.value = null
+    }
+  }
+
+  function close(options: { reset?: boolean } = {}) {
+    isOpen.value = false
+
+    if (options.reset || step.value === 'success') {
+      resetState()
+      return
+    }
+
+    instructionsError.value = null
+    isRequestingDiff.value = false
+    isApplying.value = false
+    errorMessage.value = null
   }
 
   function open() {
@@ -179,11 +223,12 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
   }
 
   function startOver() {
-    step.value = 'input'
+    resetState({ preserveLastUpdated: true })
+  }
+
+  function clearInstructions() {
     instructions.value = ''
-    diff.value = null
-    selectedDiffIds.value = new Set()
-    errorMessage.value = null
+    instructionsError.value = null
   }
 
   function mergeLocalItems(payload: QuickEditApplyResponse) {
@@ -250,6 +295,7 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
 
       mergeLocalItems(response)
       notifications.success(`Изменения применены (${response.appliedCount} блюд).`)
+      instructions.value = ''
       step.value = 'success'
       lastUpdatedAt.value = new Date().toISOString()
 
@@ -278,6 +324,7 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
     clearSelection,
     backToEdit,
     startOver,
+    clearInstructions,
     applyChanges,
     canApply,
     selectedItems,
