@@ -72,7 +72,6 @@
 
         <div class="flex flex-col gap-5">
           <div class="space-y-3">
-            <div class="text-sm text-slate-500 dark:text-slate-400">Цена</div>
             <div class="text-3xl font-semibold text-slate-900 dark:text-slate-100">{{ formatPrice(totalPrice) }}</div>
             <p v-if="item.description" class="text-sm leading-relaxed text-slate-600 dark:text-slate-300">
               {{ item.description }}
@@ -132,7 +131,7 @@
               class="flex-1 rounded-xl bg-brand-600 py-3 text-white hover:bg-brand-700"
               @click="handleAddToCart"
             >
-              В корзину
+              В корзину · {{ formatPrice(checkoutPrice) }}
             </button>
           </div>
         </div>
@@ -181,6 +180,7 @@ watch(() => props.item, (next) => {
 }, { immediate: true })
 
 const totalPrice = computed(() => props.item?.price ?? 0)
+const checkoutPrice = computed(() => totalPrice.value * quantity.value)
 
 const isFavorite = computed(() => {
   if (!props.item) return false
