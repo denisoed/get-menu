@@ -38,6 +38,94 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
   const { $fetch } = useNuxtApp()
   const notifications = useNotifications()
 
+  const draftKey = computed(() => {
+    if (!menuId.value) {
+      return null
+    }
+
+    return `menu-quick-edit:draft:${encodeURIComponent(menuId.value)}`
+  })
+
+  const skipDraftPersist = ref(false)
+
+  function getDraftStorage() {
+    if (!process.client) {
+      return null
+    }
+
+    try {
+      return window.localStorage
+    } catch (error) {
+      console.warn('Local storage is not accessible', error)
+      return null
+    }
+  }
+
+  function setInstructionsSilently(value: string) {
+    if (instructions.value === value) {
+      skipDraftPersist.value = false
+      return
+    }
+
+    skipDraftPersist.value = true
+    instructions.value = value
+  }
+
+  function readDraftFromStorage(id: string) {
+    const storage = getDraftStorage()
+
+    if (!storage) {
+      return null
+    }
+
+    try {
+      return storage.getItem(`menu-quick-edit:draft:${encodeURIComponent(id)}`)
+    } catch (error) {
+      console.warn('Failed to read quick edit draft', error)
+      return null
+    }
+  }
+
+  function persistDraft(value: string) {
+    const storage = getDraftStorage()
+
+    if (!storage || !draftKey.value) {
+      return
+    }
+
+    try {
+      storage.setItem(draftKey.value, value)
+    } catch (error) {
+      console.warn('Failed to persist quick edit draft', error)
+    }
+  }
+
+  function removeDraft() {
+    const storage = getDraftStorage()
+
+    if (!storage || !draftKey.value) {
+      return
+    }
+
+    try {
+      storage.removeItem(draftKey.value)
+    } catch (error) {
+      console.warn('Failed to remove quick edit draft', error)
+    }
+  }
+
+  function hydrateDraft() {
+    if (!menuId.value) {
+      return
+    }
+
+    const stored = readDraftFromStorage(menuId.value)
+
+    if (stored !== null) {
+      setInstructionsSilently(stored)
+    }
+  }
+
   const state = reactive({
     isOpen,
     step,
@@ -59,10 +147,43 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
     }
   })
 
+  watch(instructions, (value) => {
+    if (skipDraftPersist.value) {
+      skipDraftPersist.value = false
+      return
+    }
+
+    if (!draftKey.value) {
+      return
+    }
+
+    persistDraft(value)
+  })
+
+  watch(menuId, (next) => {
+    if (!next) {
+      setInstructionsSilently('')
+      return
+    }
+
+    const stored = readDraftFromStorage(next)
+
+    if (stored !== null) {
+      setInstructionsSilently(stored)
+    } else {
+      setInstructionsSilently('')
+    }
+  }, { immediate: true })
+
+  function clearInstructions() {
+    removeDraft()
+    setInstructionsSilently('')
+    instructionsError.value = null
+  }
+
   function close() {
     isOpen.value = false
     step.value = 'input'
-    instructions.value = ''
     instructionsError.value = null
     isRequestingDiff.value = false
     isApplying.value = false
@@ -78,6 +199,7 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
       return
     }
 
+    hydrateDraft()
     isOpen.value = true
     step.value = diff.value ? 'confirm' : 'input'
   }
@@ -180,7 +302,7 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
 
   function startOver() {
     step.value = 'input'
-    instructions.value = ''
+    clearInstructions()
     diff.value = null
     selectedDiffIds.value = new Set()
     errorMessage.value = null
@@ -250,6 +372,7 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
 
       mergeLocalItems(response)
       notifications.success(`Изменения применены (${response.appliedCount} блюд).`)
+      clearInstructions()
       step.value = 'success'
       lastUpdatedAt.value = new Date().toISOString()
 
@@ -272,6 +395,7 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
     isAvailable,
     open,
     close,
+    clearInstructions,
     requestDiff,
     toggleItem,
     selectAll,
