@@ -89,15 +89,17 @@
                     </div>
                     <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-600 dark:text-slate-300">
                       <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1 dark:bg-slate-800/60">
-                        Количество: <strong class="font-semibold">{{ entry.quantity }}</strong>
-                      </span>
-                      <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1 dark:bg-slate-800/60">
                         За шт.: <strong class="font-semibold">{{ fmt(entry.item.price) }}</strong>
                       </span>
                     </div>
                   </div>
-                  <div class="flex flex-col items-end gap-2">
+                  <div class="flex flex-col items-end gap-3">
                     <div class="text-sm font-semibold text-slate-900 dark:text-slate-100">{{ fmt(entry.lineTotal) }}</div>
+                    <UiQuantitySelector
+                      :model-value="entry.quantity"
+                      class="w-full max-w-[140px]"
+                      @update:model-value="value => updateQuantity(entry, value)"
+                    />
                     <button
                       type="button"
                       class="flex items-center gap-1 rounded-lg border border-red-200 px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-400 dark:border-red-500/40 dark:text-red-300 dark:hover:bg-red-500/10"
@@ -140,7 +142,7 @@
               placeholder="Код домофона, пожелания…"
             ></textarea>
           </label>
-          <div class="sticky bottom-0 mt-auto bg-white pt-3 dark:bg-slate-950">
+          <div class="sticky bottom-0 mt-auto bg-white dark:bg-slate-950">
             <button
               class="w-full rounded-xl bg-brand-600 py-3 text-white hover:bg-brand-700 disabled:opacity-50"
               :disabled="!hasItems"
@@ -158,7 +160,7 @@
 import { computed, reactive, watch } from 'vue'
 import useDate from '~/composables/useDate'
 import { useCartStore } from '~/store/cart'
-import type { CartEntry } from '~/types/cart'
+import type { CartEntry, GroupedCartItem } from '~/types/cart'
 import { buildCartLines, calculateCartTotals, cartEntryDescription, composeOrderMessage, groupCartItems } from '~/utils/cart'
 
 interface Settings {
@@ -224,8 +226,37 @@ function close () {
   emit('update:is-open', false)
 }
 
+function updateQuantity (entry: GroupedCartItem, nextQuantity: number) {
+  const current = entry.quantity
+  const safeNext = Number.isFinite(nextQuantity) ? Math.max(1, Math.floor(nextQuantity)) : current
+  if (safeNext === current) return
+
+  if (safeNext > current) {
+    const diff = safeNext - current
+    cartStore.addToCart({ ...entry.item }, diff)
+    return
+  }
+
+  removeQuantity(entry.key, current - safeNext)
+}
+
+function removeQuantity (key: string, quantity: number) {
+  let remaining = Number.isFinite(quantity) ? Math.max(0, Math.floor(quantity)) : Infinity
+  if (remaining <= 0) return
+
+  cartStore.cart = cartStore.cart.filter((entry) => {
+    const matches = ((entry as CartEntry).cartKey || entry.id) === key
+    if (!matches) return true
+    if (remaining > 0) {
+      remaining -= 1
+      return false
+    }
+    return true
+  })
+}
+
 function removeFromCart (key: string) {
-  cartStore.cart = cartStore.cart.filter(entry => ((entry as CartEntry).cartKey || entry.id) !== key)
+  removeQuantity(key, Infinity)
 }
 
 function handleSubmit () {
