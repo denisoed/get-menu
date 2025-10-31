@@ -81,6 +81,67 @@
                 <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft dark:border-slate-800 dark:bg-slate-900">
                   <div class="space-y-6">
                     <div>
+                      <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Адрес меню</h2>
+                      <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                        Выберите короткое имя, которое станет частью ссылки вида
+                        <span class="font-semibold text-slate-900 dark:text-slate-100">{{ fullMenuUrlDisplay }}</span>.
+                      </p>
+                    </div>
+                    <div class="space-y-4">
+                      <div class="flex flex-col gap-3 md:flex-row md:items-end">
+                        <label class="flex-1 text-sm text-slate-700 dark:text-slate-200">
+                          Сабдомен
+                          <div class="mt-1">
+                            <div :class="subdomainWrapperClasses">
+                              <input
+                                :value="subdomain"
+                                :readonly="isEditing"
+                                type="text"
+                                autocomplete="off"
+                                spellcheck="false"
+                                inputmode="lowercase"
+                                class="w-full flex-1 bg-transparent p-0 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none dark:text-slate-100"
+                                placeholder="super-restaurant"
+                                @input="onSubdomainInput(($event.target as HTMLInputElement).value)"
+                                @blur="markSubdomainTouched"
+                              >
+                              <span class="inline-flex items-center border-l border-slate-200 pl-3 text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
+                                {{ SUBDOMAIN_SUFFIX }}
+                              </span>
+                            </div>
+                          </div>
+                        </label>
+                        <button
+                          v-if="isEditing"
+                          type="button"
+                          class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-brand-500 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 disabled:opacity-60 dark:border-slate-700 dark:text-slate-300 dark:hover:border-brand-400 dark:hover:text-brand-300"
+                          :class="copyButtonStateClasses"
+                          :disabled="isCopyDisabled"
+                          @click="copyMenuLink"
+                        >
+                          <span v-if="copyState === 'success'" aria-hidden="true">✔</span>
+                          <span v-else-if="copyState === 'error'" aria-hidden="true">!</span>
+                          <span>{{ copyButtonLabel }}</span>
+                        </button>
+                      </div>
+                      <p
+                        class="text-sm"
+                        :class="subdomainMessageClass"
+                        aria-live="polite"
+                      >
+                        <span v-if="isCheckingSubdomain" class="mr-2 inline-flex h-2 w-2 animate-ping rounded-full bg-brand-500"></span>
+                        {{ subdomainMessage }}
+                      </p>
+                      <p class="text-sm text-slate-500 dark:text-slate-400">
+                        Итоговая ссылка: <span class="font-medium text-slate-900 dark:text-slate-100">{{ fullMenuUrlDisplay }}</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-soft dark:border-slate-800 dark:bg-slate-900">
+                  <div class="space-y-6">
+                    <div>
                       <h2 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Контакты и витрина</h2>
                       <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
                         Укажите данные, которые увидят гости на странице меню.
@@ -528,7 +589,7 @@
                   <button
                     type="submit"
                     class="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:bg-brand-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 disabled:opacity-60 dark:bg-brand-500 dark:hover:bg-brand-400"
-                    :disabled="isSubmitting"
+                    :disabled="isSubmitDisabled"
                   >
                     <span v-if="isSubmitting" class="h-2 w-2 animate-ping rounded-full bg-white"></span>
                     Сохранить меню
@@ -577,9 +638,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
-import { useHead, useRoute } from '#imports'
+import { computed, reactive, ref, watch, onBeforeUnmount } from 'vue'
+import { useHead, useRoute, useNuxtApp } from '#imports'
 import { useMenuCategories } from '~/composables/useMenuCategories'
+import { useNotifications } from '~/composables/useNotifications'
 import MenuCategoryManager from '~/components/admin/MenuCategoryManager.vue'
 import BackButton from '~/components/ui/BackButton.vue'
 import Tabs from '~/components/ui/Tabs.vue'
@@ -591,8 +653,23 @@ import type {
 } from '~/types/admin-menu-editor'
 
 const DEFAULT_PREFILL_ERROR = 'Failed to load menu data. Try refreshing the page.'
+const SUBDOMAIN_SUFFIX = '.get-menu.com'
+const SUBDOMAIN_MIN_LENGTH = 3
+const SUBDOMAIN_MAX_LENGTH = 32
+const BASE_SUBDOMAIN_HINT = 'Используйте латинские буквы, цифры и дефисы. Например, super-restaurant.'
 
 const route = useRoute()
+const nuxtApp = useNuxtApp()
+const request =
+  nuxtApp?.$fetch ??
+  (globalThis as unknown as { $fetch?: typeof $fetch }).$fetch
+
+if (!request) {
+  throw new Error('Nuxt $fetch instance is not available.')
+}
+
+const notifications = useNotifications()
+
 const editMenuIdQuery = route.query.edit
 const editMenuId = typeof editMenuIdQuery === 'string' ? editMenuIdQuery : null
 
@@ -601,6 +678,20 @@ const isPrefilling = ref(false)
 const prefillError = ref<string | null>(null)
 const editingMenuTitle = ref('')
 const isPublished = ref(false)
+
+const subdomain = ref('')
+const subdomainTouched = ref(false)
+const subdomainErrors = ref<string[]>([])
+const isCheckingSubdomain = ref(false)
+const isSubdomainAvailable = ref<boolean | null>(null)
+const subdomainCheckError = ref<string | null>(null)
+const lastCheckedSubdomain = ref<string | null>(null)
+
+const copyState = ref<'idle' | 'success' | 'error'>('idle')
+
+let availabilityDebounceTimer: ReturnType<typeof setTimeout> | null = null
+let availabilityAbortController: AbortController | null = null
+let copyResetTimer: ReturnType<typeof setTimeout> | null = null
 
 const headerKicker = computed(() => (isEditing.value ? 'Редактирование' : 'Новое меню'))
 const headerTitle = computed(() => (isEditing.value ? `Меню «${editingMenuTitle.value || '…'}»` : 'Создание меню'))
@@ -660,6 +751,432 @@ const {
 } = useMenuCategories()
 const menuItems = ref<EditableMenuItem[]>([createMenuItem()])
 const isSubmitting = ref(false)
+
+const normalizedSubdomain = computed(() => subdomain.value.trim().toLowerCase())
+const hasSubdomainValue = computed(() => normalizedSubdomain.value.length > 0)
+const fullMenuUrlDisplay = computed(() =>
+  hasSubdomainValue.value
+    ? `https://${normalizedSubdomain.value}${SUBDOMAIN_SUFFIX}`
+    : `https://ваше-меню${SUBDOMAIN_SUFFIX}`
+)
+const isCopyDisabled = computed(() => !hasSubdomainValue.value)
+
+const copyButtonLabel = computed(() => {
+  if (copyState.value === 'success') {
+    return 'Скопировано'
+  }
+
+  if (copyState.value === 'error') {
+    return 'Не удалось скопировать'
+  }
+
+  return 'Копировать ссылку'
+})
+
+const copyButtonStateClasses = computed(() => {
+  if (copyState.value === 'success') {
+    return 'border-emerald-400 text-emerald-600 dark:border-emerald-500 dark:text-emerald-400'
+  }
+
+  if (copyState.value === 'error') {
+    return 'border-red-300 text-red-600 dark:border-red-500/60 dark:text-red-300'
+  }
+
+  return ''
+})
+
+const displayedSubdomainError = computed(() => (subdomainTouched.value ? subdomainErrors.value[0] ?? null : null))
+const hasConflict = computed(() => subdomainTouched.value && isSubdomainAvailable.value === false)
+const hasNetworkIssue = computed(() => subdomainTouched.value && isSubdomainAvailable.value === null && !!subdomainCheckError.value)
+const showSuccess = computed(
+  () =>
+    subdomainTouched.value &&
+    hasSubdomainValue.value &&
+    subdomainErrors.value.length === 0 &&
+    isSubdomainAvailable.value === true &&
+    !isCheckingSubdomain.value
+)
+
+const subdomainMessage = computed(() => {
+  if (displayedSubdomainError.value) {
+    return displayedSubdomainError.value
+  }
+
+  if (hasConflict.value) {
+    return subdomainCheckError.value || 'Этот адрес уже занят. Попробуйте другой вариант.'
+  }
+
+  if (hasNetworkIssue.value) {
+    return subdomainCheckError.value
+  }
+
+  if (isCheckingSubdomain.value) {
+    return 'Проверяем доступность…'
+  }
+
+  if (isEditing.value) {
+    return 'Адрес закреплён за меню. Скопируйте ссылку и поделитесь с гостями.'
+  }
+
+  if (showSuccess.value) {
+    return 'Адрес свободен. После публикации меню будет доступно по этой ссылке.'
+  }
+
+  return BASE_SUBDOMAIN_HINT
+})
+
+const subdomainMessageClass = computed(() => {
+  if (displayedSubdomainError.value || hasConflict.value) {
+    return 'text-red-600 dark:text-red-400'
+  }
+
+  if (hasNetworkIssue.value) {
+    return 'text-amber-600 dark:text-amber-400'
+  }
+
+  if (showSuccess.value) {
+    return 'text-emerald-600 dark:text-emerald-400'
+  }
+
+  if (isCheckingSubdomain.value) {
+    return 'text-brand-600 dark:text-brand-300'
+  }
+
+  return 'text-slate-500 dark:text-slate-400'
+})
+
+const subdomainWrapperClasses = computed(() => {
+  const base =
+    'flex items-center gap-3 rounded-xl border px-3 py-2 shadow-inner-sm transition focus-within:ring-2 focus-within:ring-brand-200 dark:bg-slate-950 dark:focus-within:ring-brand-500'
+
+  if (displayedSubdomainError.value || hasConflict.value) {
+    return `${base} border-red-300 focus-within:ring-red-200 dark:border-red-500/70 dark:focus-within:ring-red-500/40`
+  }
+
+  if (showSuccess.value) {
+    return `${base} border-emerald-400 focus-within:ring-emerald-200 dark:border-emerald-500 dark:focus-within:ring-emerald-500/40`
+  }
+
+  return `${base} border-slate-200 dark:border-slate-800`
+})
+
+const isSubmitDisabled = computed(() => {
+  if (isSubmitting.value) {
+    return true
+  }
+
+  if (isEditing.value) {
+    return !hasSubdomainValue.value
+  }
+
+  if (!hasSubdomainValue.value) {
+    return true
+  }
+
+  if (subdomainErrors.value.length > 0) {
+    return true
+  }
+
+  if (isCheckingSubdomain.value) {
+    return true
+  }
+
+  if (hasNetworkIssue.value) {
+    return true
+  }
+
+  return isSubdomainAvailable.value !== true
+})
+
+function sanitizeSubdomainInput(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '')
+}
+
+function validateSubdomain(value: string) {
+  const trimmed = value.trim()
+  const errors: string[] = []
+
+  if (!trimmed) {
+    errors.push('Укажите название сабдомена.')
+  } else {
+    if (trimmed.length < SUBDOMAIN_MIN_LENGTH) {
+      errors.push(`Сабдомен должен содержать не менее ${SUBDOMAIN_MIN_LENGTH} символов.`)
+    }
+
+    if (trimmed.length > SUBDOMAIN_MAX_LENGTH) {
+      errors.push(`Сабдомен не может быть длиннее ${SUBDOMAIN_MAX_LENGTH} символов.`)
+    }
+
+    if (!/^[a-z0-9-]+$/.test(trimmed)) {
+      errors.push('Допустимы только латинские буквы, цифры и дефисы.')
+    }
+
+    if (trimmed.startsWith('-') || trimmed.endsWith('-')) {
+      errors.push('Сабдомен не может начинаться или заканчиваться дефисом.')
+    }
+  }
+
+  subdomainErrors.value = errors
+  return errors
+}
+
+function onSubdomainInput(value: string) {
+  subdomainTouched.value = true
+  subdomain.value = sanitizeSubdomainInput(value)
+}
+
+function markSubdomainTouched() {
+  subdomainTouched.value = true
+  validateSubdomain(subdomain.value)
+}
+
+function scheduleAvailabilityCheck(value: string) {
+  if (availabilityDebounceTimer) {
+    clearTimeout(availabilityDebounceTimer)
+    availabilityDebounceTimer = null
+  }
+
+  availabilityDebounceTimer = setTimeout(() => {
+    checkSubdomainAvailability(value).catch(() => {})
+  }, 500)
+}
+
+async function checkSubdomainAvailability(value: string, options: { force?: boolean } = {}) {
+  if (isEditing.value) {
+    isSubdomainAvailable.value = true
+    subdomainCheckError.value = null
+    return true
+  }
+
+  const normalized = value.trim().toLowerCase()
+
+  if (!normalized) {
+    isSubdomainAvailable.value = null
+    subdomainCheckError.value = null
+    return false
+  }
+
+  if (
+    !options.force &&
+    lastCheckedSubdomain.value === normalized &&
+    isSubdomainAvailable.value !== null &&
+    !subdomainCheckError.value
+  ) {
+    return isSubdomainAvailable.value
+  }
+
+  if (availabilityAbortController) {
+    availabilityAbortController.abort()
+  }
+
+  const controller = new AbortController()
+  availabilityAbortController = controller
+
+  isCheckingSubdomain.value = true
+  subdomainCheckError.value = null
+
+  try {
+    const response = await request('/api/admin/menu/subdomain/check', {
+      method: 'GET',
+      query: { value: normalized },
+      signal: controller.signal
+    }) as { isAvailable?: boolean }
+
+    const available = Boolean(response?.isAvailable)
+
+    isSubdomainAvailable.value = available
+    subdomainCheckError.value = available ? null : 'Этот адрес уже занят. Попробуйте другой вариант.'
+    lastCheckedSubdomain.value = normalized
+
+    return available
+  } catch (error: any) {
+    if (error?.name === 'AbortError') {
+      return false
+    }
+
+    console.error('[client][subdomain] Failed to check availability', error)
+
+    isSubdomainAvailable.value = null
+    subdomainCheckError.value = 'Не удалось проверить уникальность. Попробуйте ещё раз.'
+
+    return false
+  } finally {
+    if (availabilityAbortController === controller) {
+      availabilityAbortController = null
+    }
+
+    isCheckingSubdomain.value = false
+  }
+}
+
+async function ensureSubdomainAvailability(options: { force?: boolean } = {}) {
+  if (isEditing.value) {
+    return true
+  }
+
+  const errors = validateSubdomain(subdomain.value)
+
+  if (errors.length > 0) {
+    return false
+  }
+
+  return checkSubdomainAvailability(subdomain.value, { force: options.force })
+}
+
+watch(
+  () => subdomain.value,
+  (value) => {
+    const errors = validateSubdomain(value)
+
+    if (availabilityDebounceTimer) {
+      clearTimeout(availabilityDebounceTimer)
+      availabilityDebounceTimer = null
+    }
+
+    if (isEditing.value) {
+      isSubdomainAvailable.value = true
+      subdomainCheckError.value = null
+      return
+    }
+
+    if (!subdomainTouched.value) {
+      return
+    }
+
+    if (!value.trim() || errors.length > 0) {
+      isSubdomainAvailable.value = null
+      subdomainCheckError.value = null
+      isCheckingSubdomain.value = false
+      return
+    }
+
+    isSubdomainAvailable.value = null
+    subdomainCheckError.value = null
+
+    scheduleAvailabilityCheck(value)
+  },
+  { immediate: true }
+)
+
+watch(
+  () => cafeForm.cafeName,
+  (name) => {
+    if (isEditing.value || subdomainTouched.value || subdomain.value.trim().length > 0) {
+      return
+    }
+
+    subdomain.value = sanitizeSubdomainInput(name)
+  }
+)
+
+async function copyMenuLink() {
+  if (!hasSubdomainValue.value) {
+    return
+  }
+
+  if (!process.client) {
+    notifications.info('Скопируйте ссылку вручную в браузере.')
+    return
+  }
+
+  const link = fullMenuUrlDisplay.value
+
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(link)
+    } else {
+      const textarea = document.createElement('textarea')
+      textarea.value = link
+      textarea.setAttribute('readonly', '')
+      textarea.style.position = 'absolute'
+      textarea.style.left = '-9999px'
+      document.body.appendChild(textarea)
+      textarea.select()
+      const succeeded = document.execCommand('copy')
+      document.body.removeChild(textarea)
+
+      if (!succeeded) {
+        throw new Error('Clipboard fallback failed.')
+      }
+    }
+
+    copyState.value = 'success'
+    notifications.success('Ссылка на меню скопирована.')
+  } catch (error) {
+    console.error('[client][subdomain] Failed to copy link', error)
+    copyState.value = 'error'
+    notifications.error('Не удалось скопировать ссылку. Скопируйте её вручную.')
+  } finally {
+    if (copyResetTimer) {
+      clearTimeout(copyResetTimer)
+    }
+
+    copyResetTimer = setTimeout(() => {
+      copyState.value = 'idle'
+      copyResetTimer = null
+    }, 2000)
+  }
+}
+
+function normalizeNumeric(value: number | null) {
+  return typeof value === 'number' && !Number.isNaN(value) ? value : null
+}
+
+function buildMenuPayload() {
+  const items = menuItems.value.map((item) => ({
+    id: item.id,
+    name: item.name,
+    category: item.category,
+    price: normalizeNumeric(item.price),
+    img: item.img,
+    tags: item.tags
+      .split(',')
+      .map((tag) => tag.trim())
+      .filter(Boolean),
+    description: item.description,
+    options: {
+      sizes: item.options.sizes.map((option) => ({
+        id: option.id,
+        label: option.label,
+        add: normalizeNumeric(option.add),
+      })),
+      extras: item.options.extras.map((option) => ({
+        id: option.id,
+        label: option.label,
+        add: normalizeNumeric(option.add),
+      })),
+    },
+  }))
+
+  const cafePayload = {
+    cafeName: cafeForm.cafeName,
+    phone: cafeForm.phone,
+    whatsapp: cafeForm.whatsapp,
+    minOrder: normalizeNumeric(cafeForm.minOrder),
+    deliveryFee: normalizeNumeric(cafeForm.deliveryFee),
+    address: cafeForm.address,
+    announcement: cafeForm.announcement,
+    bannerImage: cafeForm.bannerImage,
+    bannerTitle: cafeForm.bannerTitle,
+    bannerSubtitle: cafeForm.bannerSubtitle,
+    openHours: cafeForm.openHours,
+    scheduleDetails: cafeForm.scheduleDetails,
+  }
+
+  return {
+    id: editMenuId ?? undefined,
+    subdomain: normalizedSubdomain.value,
+    slug: normalizedSubdomain.value,
+    title: cafeForm.cafeName || 'Меню без названия',
+    description: cafeForm.announcement || '',
+    isPublished: isPublished.value,
+    cafe: cafePayload,
+    items,
+  }
+}
 
 function createId () {
   return Math.random().toString(36).slice(2, 10)
@@ -769,6 +1286,15 @@ function applyMenuDetails (details: AdminMenuDetails) {
   isPublished.value = details.isPublished
   Object.assign(cafeForm, details.cafe)
 
+  const normalized = details.subdomain.trim().toLowerCase()
+  subdomain.value = normalized
+  subdomainTouched.value = true
+  subdomainErrors.value = []
+  isSubdomainAvailable.value = true
+  subdomainCheckError.value = null
+  lastCheckedSubdomain.value = normalized
+  copyState.value = 'idle'
+
   const hydratedItems = details.items.map((item) => ({
     id: createId(),
     name: item.name,
@@ -822,17 +1348,57 @@ async function prefillMenu (menuId: string) {
 }
 
 async function handleSubmit () {
+  if (!isEditing.value) {
+    subdomainTouched.value = true
+    const errors = validateSubdomain(subdomain.value)
+
+    if (errors.length > 0) {
+      notifications.error('Проверьте адрес меню.')
+      return
+    }
+
+    const available = await ensureSubdomainAvailability({ force: true })
+
+    if (!available) {
+      notifications.error(subdomainCheckError.value || 'Этот сабдомен уже занят. Попробуйте другой.')
+      return
+    }
+  } else if (!hasSubdomainValue.value) {
+    notifications.error('Сабдомен отсутствует. Обратитесь в поддержку.')
+    return
+  }
+
   try {
     isSubmitting.value = true
-    await new Promise(resolve => setTimeout(resolve, 800))
-    console.info('Submitting menu', {
-      mode: isEditing.value ? 'update' : 'create',
-      menuId: editMenuId,
-      isPublished: isPublished.value,
-      cafeForm,
-      categories: categories.value,
-      menuItems: menuItems.value,
+
+    const payload = buildMenuPayload()
+
+    await request(isEditing.value ? `/api/admin/menu/${editMenuId}` : '/api/admin/menu', {
+      method: isEditing.value ? 'PATCH' : 'POST',
+      body: payload
     })
+
+    if (!isEditing.value) {
+      lastCheckedSubdomain.value = normalizedSubdomain.value
+      isSubdomainAvailable.value = true
+    }
+
+    notifications.success(isEditing.value ? 'Меню обновлено.' : 'Меню создано.')
+  } catch (error: any) {
+    if (error?.data?.error === 'subdomain_conflict') {
+      isSubdomainAvailable.value = false
+      subdomainCheckError.value = 'Этот адрес уже занят. Попробуйте другой вариант.'
+      notifications.error('Этот сабдомен уже занят. Выберите другое имя.')
+      return
+    }
+
+    if (error?.data?.error === 'validation_error') {
+      notifications.error('Проверьте заполненные поля и попробуйте снова.')
+      return
+    }
+
+    console.error('[client][menu] Failed to submit menu', error)
+    notifications.error('Не удалось сохранить меню. Попробуйте ещё раз.')
   } finally {
     isSubmitting.value = false
   }
@@ -847,4 +1413,21 @@ if (editMenuId) {
 useHead(() => ({
   title: isEditing.value ? 'Редактирование меню — Get Menu' : 'Новое меню — Get Menu',
 }))
+
+onBeforeUnmount(() => {
+  if (availabilityDebounceTimer) {
+    clearTimeout(availabilityDebounceTimer)
+    availabilityDebounceTimer = null
+  }
+
+  if (availabilityAbortController) {
+    availabilityAbortController.abort()
+    availabilityAbortController = null
+  }
+
+  if (copyResetTimer) {
+    clearTimeout(copyResetTimer)
+    copyResetTimer = null
+  }
+})
 </script>
