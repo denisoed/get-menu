@@ -5,7 +5,7 @@
     :class="{ hidden: !isOpen || !hasItems, flex: isOpen && hasItems }"
   >
     <div class="absolute inset-0 bg-transparent backdrop-blur-sm" @click="close"></div>
-    <div class="w-full md:w-[720px] bg-white rounded-none md:rounded-2xl p-5 h-full md:h-auto md:max-h-[90vh] overflow-y-auto shadow-soft z-50 dark:bg-slate-950 dark:text-slate-100">
+    <div class="w-full md:w-[720px] bg-white rounded-none md:rounded-2xl p-5 h-full md:h-auto md:max-h-[90vh] shadow-soft z-50 dark:bg-slate-950 dark:text-slate-100 flex flex-col overflow-hidden">
       <div class="flex items-start justify-between gap-4">
         <h3 class="text-xl font-semibold text-slate-900 dark:text-slate-100">Оформление заказа</h3>
         <button
@@ -21,64 +21,65 @@
           </span>
         </button>
       </div>
-      <div
-        v-if="isCompleted"
-        class="mt-8 flex h-full flex-col items-center justify-center"
-      >
+      <div class="mt-4 flex-1 overflow-y-auto">
         <div
-          class="relative w-full max-w-md overflow-hidden rounded-3xl border border-slate-100 bg-white/90 p-8 text-center shadow-soft backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/80"
+          v-if="isCompleted"
+          class="flex min-h-full flex-col items-center justify-center py-8"
         >
           <div
-            aria-hidden="true"
-            class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(249,115,22,0.12),_transparent_70%)] dark:bg-[radial-gradient(circle_at_top,_rgba(249,115,22,0.22),_transparent_75%)]"
-          ></div>
-          <div class="relative flex flex-col items-center gap-6">
-            <div class="inline-flex items-center justify-center rounded-3xl bg-gradient-to-br from-brand-500 via-brand-600 to-brand-700 p-[3px] shadow-lg">
-              <div class="grid h-20 w-20 place-items-center rounded-[1.25rem] bg-white text-brand-600 dark:bg-slate-950/80 dark:text-brand-300">
-                <svg
-                  aria-hidden="true"
-                  class="h-10 w-10"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="1.5"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="m4.5 12.75 6 6 9-13.5" />
-                </svg>
+            class="relative w-full max-w-md overflow-hidden rounded-3xl border border-slate-100 bg-white/90 p-8 text-center shadow-soft backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/80"
+          >
+            <div
+              aria-hidden="true"
+              class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(249,115,22,0.12),_transparent_70%)] dark:bg-[radial-gradient(circle_at_top,_rgba(249,115,22,0.22),_transparent_75%)]"
+            ></div>
+            <div class="relative flex flex-col items-center gap-6">
+              <div class="inline-flex items-center justify-center rounded-3xl bg-gradient-to-br from-brand-500 via-brand-600 to-brand-700 p-[3px] shadow-lg">
+                <div class="grid h-20 w-20 place-items-center rounded-[1.25rem] bg-white text-brand-600 dark:bg-slate-950/80 dark:text-brand-300">
+                  <svg
+                    aria-hidden="true"
+                    class="h-10 w-10"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="m4.5 12.75 6 6 9-13.5" />
+                  </svg>
+                </div>
               </div>
-            </div>
-            <div class="space-y-2 text-slate-600 dark:text-slate-300">
-              <div class="text-2xl font-semibold leading-tight text-slate-900 dark:text-slate-100">Заказ оформлен</div>
-              <div class="text-sm">⏳ Отправляем в кафе…</div>
-              <div class="text-sm">📩 Подробности придут в чат</div>
-            </div>
-            <div class="flex w-full flex-nowrap items-center justify-center gap-3 pt-2">
-              <button
-                type="button"
-                class="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-400 dark:border-slate-700 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:text-slate-100"
-                @click="handleFinish"
-              >
-                Завершить
-              </button>
-              <button
-                type="button"
-                class="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900"
-                @click="handleContinue"
-              >
-                Продолжить
-              </button>
+              <div class="space-y-2 text-slate-600 dark:text-slate-300">
+                <div class="text-2xl font-semibold leading-tight text-slate-900 dark:text-slate-100">Заказ оформлен</div>
+                <div class="text-sm">⏳ Отправляем в кафе…</div>
+                <div class="text-sm">📩 Подробности придут в чат</div>
+              </div>
+              <div class="flex w-full flex-nowrap items-center justify-center gap-3 pt-2">
+                <button
+                  type="button"
+                  class="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-400 dark:border-slate-700 dark:text-slate-200 dark:hover:border-slate-600 dark:hover:text-slate-100"
+                  @click="handleFinish"
+                >
+                  Завершить
+                </button>
+                <button
+                  type="button"
+                  class="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900"
+                  @click="handleContinue"
+                >
+                  Продолжить
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <form v-else class="mt-4 grid md:grid-cols-2 gap-4" @submit.prevent="handleSubmit">
-        <div class="grid gap-3">
-          <label class="text-sm text-slate-700 dark:text-slate-200">Имя
-            <input
-              v-model="form.name"
-              name="name"
+        <form v-else class="grid md:grid-cols-2 gap-4" @submit.prevent="handleSubmit">
+          <div class="grid gap-3">
+            <label class="text-sm text-slate-700 dark:text-slate-200">Имя
+              <input
+                v-model="form.name"
+                name="name"
               required
               enterkeyhint="done"
               class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-400"
@@ -194,16 +195,17 @@
               placeholder="Код домофона, пожелания…"
             ></textarea>
           </label>
-          <div class="sticky bottom-0 mt-auto bg-white dark:bg-slate-950">
-            <button
-              class="w-full rounded-xl bg-brand-600 py-3 text-white hover:bg-brand-700 disabled:opacity-50"
-              :disabled="!hasItems"
-            >
-              Подтвердить заказ
-            </button>
+            <div class="sticky bottom-0 mt-auto bg-white dark:bg-slate-950">
+              <button
+                class="w-full rounded-xl bg-brand-600 py-3 text-white hover:bg-brand-700 disabled:opacity-50"
+                :disabled="!hasItems"
+              >
+                Подтвердить заказ
+              </button>
+            </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   </div>
 </template>
