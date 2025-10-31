@@ -14,6 +14,7 @@ declare global {
     onEvent?<T = unknown>(eventType: string, handler: (event: T) => void): void
     openLink?(url: string, options?: TelegramOpenLinkOptions): void
     openTelegramLink?(url: string): void
+    close?(): void
   }
 
   interface TelegramNamespace {

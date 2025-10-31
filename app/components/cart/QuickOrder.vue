@@ -21,7 +21,38 @@
           </span>
         </button>
       </div>
-      <form class="mt-4 grid md:grid-cols-2 gap-4" @submit.prevent="handleSubmit">
+      <div
+        v-if="isProcessing"
+        class="mt-6 flex h-full flex-col items-center justify-center gap-4 text-center text-slate-700 dark:text-slate-200"
+      >
+        <div class="text-xl font-semibold text-slate-900 dark:text-slate-100">Заказ оформлен ✅</div>
+        <div class="text-sm">⏳ Отправляем в кафе…</div>
+        <div class="text-sm">📩 Подробности придут в чат</div>
+        <UiSpinner size="lg" />
+      </div>
+      <div
+        v-else-if="isCompleted"
+        class="mt-6 flex h-full flex-col items-center justify-center gap-6 text-center text-slate-700 dark:text-slate-200"
+      >
+        <div class="text-xl font-semibold text-slate-900 dark:text-slate-100">Заказ оформлен ✅</div>
+        <div class="grid w-full max-w-sm gap-3">
+          <button
+            type="button"
+            class="w-full rounded-xl bg-brand-600 py-3 text-white transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:opacity-50"
+            @click="handleFinish"
+          >
+            Завершить
+          </button>
+          <button
+            type="button"
+            class="w-full rounded-xl border border-slate-200 py-3 text-slate-900 transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-slate-700 dark:text-slate-100 dark:hover:bg-slate-900/60"
+            @click="handleContinue"
+          >
+            Продолжить
+          </button>
+        </div>
+      </div>
+      <form v-else class="mt-4 grid md:grid-cols-2 gap-4" @submit.prevent="handleSubmit">
         <div class="grid gap-3">
           <label class="text-sm text-slate-700 dark:text-slate-200">Имя
             <input
@@ -145,7 +176,7 @@
           <div class="sticky bottom-0 mt-auto bg-white dark:bg-slate-950">
             <button
               class="w-full rounded-xl bg-brand-600 py-3 text-white hover:bg-brand-700 disabled:opacity-50"
-              :disabled="!hasItems"
+              :disabled="!hasItems || isProcessing"
             >
               Подтвердить заказ
             </button>
@@ -157,11 +188,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, watch } from 'vue'
+import { computed, reactive, ref, watch, onBeforeUnmount } from 'vue'
+import UiSpinner from '~/components/ui/Spinner.vue'
 import useDate from '~/composables/useDate'
 import { useCartStore } from '~/store/cart'
 import type { CartEntry, GroupedCartItem } from '~/types/cart'
-import { buildCartLines, calculateCartTotals, cartEntryDescription, composeOrderMessage, groupCartItems } from '~/utils/cart'
+import { calculateCartTotals, cartEntryDescription, groupCartItems } from '~/utils/cart'
 
 interface Settings {
   cafeName: string
@@ -194,36 +226,65 @@ const groupedCart = computed(() => groupCartItems(cartItems.value))
 const totals = computed(() => calculateCartTotals(groupedCart.value, props.settings.deliveryFee))
 const hasItems = computed(() => groupedCart.value.length > 0)
 
-const quickOrderLines = computed(() => buildCartLines(groupedCart.value, fmt, totals.value))
-
-const quickOrderMessage = computed(() => composeOrderMessage(props.settings.cafeName, quickOrderLines.value, {
-  customer: {
-    name: form.name,
-    phone: form.phone,
-    type: form.type,
-    address: form.address,
-    time: form.time,
-    comment: form.comment,
-  },
-}))
-
-const whatsappOrderLink = computed(() => {
-  if (!hasItems.value) return '#'
-  const phone = props.settings.whatsapp.replace(/\D/g, '')
-  return `https://wa.me/${phone}?text=${encodeURIComponent(quickOrderMessage.value)}`
-})
-
 const requiresAddress = computed(() => form.type === 'delivery')
 
+const isProcessing = ref(false)
+const isCompleted = ref(false)
+let completionTimer: ReturnType<typeof window.setTimeout> | undefined
+
 watch(() => props.isOpen, (isOpen) => {
-  if (!isOpen) return
+  if (!isOpen) {
+    resetCompletion()
+    return
+  }
   if (!hasItems.value) {
     emit('update:is-open', false)
   }
 })
 
 function close () {
+  resetCompletion()
   emit('update:is-open', false)
+}
+
+function resetCompletion () {
+  clearCompletionTimer()
+  isProcessing.value = false
+  isCompleted.value = false
+}
+
+function clearCompletionTimer () {
+  if (completionTimer !== undefined) {
+    window.clearTimeout(completionTimer)
+    completionTimer = undefined
+  }
+}
+
+function finishProcessing () {
+  clearCompletionTimer()
+  isProcessing.value = false
+  isCompleted.value = true
+}
+
+function closeMiniApp () {
+  if (!process.client) {
+    return false
+  }
+
+  const webApp = window.Telegram?.WebApp
+
+  if (!webApp) {
+    return false
+  }
+
+  try {
+    webApp.close?.()
+    return true
+  } catch (error) {
+    console.warn('[telegram]', 'Failed to close mini app', error)
+  }
+
+  return false
 }
 
 function updateQuantity (entry: GroupedCartItem, nextQuantity: number) {
@@ -259,11 +320,35 @@ function removeFromCart (key: string) {
   removeQuantity(key, Infinity)
 }
 
-function handleSubmit () {
-  if (!hasItems.value) return
-  if (process.client) {
-    window.open(whatsappOrderLink.value, '_blank')
+function handleFinish () {
+  const closed = closeMiniApp()
+  if (!closed) {
+    close()
   }
+}
+
+function handleContinue () {
   close()
 }
+
+function handleSubmit () {
+  if (!hasItems.value) return
+  if (isProcessing.value || isCompleted.value) return
+
+  isProcessing.value = true
+
+  if (!process.client) {
+    finishProcessing()
+    return
+  }
+
+  clearCompletionTimer()
+  completionTimer = window.setTimeout(() => {
+    finishProcessing()
+  }, 2500)
+}
+
+onBeforeUnmount(() => {
+  clearCompletionTimer()
+})
 </script>
