@@ -12,6 +12,7 @@ export interface EditableOption {
 
 export interface EditableMenuItem {
   id: string
+  sourceId: string | null
   name: string
   category: string
   price: number | null

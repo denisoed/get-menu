@@ -663,15 +663,22 @@
   </section>
 
   <LayoutAdminFooter />
+
+  <MenuQuickEdit
+    v-if="isEditing"
+    :quick-edit="quickEdit"
+  />
 </template>
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import { useHead, useRoute } from '#imports'
 import { useMenuCategories } from '~/composables/useMenuCategories'
+import { useMenuQuickEdit } from '~/composables/useMenuQuickEdit'
 import MenuCategoryManager from '~/components/admin/MenuCategoryManager.vue'
 import BackButton from '~/components/ui/BackButton.vue'
 import Tabs from '~/components/ui/Tabs.vue'
+import MenuQuickEdit from '~/components/admin/MenuQuickEdit.vue'
 import type { AdminMenuDetails } from '~/types/admin-menu'
 import type {
   CafeForm,
@@ -838,6 +845,7 @@ const {
   deleteCategory: deleteRemoteCategory
 } = useMenuCategories()
 const menuItems = ref<EditableMenuItem[]>([createMenuItem()])
+const quickEdit = useMenuQuickEdit({ menuId: computed(() => editMenuId), menuTitle: editingMenuTitle, menuItems })
 const isSubmitting = ref(false)
 const isSubmitDisabled = computed(() => {
   if (isSubmitting.value) {
@@ -1111,6 +1119,7 @@ function createMenuItem (base?: EditableMenuItem): EditableMenuItem {
   if (base) {
     const clone: EditableMenuItem = JSON.parse(JSON.stringify(base))
     clone.id = createId()
+    clone.sourceId = base.sourceId
     clone.options.sizes = clone.options.sizes.map(option => ({ ...option, id: createId() }))
     clone.options.extras = clone.options.extras.map(option => ({ ...option, id: createId() }))
     clone.isCollapsed = true
@@ -1119,6 +1128,7 @@ function createMenuItem (base?: EditableMenuItem): EditableMenuItem {
 
   return {
     id: createId(),
+    sourceId: null,
     name: '',
     category: '',
     price: null,
@@ -1220,6 +1230,7 @@ function applyMenuDetails (details: AdminMenuDetails) {
 
   const hydratedItems = details.items.map((item) => ({
     id: createId(),
+    sourceId: item.id,
     name: item.name,
     category: item.category,
     price: item.price,
