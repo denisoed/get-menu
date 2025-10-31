@@ -26,6 +26,7 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
   const isOpen = ref(false)
   const step = ref<'input' | 'confirm' | 'success'>('input')
   const instructions = ref('')
+  const instructionsCache = new Map<string, string>()
   const instructionsLimit = 1500
   const instructionsError = ref<string | null>(null)
   const isRequestingDiff = ref(false)
@@ -53,20 +54,46 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
 
   const isAvailable = computed(() => Boolean(menuId.value))
 
+  watch(
+    instructions,
+    (value) => {
+      const activeMenuId = menuId.value
+
+      if (!activeMenuId) return
+
+      if (value) {
+        instructionsCache.set(activeMenuId, value)
+      } else {
+        instructionsCache.delete(activeMenuId)
+      }
+    },
+    { flush: 'post' }
+  )
+
   watch(menuId, (next, prev) => {
-    if (!next && isOpen.value) {
-      close({ reset: true })
+    if (!next) {
+      if (isOpen.value) {
+        close({ reset: true })
+      }
+
+      instructions.value = ''
       return
     }
 
-    if (prev && next && prev !== next) {
-      resetState()
+    if (prev && prev !== next) {
+      resetState({ preserveInstructions: true })
     }
+
+    instructions.value = instructionsCache.get(next) ?? ''
   })
 
-  function resetState(options: { preserveLastUpdated?: boolean } = {}) {
+  function resetState(options: { preserveLastUpdated?: boolean; preserveInstructions?: boolean } = {}) {
+    const preserveInstructions = options.preserveInstructions ?? true
+
     step.value = 'input'
-    instructions.value = ''
+    if (!preserveInstructions) {
+      instructions.value = ''
+    }
     instructionsError.value = null
     isRequestingDiff.value = false
     isApplying.value = false
@@ -200,7 +227,7 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
   }
 
   function startOver() {
-    resetState({ preserveLastUpdated: true })
+    resetState({ preserveLastUpdated: true, preserveInstructions: false })
   }
 
   function clearInstructions() {
