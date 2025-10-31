@@ -2,7 +2,7 @@
   <div class="inline-flex items-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
     <button
       type="button"
-      class="h-10 w-10 rounded-l-xl transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:hover:bg-slate-800"
+      class="h-10 w-10 touch-manipulation rounded-l-xl transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:hover:bg-slate-800"
       :aria-label="decreaseLabel"
       @click="decrease"
     >
@@ -13,7 +13,7 @@
     </div>
     <button
       type="button"
-      class="h-10 w-10 rounded-r-xl transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:hover:bg-slate-800"
+      class="h-10 w-10 touch-manipulation rounded-r-xl transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 dark:hover:bg-slate-800"
       :aria-label="increaseLabel"
       @click="increase"
     >
