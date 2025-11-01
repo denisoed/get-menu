@@ -325,7 +325,8 @@ export function useMenuQuickEdit({ menuId, menuTitle, menuItems }: UseMenuQuickE
       return {
         ...entry,
         price: updated.price,
-        tags: updated.tags.join(', '),
+        tagIds: [...updated.tagIds],
+        tags: [...updated.tags],
         description: updated.description
       }
     })

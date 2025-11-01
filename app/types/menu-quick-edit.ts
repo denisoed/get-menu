@@ -51,6 +51,7 @@ export interface QuickEditApplyResponse {
     id: string
     name: string
     price: number | null
+    tagIds: string[]
     tags: string[]
     description: string
   }>

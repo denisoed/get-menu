@@ -25,6 +25,7 @@ export interface AdminMenuDetails {
     category: string
     price: number | null
     img: string
+    tagIds: string[]
     tags: string[]
     description: string
     options: {

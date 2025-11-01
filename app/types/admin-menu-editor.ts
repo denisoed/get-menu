@@ -1,8 +1,10 @@
 import type { CategoryModel } from '~/schemas/categories'
+import type { TagModel } from '~/schemas/tags'
 
 export type OptionType = 'sizes' | 'extras'
 
 export type EditableCategory = CategoryModel
+export type EditableTag = TagModel
 
 export interface EditableOption {
   id: string
@@ -17,7 +19,8 @@ export interface EditableMenuItem {
   category: string
   price: number | null
   img: string
-  tags: string
+  tagIds: string[]
+  tags: string[]
   description: string
   isCollapsed: boolean
   options: {

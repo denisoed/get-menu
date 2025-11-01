@@ -353,6 +353,18 @@
                   :on-update-category="requestCategoryUpdate"
                   :on-delete-category="requestCategoryDeletion"
                 />
+                <MenuTagManager
+                  :tags="tags"
+                  :is-loading="areTagsLoading"
+                  :load-error="tagsLoadError"
+                  :is-creating="isCreatingTag"
+                  :updating-tag-id="updatingTagId"
+                  :deleting-tag-id="deletingTagId"
+                  :on-reload="loadTags"
+                  :on-create-tag="requestTagCreation"
+                  :on-update-tag="requestTagUpdate"
+                  :on-delete-tag="requestTagDeletion"
+                />
 
                 <div class="grid gap-6">
                   <div
@@ -444,14 +456,35 @@
                           >
                         </label>
                         <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
-                          Теги (через запятую)
-                          <input
-                            v-model="item.tags"
-                            type="text"
-                            class="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
-                            placeholder="Хит, Острый"
-                            enterkeyhint="done"
-                          >
+                          Теги
+                          <div class="mt-1">
+                            <select
+                              v-model="item.tagIds"
+                              multiple
+                              class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm shadow-inner-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:focus:ring-brand-500"
+                              :disabled="areTagsLoading"
+                              @change="handleTagSelectionChange(item)"
+                            >
+                              <option
+                                v-for="tag in tags"
+                                :key="tag.id"
+                                :value="tag.id"
+                              >
+                                {{ tag.name }}
+                              </option>
+                            </select>
+                          </div>
+                          <p v-if="!tags.length" class="mt-1 text-xs text-slate-500 dark:text-slate-400">Создайте теги выше, чтобы выбрать их для блюда.</p>
+                          <p v-else class="mt-1 text-xs text-slate-500 dark:text-slate-400">Удерживайте Ctrl или Command, чтобы отметить несколько тегов.</p>
+                          <div v-if="item.tags.length" class="mt-2 flex flex-wrap gap-2">
+                            <span
+                              v-for="(tagName, tagIndex) in item.tags"
+                              :key="`${item.id}-${tagName}-${tagIndex}`"
+                              class="rounded-full bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-600 dark:bg-brand-500/10 dark:text-brand-300"
+                            >
+                              {{ tagName }}
+                            </span>
+                          </div>
                         </label>
                         <label class="text-sm text-slate-700 dark:text-slate-200 md:col-span-2">
                           Описание
@@ -679,8 +712,10 @@
 import { computed, onBeforeUnmount, reactive, ref, watch } from 'vue'
 import { useHead, useRoute } from '#imports'
 import { useMenuCategories } from '~/composables/useMenuCategories'
+import { useMenuTags } from '~/composables/useMenuTags'
 import { useMenuQuickEdit } from '~/composables/useMenuQuickEdit'
 import MenuCategoryManager from '~/components/admin/MenuCategoryManager.vue'
+import MenuTagManager from '~/components/admin/MenuTagManager.vue'
 import BackButton from '~/components/ui/BackButton.vue'
 import Tabs from '~/components/ui/Tabs.vue'
 import MenuQuickEdit from '~/components/admin/MenuQuickEdit.vue'
@@ -849,6 +884,18 @@ const {
   updateCategoryName: updateRemoteCategory,
   deleteCategory: deleteRemoteCategory
 } = useMenuCategories()
+const {
+  tags,
+  isLoading: areTagsLoading,
+  loadError: tagsLoadError,
+  isCreating: isCreatingTag,
+  updatingTagId,
+  deletingTagId,
+  loadTags,
+  createTag: createRemoteTag,
+  updateTagName: updateRemoteTag,
+  deleteTag: deleteRemoteTag
+} = useMenuTags()
 const menuItems = ref<EditableMenuItem[]>([createMenuItem()])
 const quickEdit = useMenuQuickEdit({ menuId: computed(() => editMenuId), menuTitle: editingMenuTitle, menuItems })
 const isSubmitting = ref(false)
@@ -1127,6 +1174,9 @@ function createMenuItem (base?: EditableMenuItem): EditableMenuItem {
     clone.sourceId = base.sourceId
     clone.options.sizes = clone.options.sizes.map(option => ({ ...option, id: createId() }))
     clone.options.extras = clone.options.extras.map(option => ({ ...option, id: createId() }))
+    clone.tagIds = Array.from(new Set(clone.tagIds || []))
+    clone.tags = clone.tags ? [...clone.tags] : []
+    normalizeMenuItemTags(clone)
     clone.isCollapsed = true
     return clone
   }
@@ -1138,7 +1188,8 @@ function createMenuItem (base?: EditableMenuItem): EditableMenuItem {
     category: '',
     price: null,
     img: '',
-    tags: '',
+    tagIds: [],
+    tags: [],
     description: '',
     isCollapsed: false,
     options: {
@@ -1166,6 +1217,56 @@ function handleCategoryRemoved ({ name }: { name: string }) {
   })
 }
 
+const tagLookup = computed(() => new Map(tags.value.map((tag) => [tag.id, tag.name])))
+
+function normalizeMenuItemTags (item: EditableMenuItem) {
+  const uniqueIds = Array.from(new Set(item.tagIds))
+
+  if (uniqueIds.length !== item.tagIds.length || uniqueIds.some((id, index) => id !== item.tagIds[index])) {
+    item.tagIds = uniqueIds
+  }
+
+  const nextTagNames = uniqueIds
+    .map((id) => tagLookup.value.get(id))
+    .filter((name): name is string => Boolean(name))
+
+  if (
+    nextTagNames.length !== item.tags.length ||
+    nextTagNames.some((name, index) => name !== item.tags[index])
+  ) {
+    item.tags = nextTagNames
+  }
+}
+
+function syncMenuItemTagNames () {
+  menuItems.value.forEach((item) => {
+    normalizeMenuItemTags(item)
+  })
+}
+
+watch(tags, () => {
+  syncMenuItemTagNames()
+}, { deep: true })
+
+watch(menuItems, (items) => {
+  items.forEach((item) => {
+    normalizeMenuItemTags(item)
+  })
+}, { deep: true })
+
+function handleTagSelectionChange (item: EditableMenuItem) {
+  normalizeMenuItemTags(item)
+}
+
+function handleTagRemoved (tagId: string) {
+  menuItems.value.forEach((item) => {
+    if (item.tagIds.includes(tagId)) {
+      item.tagIds = item.tagIds.filter((id) => id !== tagId)
+      normalizeMenuItemTags(item)
+    }
+  })
+}
+
 function togglePublication () {
   isPublished.value = !isPublished.value
 }
@@ -1187,6 +1288,24 @@ async function requestCategoryUpdate ({ id, name, updatedAt }: { id: string; nam
 async function requestCategoryDeletion ({ id }: { id: string }) {
   const deleted = await deleteRemoteCategory(id)
   handleCategoryRemoved({ name: deleted.name })
+}
+
+async function requestTagCreation (name: string) {
+  await createRemoteTag(name)
+  syncMenuItemTagNames()
+}
+
+async function requestTagUpdate ({ id, name, updatedAt }: { id: string; name: string; updatedAt: string }) {
+  const updated = await updateRemoteTag(id, name, updatedAt)
+
+  if (updated) {
+    syncMenuItemTagNames()
+  }
+}
+
+async function requestTagDeletion ({ id }: { id: string }) {
+  await deleteRemoteTag(id)
+  handleTagRemoved(id)
 }
 
 function addMenuItem (base?: EditableMenuItem) {
@@ -1240,7 +1359,8 @@ function applyMenuDetails (details: AdminMenuDetails) {
     category: item.category,
     price: item.price,
     img: item.img,
-    tags: item.tags.join(', '),
+    tagIds: [...item.tagIds],
+    tags: [...item.tags],
     description: item.description,
     isCollapsed: true,
     options: {
@@ -1258,6 +1378,7 @@ function applyMenuDetails (details: AdminMenuDetails) {
   }))
 
   menuItems.value = hydratedItems.length ? hydratedItems : [createMenuItem()]
+  syncMenuItemTagNames()
 }
 
 async function prefillMenu (menuId: string) {
@@ -1311,6 +1432,7 @@ async function handleSubmit () {
   }
 }
 
+await loadTags().catch(() => {})
 await loadCategories().catch(() => {})
 
 if (editMenuId) {

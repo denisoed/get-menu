@@ -78,6 +78,7 @@
       "id": "dish-1",
       "name": "Бургер «Классик»",
       "price": 350,
+      "tagIds": ["tag-hit", "tag-new"],
       "tags": ["Хит", "Новинка"],
       "description": "..."
     }
