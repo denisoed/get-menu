@@ -516,7 +516,7 @@
                                   </label>
                                   <button
                                     type="button"
-                                    class="inline-flex items-center gap-1 rounded-lg border border-red-200 px-3 py-2 text-xs font-medium text-red-600 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 dark:border-red-500/40 dark:text-red-300 dark:hover:bg-red-500/10"
+                                    class="inline-flex h-11 items-center justify-center gap-1 rounded-lg border border-red-200 px-4 text-sm font-medium text-red-600 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 dark:border-red-500/40 dark:text-red-300 dark:hover:bg-red-500/10"
                                     @click="removeOption(index, 'sizes', sizeIndex)"
                                   >
                                     Удалить
@@ -577,7 +577,7 @@
                                   </label>
                                   <button
                                     type="button"
-                                    class="inline-flex items-center gap-1 rounded-lg border border-red-200 px-3 py-2 text-xs font-medium text-red-600 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 dark:border-red-500/40 dark:text-red-300 dark:hover:bg-red-500/10"
+                                    class="inline-flex h-11 items-center justify-center gap-1 rounded-lg border border-red-200 px-4 text-sm font-medium text-red-600 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 dark:border-red-500/40 dark:text-red-300 dark:hover:bg-red-500/10"
                                     @click="removeOption(index, 'extras', extraIndex)"
                                   >
                                     Удалить
@@ -592,14 +592,14 @@
                       <div class="flex flex-col-reverse gap-3 pt-4 md:flex-row md:items-center md:justify-between">
                         <button
                           type="button"
-                          class="inline-flex items-center justify-center gap-1 rounded-lg border border-slate-300 px-3 py-2 text-xs font-medium text-slate-600 transition hover:border-brand-500 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:text-slate-300 dark:hover:border-brand-400 dark:hover:text-brand-300 md:hidden"
+                          class="inline-flex h-11 items-center justify-center gap-1 rounded-lg border border-slate-300 px-4 text-sm font-medium text-slate-600 transition hover:border-brand-500 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:text-slate-300 dark:hover:border-brand-400 dark:hover:text-brand-300 md:hidden"
                           @click="collapseMenuItem(index)"
                         >
                           Свернуть
                         </button>
                         <button
                           type="button"
-                          class="inline-flex items-center gap-1 rounded-lg border border-red-200 px-3 py-1 text-xs font-medium text-red-600 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 dark:border-red-500/40 dark:text-red-300 dark:hover:bg-red-500/10"
+                          class="inline-flex h-11 items-center justify-center gap-1 rounded-lg border border-red-200 px-4 text-sm font-medium text-red-600 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 dark:border-red-500/40 dark:text-red-300 dark:hover:bg-red-500/10"
                           :disabled="menuItems.length === 1"
                           :class="{ 'opacity-60 cursor-not-allowed': menuItems.length === 1 }"
                           @click="removeMenuItem(index)"
@@ -608,7 +608,7 @@
                         </button>
                         <button
                           type="button"
-                          class="inline-flex items-center gap-1 rounded-lg border border-slate-300 px-3 py-1 text-xs font-medium text-slate-600 transition hover:border-brand-500 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:text-slate-300 dark:hover:border-brand-400 dark:hover:text-brand-300"
+                          class="inline-flex h-11 items-center justify-center gap-1 rounded-lg border border-slate-300 px-4 text-sm font-medium text-slate-600 transition hover:border-brand-500 hover:text-brand-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 dark:border-slate-700 dark:text-slate-300 dark:hover:border-brand-400 dark:hover:text-brand-300"
                           @click="duplicateMenuItem(index)"
                         >
                           Дублировать
