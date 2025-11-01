@@ -117,7 +117,8 @@ describe('useMenuQuickEdit draft persistence', () => {
         category: 'Основные',
         price: 310,
         img: '',
-        tags: 'Хит',
+        tagIds: ['tag-hit'],
+        tags: ['Хит'],
         description: 'Старое описание',
         isCollapsed: false,
         options: {
@@ -176,6 +177,7 @@ describe('useMenuQuickEdit draft persistence', () => {
           id: 'dish-1',
           name: 'Блюдо',
           price: 420,
+          tagIds: ['tag-hit'],
           tags: ['Хит'],
           description: 'Новое описание'
         }

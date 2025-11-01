@@ -29,6 +29,7 @@ export const MENU_DETAILS: Record<string, AdminMenuDetails> = {
         category: 'Бургеры',
         price: 290,
         img: 'https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=1200&auto=format&fit=crop',
+        tagIds: ['tag-hit'],
         tags: ['Хит'],
         description: 'Сочное мясо, маринованные огурцы и фирменный соус.',
         options: {
@@ -49,6 +50,7 @@ export const MENU_DETAILS: Record<string, AdminMenuDetails> = {
         category: 'Салаты',
         price: 260,
         img: 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?q=80&w=1200&auto=format&fit=crop',
+        tagIds: ['tag-popular'],
         tags: ['Популярно'],
         description: 'Классический рецепт с соусом собственного приготовления.',
         options: { sizes: [], extras: [] }
@@ -59,6 +61,7 @@ export const MENU_DETAILS: Record<string, AdminMenuDetails> = {
         category: 'Напитки',
         price: 110,
         img: 'https://images.unsplash.com/photo-1528909514045-2fa4ac7a08ba?q=80&w=1200&auto=format&fit=crop',
+        tagIds: ['tag-summer'],
         tags: ['Лето'],
         description: 'Освежающий напиток с лимоном и мятой.',
         options: {
@@ -99,6 +102,7 @@ export const MENU_DETAILS: Record<string, AdminMenuDetails> = {
         category: 'Холодные супы',
         price: 240,
         img: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1200&auto=format&fit=crop',
+        tagIds: ['tag-season'],
         tags: ['Сезон'],
         description: 'Легкий суп с арбузом и свежими овощами.',
         options: { sizes: [], extras: [{ id: 'season-extra-1', label: 'Креветки', add: 120 }] }
@@ -109,6 +113,7 @@ export const MENU_DETAILS: Record<string, AdminMenuDetails> = {
         category: 'Салаты',
         price: 290,
         img: 'https://images.unsplash.com/photo-1463740839922-2d3b7e426a56?q=80&w=1200&auto=format&fit=crop',
+        tagIds: ['tag-vegan'],
         tags: ['Веган'],
         description: 'Сладкая клубника, шпинат и сыр фета.',
         options: { sizes: [], extras: [] }
@@ -143,6 +148,7 @@ export const MENU_DETAILS: Record<string, AdminMenuDetails> = {
         category: 'Наборы',
         price: 4900,
         img: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1200&auto=format&fit=crop',
+        tagIds: ['tag-team'],
         tags: ['Для команды'],
         description: 'Сытный набор для команды до 10 человек.',
         options: { sizes: [], extras: [] }
@@ -153,6 +159,7 @@ export const MENU_DETAILS: Record<string, AdminMenuDetails> = {
         category: 'Напитки и десерты',
         price: 2600,
         img: 'https://images.unsplash.com/photo-1495744472287-4d71bcdd2085?q=80&w=1200&auto=format&fit=crop',
+        tagIds: ['tag-popular'],
         tags: ['Популярно'],
         description: 'Кофе, мини-десерты и свежие фрукты.',
         options: {

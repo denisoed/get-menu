@@ -276,7 +276,14 @@ export function applyQuickEditChanges(
   }
 
   const warnings: string[] = []
-  const updatedItems = new Map<string, { id: string; name: string; price: number | null; tags: string[]; description: string }>()
+  const updatedItems = new Map<string, {
+    id: string
+    name: string
+    price: number | null
+    tagIds: string[]
+    tags: string[]
+    description: string
+  }>()
 
   for (const item of items) {
     const target = menu.items.find((entry) => entry.id === item.itemId)
@@ -298,10 +305,26 @@ export function applyQuickEditChanges(
 
       if (change.field === 'tags') {
         if (typeof change.value === 'string') {
-          target.tags = change.value
+          const previousMap = new Map(
+            (target.tags || []).map((tag, index) => [normalize(tag), target.tagIds?.[index] ?? null])
+          )
+
+          const nextNames = change.value
             .split(/[,;/]/)
             .map((tag) => tag.trim())
             .filter(Boolean)
+
+          target.tags = nextNames
+          target.tagIds = nextNames.map((name) => {
+            const normalizedName = normalize(name)
+            const existing = previousMap.get(normalizedName)
+
+            if (existing) {
+              return existing
+            }
+
+            return createId('tag')
+          })
         } else {
           warnings.push(`Некорректные теги для блюда «${target.name}».`)
         }
@@ -320,6 +343,7 @@ export function applyQuickEditChanges(
       id: target.id,
       name: target.name,
       price: target.price ?? null,
+      tagIds: target.tagIds ? [...target.tagIds] : [],
       tags: [...target.tags],
       description: target.description
     })
